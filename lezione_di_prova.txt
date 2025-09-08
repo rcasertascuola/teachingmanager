@@ -1,0 +1,48 @@
+= Titolo Principale della Lezione (H1) =
+
+Questo è un paragrafo introduttivo. Possiamo scrivere testo '''grassetto''' e ''corsivo''.
+Possiamo anche combinare '''corsivo e ''grassetto''''' per un effetto speciale.
+
+Questo è un altro paragrafo.
+Ecco del testo colorato: {{color:blue|questo testo è blu}}. Ed ecco del testo in esadecimale: {{color:#ff00ff|questo testo è magenta}}.
+
+== Sottotitolo (H2) ==
+
+Questa sezione parla degli elenchi.
+
+* Questo è un elemento di un elenco puntato.
+* Un altro elemento.
+** Puoi indentare gli elenchi, ma il parser attuale non lo supporta. Verrà visualizzato come * Elemento.
+* Ultimo elemento.
+
+# Questo è un elenco numerato.
+# Ogni elemento è numerato progressivamente.
+# Perfetto per le istruzioni passo-passo.
+
+=== Sottotitolo più piccolo (H3) ===
+
+Questa sezione mostra altri elementi.
+
+----
+
+Sopra c'è una linea orizzontale.
+
+Un link a una pagina interna: [[Pagina di Esempio]]
+Un link a una pagina interna con testo diverso: [[Pagina di Esempio|clicca qui]]
+
+Un link a un sito esterno: [https://www.google.com Google]
+
+== Media e Tabelle ==
+
+Ecco come inserire un'immagine:
+[[Image:https://via.placeholder.com/150|Un'immagine di esempio]]
+
+Ecco come inserire un video di YouTube:
+[[Video:https://www.youtube.com/watch?v=dQw4w9WgXcQ]]
+
+Ed ecco una tabella:
+| Intestazione 1 | Intestazione 2 | Intestazione 3 |
+|----------------|----------------|----------------|
+| Riga 1, Cella 1| Riga 1, Cella 2| Riga 1, Cella 3|
+| Riga 2, Cella 1| Riga 2, Cella 2| Riga 2, Cella 3|
+| Riga 3, Cella 1| Riga 3, Cella 2| Riga 3, Cella 3|
