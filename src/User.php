@@ -73,5 +73,21 @@ class User {
 
         return false;
     }
+
+    /**
+     * Find all users with the 'student' role.
+     *
+     * @return array An array of student data (id, username).
+     */
+    public static function findAllStudents()
+    {
+        $database = new Database();
+        $pdo = $database->getConnection();
+
+        $stmt = $pdo->prepare("SELECT id, username FROM users WHERE role = 'student' ORDER BY username ASC");
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>

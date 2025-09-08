@@ -331,4 +331,54 @@ class Lesson
             return "DB Error: " . $e->getMessage();
         }
     }
+
+    /**
+     * Get all unique students who have submitted data for a specific lesson.
+     *
+     * @param int $lessonId
+     * @return array
+     */
+    public static function getStudentsForLesson($lessonId)
+    {
+        $database = new Database();
+        $pdo = $database->getConnection();
+        $stmt = $pdo->prepare('
+            SELECT DISTINCT u.id, u.username
+            FROM student_lesson_data sld
+            JOIN users u ON sld.user_id = u.id
+            WHERE sld.lesson_id = :lesson_id
+            ORDER BY u.username ASC
+        ');
+        $stmt->execute(['lesson_id' => $lessonId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Get all student-specific data for a given lesson.
+     *
+     * @param int $lessonId
+     * @return array
+     */
+    public static function getAllStudentDataForLesson($lessonId)
+    {
+        $database = new Database();
+        $pdo = $database->getConnection();
+        $stmt = $pdo->prepare('
+            SELECT sld.id, sld.user_id, u.username, sld.type, sld.data, sld.created_at
+            FROM student_lesson_data sld
+            JOIN users u ON sld.user_id = u.id
+            WHERE sld.lesson_id = :lesson_id
+            ORDER BY u.username ASC, sld.created_at ASC
+        ');
+        $stmt->execute(['lesson_id' => $lessonId]);
+
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Decode the JSON data for each record
+        foreach ($results as &$row) {
+            $row['data'] = json_decode($row['data'], true);
+        }
+
+        return $results;
+    }
 }
