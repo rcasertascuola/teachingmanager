@@ -1,8 +1,8 @@
 -- Create the database
-CREATE DATABASE IF NOT EXISTS `gestionale_studio`;
+CREATE DATABASE IF NOT EXISTS `my_dottorci`;
 
 -- Use the created database
-USE `gestionale_studio`;
+USE `my_dottorci`;
 
 --
 -- Table structure for table `users`
