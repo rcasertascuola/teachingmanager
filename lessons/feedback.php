@@ -27,10 +27,10 @@ $studentsOnLesson = Lesson::getStudentsForLesson($lessonId);
 
 // Process data for aggregated view and individual view
 $aggregatedData = [
-    'highlights' => [],
-    'notes' => [],
-    'questions' => [],
-    'summaries' => []
+    'highlight' => [],
+    'note' => [],
+    'question' => [],
+    'summary' => []
 ];
 $individualData = [];
 
@@ -106,16 +106,16 @@ foreach ($allStudentData as $data) {
                 <div class="card mb-3">
                     <div class="card-header"><h4>Sottolineature</h4></div>
                     <div class="card-body">
-                        <?php if (empty($aggregatedData['highlights'])): ?>
+                        <?php if (empty($aggregatedData['highlight'])): ?>
                             <p class="text-muted">Nessuna sottolineatura dagli alunni.</p>
                         <?php else: ?>
-                            <?php foreach ($aggregatedData['highlights'] as $item): ?>
+                            <?php foreach ($aggregatedData['highlight'] as $item): ?>
                                 <div class="data-block">
                                     <h5 class="mb-1">
                                         Da: <?php echo htmlspecialchars($item['student_username']); ?>
                                         <span class="badge bg-primary student-badge">Sottolineatura</span>
                                     </h5>
-                                    <div class="content">"<?php echo htmlspecialchars($item['text']); ?>"</div>
+                                    <div class="content">"<?php echo htmlspecialchars($item['text'] ?? '[Testo non disponibile]'); ?>"</div>
                                 </div>
                             <?php endforeach; ?>
                         <?php endif; ?>
@@ -126,10 +126,10 @@ foreach ($allStudentData as $data) {
                 <div class="card mb-3">
                     <div class="card-header"><h4>Annotazioni</h4></div>
                     <div class="card-body">
-                         <?php if (empty($aggregatedData['notes'])): ?>
+                         <?php if (empty($aggregatedData['note'])): ?>
                             <p class="text-muted">Nessuna annotazione dagli alunni.</p>
                         <?php else: ?>
-                            <?php foreach ($aggregatedData['notes'] as $item): ?>
+                            <?php foreach ($aggregatedData['note'] as $item): ?>
                                 <div class="data-block">
                                     <h5 class="mb-1">
                                         Da: <?php echo htmlspecialchars($item['student_username']); ?>
@@ -146,10 +146,10 @@ foreach ($allStudentData as $data) {
                 <div class="card mb-3">
                     <div class="card-header"><h4>Domande</h4></div>
                     <div class="card-body">
-                        <?php if (empty($aggregatedData['questions'])): ?>
+                        <?php if (empty($aggregatedData['question'])): ?>
                             <p class="text-muted">Nessuna domanda dagli alunni.</p>
                         <?php else: ?>
-                            <?php foreach ($aggregatedData['questions'] as $item): ?>
+                            <?php foreach ($aggregatedData['question'] as $item): ?>
                                 <div class="data-block">
                                     <h5 class="mb-1">
                                         Da: <?php echo htmlspecialchars($item['student_username']); ?>
@@ -166,10 +166,10 @@ foreach ($allStudentData as $data) {
                 <div class="card mb-3">
                     <div class="card-header"><h4>Riassunti</h4></div>
                     <div class="card-body">
-                        <?php if (empty($aggregatedData['summaries'])): ?>
+                        <?php if (empty($aggregatedData['summary'])): ?>
                             <p class="text-muted">Nessun riassunto dagli alunni.</p>
                         <?php else: ?>
-                            <?php foreach ($aggregatedData['summaries'] as $item): ?>
+                            <?php foreach ($aggregatedData['summary'] as $item): ?>
                                 <div class="data-block">
                                     <h5 class="mb-1">
                                         Da: <?php echo htmlspecialchars($item['student_username']); ?>
@@ -229,16 +229,19 @@ foreach ($allStudentData as $data) {
                 let badgeClass = '';
                 let typeText = '';
                 switch(item.type) {
-                    case 'highlights': badgeClass = 'bg-primary'; typeText = 'Sottolineatura'; break;
-                    case 'notes': badgeClass = 'bg-success'; typeText = 'Nota'; break;
-                    case 'questions': badgeClass = 'bg-warning text-dark'; typeText = 'Domanda'; break;
-                    case 'summaries': badgeClass = 'bg-info text-dark'; typeText = 'Riassunto'; break;
+                    case 'highlight': badgeClass = 'bg-primary'; typeText = 'Sottolineatura'; break;
+                    case 'note': badgeClass = 'bg-success'; typeText = 'Nota'; break;
+                    case 'question': badgeClass = 'bg-warning text-dark'; typeText = 'Domanda'; break;
+                    case 'summary': badgeClass = 'bg-info text-dark'; typeText = 'Riassunto'; break;
                 }
+
+                // Safely access text, providing a fallback for older highlights
+                const textContent = item.data.text ?? (item.type === 'highlight' ? '[Testo non disponibile]' : '');
 
                 html += `
                     <div class="data-block">
                         <h5><span class="badge ${badgeClass}">${typeText}</span></h5>
-                        <div class="content">${item.data.text.replace(/\n/g, '<br>')}</div>
+                        <div class="content">${textContent.replace(/\n/g, '<br>')}</div>
                     </div>
                 `;
             });
