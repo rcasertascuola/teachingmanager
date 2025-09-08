@@ -3,8 +3,8 @@
 class Database {
     private $host = "127.0.0.1";
     private $db_name = "my_dottorci";
-    private $username = "root";
-    private $password = "root"; // Assuming 'root' as password, common in local dev envs
+    private $username = "dottorci";
+    private $password = "";
     public $conn;
 
     public function getConnection() {
