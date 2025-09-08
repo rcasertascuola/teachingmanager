@@ -10,7 +10,7 @@ require_once '../src/Database.php';
 require_once '../src/Lesson.php';
 
 // Default feedback
-$_SESSION['import_feedback'] = ['type' => 'danger', 'message' => 'Si è verificato un errore sconosciuto.'];
+$_SESSION['import_feedback'] = ['type' => 'danger', 'message' => 'Si è verificato un errore sconosciuto durante l\'importazione.'];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["jsonFile"])) {
     $file = $_FILES["jsonFile"];
@@ -34,29 +34,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["jsonFile"])) {
 
     if (is_array($lessonsData)) {
         $success_count = 0;
-        $failure_count = 0;
+        $failures = [];
 
         foreach ($lessonsData as $lessonData) {
-            if (isset($lessonData['title']) && isset($lessonData['content'])) {
+            if (isset($lessonData['title']) && !empty($lessonData['title']) && isset($lessonData['content'])) {
                 $lesson = new Lesson([
                     'title' => $lessonData['title'],
                     'content' => $lessonData['content'],
                     'tags' => $lessonData['tags'] ?? ''
                 ]);
 
-                if ($lesson->save()) {
+                $result = $lesson->save();
+                if ($result === true) {
                     $success_count++;
                 } else {
-                    $failure_count++;
+                    $failures[] = "Lezione '" . htmlspecialchars($lessonData['title']) . "': " . htmlspecialchars($result);
                 }
             } else {
-                $failure_count++;
+                 $failures[] = "Lezione con titolo o contenuto mancante.";
             }
         }
 
         $message = "Importazione completata. Lezioni aggiunte con successo: $success_count.";
-        if ($failure_count > 0) {
-            $message .= " Lezioni non riuscite: $failure_count.";
+        if (!empty($failures)) {
+            $message .= " Errori riscontrati: " . count($failures) . ".<br><ul>";
+            foreach($failures as $failure) {
+                $message .= "<li>$failure</li>";
+            }
+            $message .= "</ul>";
             $_SESSION['import_feedback'] = ['type' => 'warning', 'message' => $message];
         } else {
             $_SESSION['import_feedback'] = ['type' => 'success', 'message' => $message];

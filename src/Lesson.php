@@ -98,38 +98,48 @@ class Lesson
     /**
      * Save the lesson (insert or update).
      *
-     * @return bool
+     * @return bool|string True on success, error message string on failure.
      */
     public function save()
     {
         $database = new Database();
         $pdo = $database->getConnection();
 
+        if (!$pdo) {
+            return "Failed to connect to the database.";
+        }
+
         if ($this->id) {
             // Update existing lesson
-            $stmt = $pdo->prepare(
-                'UPDATE lessons SET title = :title, content = :content, tags = :tags WHERE id = :id'
-            );
-            return $stmt->execute([
+            $sql = 'UPDATE lessons SET title = :title, content = :content, tags = :tags WHERE id = :id';
+            $params = [
                 'id' => $this->id,
                 'title' => $this->title,
                 'content' => $this->content,
                 'tags' => $this->tags,
-            ]);
+            ];
         } else {
             // Insert new lesson
-            $stmt = $pdo->prepare(
-                'INSERT INTO lessons (title, content, tags) VALUES (:title, :content, :tags)'
-            );
-            $result = $stmt->execute([
+            $sql = 'INSERT INTO lessons (title, content, tags) VALUES (:title, :content, :tags)';
+            $params = [
                 'title' => $this->title,
                 'content' => $this->content,
                 'tags' => $this->tags,
-            ]);
-            if ($result) {
+            ];
+        }
+
+        $stmt = $pdo->prepare($sql);
+        $result = $stmt->execute($params);
+
+        if ($result) {
+            if (!$this->id) {
                 $this->id = $pdo->lastInsertId();
             }
-            return $result;
+            return true;
+        } else {
+            $errorInfo = $stmt->errorInfo();
+            // Return a formatted error message: [SQLSTATE] [Driver Code] Driver Message
+            return "DB Error: " . ($errorInfo[2] ?? 'Unknown error');
         }
     }
 
