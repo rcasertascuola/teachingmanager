@@ -507,6 +507,7 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
                 type: 'highlight',
                 data: {
                     selection: selectionData,
+                    text: currentSelection.toString(),
                     color: color
                 }
             };
