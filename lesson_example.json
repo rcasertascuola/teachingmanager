@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Lezione di Esempio 1: Introduzione alla Wikitext",
+    "content": "Benvenuti alla prima lezione.\n\nQuesto è un paragrafo.\n\n'''Testo in grassetto'''\n''Testo in corsivo''\n\n== Sottotitolo ==\nEcco un elenco puntato:\n* Primo punto\n* Secondo punto\n\n----\n\nLink esterno: [https://www.wikipedia.org Wikipedia]\nLink interno: [[Lezione di Esempio 2]]",
+    "tags": "introduzione, wikitext, esempio"
+  },
+  {
+    "title": "Lezione di Esempio 2: Argomenti Avanzati",
+    "content": "Questa è la seconda lezione che approfondisce gli argomenti.\n\n=== Un'altra intestazione ===\nIl contenuto di questa lezione è ancora in fase di definizione.",
+    "tags": "avanzato, wikitext"
+  }
+]
