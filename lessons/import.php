@@ -37,21 +37,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["jsonFile"])) {
         $failures = [];
 
         foreach ($lessonsData as $lessonData) {
-            if (isset($lessonData['title']) && !empty($lessonData['title']) && isset($lessonData['content'])) {
-                $lesson = new Lesson([
-                    'title' => $lessonData['title'],
-                    'content' => $lessonData['content'],
-                    'tags' => $lessonData['tags'] ?? ''
-                ]);
+            if (empty($lessonData['title'])) {
+                $failures[] = "Una lezione è stata saltata perché non ha un 'title'.";
+                continue; // Skip to the next lesson
+            }
+            if (!isset($lessonData['content'])) {
+                $failures[] = "Lezione '" . htmlspecialchars($lessonData['title']) . "' è stata saltata perché non ha una chiave 'content'.";
+                continue; // Skip to the next lesson
+            }
 
-                $result = $lesson->save();
-                if ($result === true) {
-                    $success_count++;
-                } else {
-                    $failures[] = "Lezione '" . htmlspecialchars($lessonData['title']) . "': " . htmlspecialchars($result);
-                }
+            $lesson = new Lesson([
+                'title' => $lessonData['title'],
+                'content' => $lessonData['content'],
+                'tags' => $lessonData['tags'] ?? ''
+            ]);
+
+            $result = $lesson->save();
+            if ($result === true) {
+                $success_count++;
             } else {
-                 $failures[] = "Lezione con titolo o contenuto mancante.";
+                $failures[] = "Lezione '" . htmlspecialchars($lessonData['title']) . "': " . htmlspecialchars($result);
             }
         }
 
