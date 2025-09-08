@@ -28,7 +28,7 @@ $studentsOnLesson = Lesson::getStudentsForLesson($lessonId);
 // Process data for aggregated view and individual view
 $aggregatedData = [
     'highlight' => [],
-    'note' => [],
+    'annotation' => [],
     'question' => [],
     'summary' => []
 ];
@@ -126,14 +126,14 @@ foreach ($allStudentData as $data) {
                 <div class="card mb-3">
                     <div class="card-header"><h4>Annotazioni</h4></div>
                     <div class="card-body">
-                         <?php if (empty($aggregatedData['note'])): ?>
+                         <?php if (empty($aggregatedData['annotation'])): ?>
                             <p class="text-muted">Nessuna annotazione dagli alunni.</p>
                         <?php else: ?>
-                            <?php foreach ($aggregatedData['note'] as $item): ?>
+                            <?php foreach ($aggregatedData['annotation'] as $item): ?>
                                 <div class="data-block">
                                     <h5 class="mb-1">
                                         Da: <?php echo htmlspecialchars($item['student_username']); ?>
-                                        <span class="badge bg-success student-badge">Nota</span>
+                                        <span class="badge bg-success student-badge">Annotazione</span>
                                     </h5>
                                     <div class="content"><?php echo htmlspecialchars($item['text']); ?></div>
                                 </div>
@@ -230,7 +230,7 @@ foreach ($allStudentData as $data) {
                 let typeText = '';
                 switch(item.type) {
                     case 'highlight': badgeClass = 'bg-primary'; typeText = 'Sottolineatura'; break;
-                    case 'note': badgeClass = 'bg-success'; typeText = 'Nota'; break;
+                    case 'annotation': badgeClass = 'bg-success'; typeText = 'Annotazione'; break;
                     case 'question': badgeClass = 'bg-warning text-dark'; typeText = 'Domanda'; break;
                     case 'summary': badgeClass = 'bg-info text-dark'; typeText = 'Riassunto'; break;
                 }
