@@ -1,5 +1,5 @@
 <?php
-require_once '../src/init.php';
+session_start();
 // Ensure the user is a logged-in teacher
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION["role"] !== 'teacher') {
     header("location: ../login.php");
