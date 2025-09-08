@@ -56,14 +56,17 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                 </div>
 
                 <div class="row">
+                    <?php if ($_SESSION['role'] === 'teacher'): ?>
                     <div class="col-md-6">
                         <div class="card mb-4">
-                            <div class="card-header">Funzionalità Futura 1</div>
-                            <div class="card-body feature-slot">
-                                <p class="text-muted">_slot per implementazione futura_</p>
+                            <div class="card-header">Gestisci Lezioni</div>
+                            <div class="card-body feature-slot d-flex flex-column justify-content-center align-items-center">
+                                <p>Crea, modifica e visualizza le lezioni.</p>
+                                <a href="lessons/index.php" class="btn btn-primary">Vai a Lezioni</a>
                             </div>
                         </div>
                     </div>
+                    <?php endif; ?>
                     <div class="col-md-6">
                         <div class="card mb-4">
                             <div class="card-header">Funzionalità Futura 2</div>
