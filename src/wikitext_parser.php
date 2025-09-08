@@ -49,7 +49,7 @@ function parse_wikitext($text) {
 
 
     // 5. Tables
-    $text = preg_replace_callback('/((?:^\|.*\|(?:\n|$))+)/m', function ($matches) use ($make_placeholder) {
+        $text = preg_replace_callback('/((?:^\|[^\n]*\n?)+)/m', function ($matches) use ($make_placeholder) {
         $table_text = trim($matches[1]);
         $rows = explode("\n", $table_text);
 
@@ -160,7 +160,7 @@ function parse_wikitext($text) {
 
         if (strpos($block, '%%PLACEHOLDER_') === false) {
             // This is a simple paragraph, apply nl2br for single line breaks
-            $html .= '<p>' . nl2br($block, false) . '</p>\n';
+            $html .= '<p>' . nl2br($block, false) . "</p>\n";
         } else {
             // This block contains placeholders, so just add it.
             // The nl2br is not needed as block elements handle their own spacing.
