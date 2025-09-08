@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["jsonFile"])) {
     $file = $_FILES["jsonFile"];
 
     // Check for errors and validate file type
-    if ($file["error"] == 0 && $file["type"] == "application/json") {
+    if ($file["error"] == 0) {
         $content = file_get_contents($file["tmp_name"]);
         $lessonsData = json_decode($content, true);
 
