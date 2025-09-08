@@ -5,11 +5,6 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     header("location: ../login.php");
     exit;
 }
-// Redirect to dashboard if not a teacher
-if ($_SESSION["role"] !== 'teacher') {
-    header("location: ../dashboard.php");
-    exit;
-}
 
 require_once '../src/Database.php';
 require_once '../src/Lesson.php';
@@ -35,13 +30,15 @@ if ($is_search) {
 
 $total_pages = ceil($total_lessons / $limit);
 
+$is_teacher = $_SESSION['role'] === 'teacher';
+
 ?>
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestisci Lezioni</title>
+    <title><?php echo $is_teacher ? 'Gestisci Lezioni' : 'Elenco Lezioni'; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -60,7 +57,7 @@ $total_pages = ceil($total_lessons / $limit);
 
     <div class="container mt-4">
         <?php
-        if (isset($_SESSION['import_feedback'])) {
+        if ($is_teacher && isset($_SESSION['import_feedback'])) {
             $feedback = $_SESSION['import_feedback'];
             echo '<div class="alert alert-' . htmlspecialchars($feedback['type']) . ' alert-dismissible fade show" role="alert">';
             echo htmlspecialchars($feedback['message']);
@@ -70,15 +67,17 @@ $total_pages = ceil($total_lessons / $limit);
         }
         ?>
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="h2">Gestione Lezioni</h1>
-            <a href="edit.php" class="btn btn-primary">Aggiungi Nuova Lezione</a>
+            <h1 class="h2"><?php echo $is_teacher ? 'Gestione Lezioni' : 'Lezioni Disponibili'; ?></h1>
+            <?php if ($is_teacher): ?>
+                <a href="edit.php" class="btn btn-primary">Aggiungi Nuova Lezione</a>
+            <?php endif; ?>
         </div>
 
         <div class="card mb-4">
-            <div class="card-header">Cerca Lezioni & Importa</div>
+            <div class="card-header">Cerca Lezioni<?php echo $is_teacher ? ' & Importa' : ''; ?></div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-<?php echo $is_teacher ? '6' : '12'; ?>">
                         <h5>Cerca Lezioni</h5>
                         <form action="index.php" method="get" class="row g-3">
                             <div class="col-12">
@@ -95,6 +94,7 @@ $total_pages = ceil($total_lessons / $limit);
                             </div>
                         </form>
                     </div>
+                    <?php if ($is_teacher): ?>
                     <div class="col-md-6">
                         <h5>Importa da JSON</h5>
                         <form action="import.php" method="post" enctype="multipart/form-data">
@@ -105,6 +105,7 @@ $total_pages = ceil($total_lessons / $limit);
                             <button type="submit" class="btn btn-success">Carica File</button>
                         </form>
                     </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -134,8 +135,10 @@ $total_pages = ceil($total_lessons / $limit);
                                     <td><?php echo htmlspecialchars($lesson->tags); ?></td>
                                     <td>
                                         <a href="view.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-info">Visualizza</a>
+                                        <?php if ($is_teacher): ?>
                                         <a href="edit.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-warning">Modifica</a>
                                         <a href="delete.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-danger">Cancella</a>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

@@ -238,4 +238,97 @@ class Lesson
 
         return [$sql, $params];
     }
+
+    /**
+     * Save student-specific data for a lesson.
+     *
+     * @param int $userId
+     * @param int $lessonId
+     * @param string $type
+     * @param mixed $data
+     * @return bool|string True on success, error message on failure.
+     */
+    public static function saveStudentData($userId, $lessonId, $type, $data)
+    {
+        $database = new Database();
+        $pdo = $database->getConnection();
+
+        $sql = 'INSERT INTO student_lesson_data (user_id, lesson_id, type, data) VALUES (:user_id, :lesson_id, :type, :data)';
+
+        try {
+            $stmt = $pdo->prepare($sql);
+            $result = $stmt->execute([
+                'user_id' => $userId,
+                'lesson_id' => $lessonId,
+                'type' => $type,
+                'data' => json_encode($data)
+            ]);
+
+            if ($result) {
+                return true;
+            } else {
+                $errorInfo = $stmt->errorInfo();
+                return "DB Error: " . ($errorInfo[2] ?? 'Unknown error');
+            }
+        } catch (PDOException $e) {
+            return "DB Error: " . $e->getMessage();
+        }
+    }
+
+    /**
+     * Get all student-specific data for a lesson.
+     *
+     * @param int $userId
+     * @param int $lessonId
+     * @return array
+     */
+    public static function getStudentData($userId, $lessonId)
+    {
+        $database = new Database();
+        $pdo = $database->getConnection();
+        $stmt = $pdo->prepare('SELECT * FROM student_lesson_data WHERE user_id = :user_id AND lesson_id = :lesson_id ORDER BY created_at ASC');
+        $stmt->execute(['user_id' => $userId, 'lesson_id' => $lessonId]);
+
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Decode the JSON data for each record
+        foreach ($results as &$row) {
+            $row['data'] = json_decode($row['data'], true);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Delete a specific piece of student data.
+     *
+     * @param int $userId
+     * @param int $dataId
+     * @return bool|string True on success, error message on failure.
+     */
+    public static function deleteStudentData($userId, $dataId)
+    {
+        $database = new Database();
+        $pdo = $database->getConnection();
+
+        // We include user_id in the WHERE clause to ensure a user can only delete their own data.
+        $sql = 'DELETE FROM student_lesson_data WHERE id = :id AND user_id = :user_id';
+
+        try {
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                'id' => $dataId,
+                'user_id' => $userId
+            ]);
+
+            if ($stmt->rowCount() > 0) {
+                return true;
+            } else {
+                // Either the ID didn't exist or it didn't belong to the user.
+                return "Data not found or permission denied.";
+            }
+        } catch (PDOException $e) {
+            return "DB Error: " . $e->getMessage();
+        }
+    }
 }
