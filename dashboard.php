@@ -61,7 +61,17 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                         <div class="card mb-4">
                             <div class="card-header">Gestisci Lezioni</div>
                             <div class="card-body feature-slot d-flex flex-column justify-content-center align-items-center">
-                                <p>Crea, modifica e visualizza le lezioni.</p>
+                                <p>Crea, modifica e visualizza lezioni.</p>
+                                <a href="lessons/index.php" class="btn btn-primary">Vai a Lezioni</a>
+                            </div>
+                        </div>
+                    </div>
+                    <?php else: // Student view ?>
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">Lezioni</div>
+                            <div class="card-body feature-slot d-flex flex-column justify-content-center align-items-center">
+                                <p>Visualizza le lezioni e i tuoi materiali di studio.</p>
                                 <a href="lessons/index.php" class="btn btn-primary">Vai a Lezioni</a>
                             </div>
                         </div>
