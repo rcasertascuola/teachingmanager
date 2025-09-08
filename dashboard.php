@@ -79,9 +79,10 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                     <?php endif; ?>
                     <div class="col-md-6">
                         <div class="card mb-4">
-                            <div class="card-header">Funzionalità Futura 2</div>
-                            <div class="card-body feature-slot">
-                                <p class="text-muted">_slot per implementazione futura_</p>
+                            <div class="card-header">Riscontro Alunni</div>
+                            <div class="card-body feature-slot d-flex flex-column justify-content-center align-items-center">
+                                <p>Visualizza il lavoro degli alunni sulle lezioni.</p>
+                                <a href="feedback/index.php" class="btn btn-success">Vai a Riscontri</a>
                             </div>
                         </div>
                     </div>

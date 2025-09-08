@@ -307,18 +307,8 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
             .then(response => response.json())
             .then(result => {
                 if (result.success) {
-                    if (element.tagName.toLowerCase() === 'div') {
-                        // Just remove the summary div
-                        element.remove();
-                    } else {
-                        // Unwrap the span for highlights, annotations, questions
-                        const parent = element.parentNode;
-                        while (element.firstChild) {
-                            parent.insertBefore(element.firstChild, element);
-                        }
-                        parent.removeChild(element);
-                        parent.normalize(); // Merges adjacent text nodes
-                    }
+                    // Reload the page to ensure a clean state
+                    location.reload();
                 } else {
                     alert('Errore nella cancellazione: ' + result.message);
                 }
@@ -507,6 +497,7 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
                 type: 'highlight',
                 data: {
                     selection: selectionData,
+                    text: currentSelection.toString(),
                     color: color
                 }
             };
