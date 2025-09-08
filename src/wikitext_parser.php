@@ -49,7 +49,7 @@ function parse_wikitext($text) {
 
 
     // 5. Tables
-    $text = preg_replace_callback('/((?:^\|[^\n]*\n?)+)/m', function ($matches) use ($make_placeholder) {
+        $text = preg_replace_callback('/((?:^\|[^\n]*\n?)+)/m', function ($matches) use ($make_placeholder) {
         $table_text = trim($matches[1]);
         $rows = explode("\n", $table_text);
 
