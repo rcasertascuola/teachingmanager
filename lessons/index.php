@@ -136,6 +136,7 @@ $is_teacher = $_SESSION['role'] === 'teacher';
                                     <td>
                                         <a href="view.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-info">Visualizza</a>
                                         <?php if ($is_teacher): ?>
+                                        <a href="feedback.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-success">Riscontro Alunni</a>
                                         <a href="edit.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-warning">Modifica</a>
                                         <a href="delete.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-danger">Cancella</a>
                                         <?php endif; ?>
