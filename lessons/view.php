@@ -101,11 +101,11 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
                     <?php if ($_SESSION['role'] === 'teacher'): ?>
                         <a href="edit.php?id=<?php echo $lesson->id; ?>" class="btn btn-primary">Modifica Lezione</a>
                     <?php else: ?>
-                        <div id="student-tools" class="d-flex align-items-center">
-                            <button id="highlight-btn" class="btn btn-secondary me-2">Evidenzia</button>
-                            <input type="color" id="highlight-color-picker" class="form-control form-control-color me-3" value="#ffff00" title="Scegli un colore per evidenziare">
-                            <button id="annotate-btn" class="btn btn-secondary me-2">Annota</button>
-                            <button id="question-btn" class="btn btn-secondary me-2">Fai una domanda</button>
+                        <div id="student-tools" class="d-flex flex-wrap align-items-center gap-2">
+                            <button id="highlight-btn" class="btn btn-secondary">Evidenzia</button>
+                            <input type="color" id="highlight-color-picker" class="form-control form-control-color" value="#ffff00" title="Scegli un colore per evidenziare">
+                            <button id="annotate-btn" class="btn btn-secondary">Annota</button>
+                            <button id="question-btn" class="btn btn-secondary">Fai una domanda</button>
                             <button id="summary-btn" class="btn btn-secondary">Aggiungi riassunto</button>
                         </div>
                     <?php endif; ?>
