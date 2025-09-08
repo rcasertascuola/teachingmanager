@@ -28,7 +28,8 @@ class Lesson
      */
     public static function findAll($limit, $offset)
     {
-        $pdo = Database::getInstance();
+        $database = new Database();
+        $pdo = $database->getConnection();
         $stmt = $pdo->prepare('SELECT * FROM lessons ORDER BY updated_at DESC LIMIT :limit OFFSET :offset');
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -49,7 +50,8 @@ class Lesson
      */
     public static function countAll()
     {
-        $pdo = Database::getInstance();
+        $database = new Database();
+        $pdo = $database->getConnection();
         return (int) $pdo->query('SELECT COUNT(id) FROM lessons')->fetchColumn();
     }
 
@@ -61,7 +63,8 @@ class Lesson
      */
     public static function findById($id)
     {
-        $pdo = Database::getInstance();
+        $database = new Database();
+        $pdo = $database->getConnection();
         $stmt = $pdo->prepare('SELECT * FROM lessons WHERE id = :id');
         $stmt->execute(['id' => $id]);
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -80,7 +83,8 @@ class Lesson
      */
     public static function findByTitle($title)
     {
-        $pdo = Database::getInstance();
+        $database = new Database();
+        $pdo = $database->getConnection();
         $stmt = $pdo->prepare('SELECT * FROM lessons WHERE title = :title');
         $stmt->execute(['title' => $title]);
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -98,7 +102,8 @@ class Lesson
      */
     public function save()
     {
-        $pdo = Database::getInstance();
+        $database = new Database();
+        $pdo = $database->getConnection();
 
         if ($this->id) {
             // Update existing lesson
@@ -136,7 +141,8 @@ class Lesson
      */
     public static function delete($id)
     {
-        $pdo = Database::getInstance();
+        $database = new Database();
+        $pdo = $database->getConnection();
         $stmt = $pdo->prepare('DELETE FROM lessons WHERE id = :id');
         return $stmt->execute(['id' => $id]);
     }
@@ -152,7 +158,8 @@ class Lesson
      */
     public static function search($contentTerm, $tagsTerm, $limit, $offset)
     {
-        $pdo = Database::getInstance();
+        $database = new Database();
+        $pdo = $database->getConnection();
         list($sql, $params) = self::buildSearchQuery('SELECT *', $contentTerm, $tagsTerm);
 
         $sql .= ' ORDER BY updated_at DESC LIMIT :limit OFFSET :offset';
@@ -187,7 +194,8 @@ class Lesson
      */
     public static function countSearch($contentTerm, $tagsTerm)
     {
-        $pdo = Database::getInstance();
+        $database = new Database();
+        $pdo = $database->getConnection();
         list($sql, $params) = self::buildSearchQuery('SELECT COUNT(id)', $contentTerm, $tagsTerm);
 
         $stmt = $pdo->prepare($sql);
