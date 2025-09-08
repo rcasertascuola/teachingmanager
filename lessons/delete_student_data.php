@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once '../src/init.php';
 require_once '../src/Database.php';
 require_once '../src/Lesson.php';
 
