@@ -33,6 +33,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -70,14 +71,37 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 
                     <div class="mb-3">
                         <label for="content" class="form-label">Contenuto (Wikitext)</label>
-                        <div id="wikitext-toolbar" class="btn-toolbar mb-2" role="toolbar">
-                            <div class="btn-group btn-group-sm me-2">
-                                <button type="button" class="btn btn-outline-secondary" onclick="wrapText('bold')"><b>B</b></button>
-                                <button type="button" class="btn btn-outline-secondary" onclick="wrapText('italic')"><i>I</i></button>
+                        <div id="wikitext-toolbar" class="btn-toolbar mb-2 flex-wrap" role="toolbar">
+                            <div class="btn-group btn-group-sm me-2 mb-2">
+                                <button type="button" class="btn btn-outline-secondary" onclick="wrapText('bold')" title="Grassetto"><b>B</b></button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="wrapText('italic')" title="Corsivo"><i>I</i></button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="wrapText('color')" title="Colore Testo"><i class="bi bi-palette-fill"></i></button>
                             </div>
-                            <div class="btn-group btn-group-sm">
-                                <button type="button" class="btn btn-outline-secondary" onclick="wrapText('internal-link')">Link Interno</button>
-                                <button type="button" class="btn btn-outline-secondary" onclick="wrapText('external-link')">Link Esterno</button>
+                            <div class="btn-group btn-group-sm me-2 mb-2">
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Titoli
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#" onclick="wrapText('h1')"><h1>Titolo 1</h1></a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="wrapText('h2')"><h2>Titolo 2</h2></a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="wrapText('h3')"><h3>Titolo 3</h3></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                             <div class="btn-group btn-group-sm me-2 mb-2">
+                                <button type="button" class="btn btn-outline-secondary" onclick="wrapText('ul')" title="Elenco puntato"><i class="bi bi-list-ul"></i></button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="wrapText('ol')" title="Elenco numerato"><i class="bi bi-list-ol"></i></button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="wrapText('hr')" title="Linea orizzontale"><i class="bi bi-hr"></i></button>
+                            </div>
+                            <div class="btn-group btn-group-sm me-2 mb-2">
+                                <button type="button" class="btn btn-outline-secondary" onclick="wrapText('internal-link')" title="Link Interno"><i class="bi bi-link-45deg"></i> Interno</button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="wrapText('external-link')" title="Link Esterno"><i class="bi bi-link-45deg"></i> Esterno</button>
+                            </div>
+                            <div class="btn-group btn-group-sm me-2 mb-2">
+                                <button type="button" class="btn btn-outline-secondary" onclick="wrapText('image')" title="Immagine"><i class="bi bi-image"></i></button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="wrapText('video')" title="Video"><i class="bi bi-camera-video"></i></button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="wrapText('table')" title="Tabella"><i class="bi bi-table"></i></button>
                             </div>
                         </div>
                         <textarea class="form-control" id="content" name="content" rows="15" required><?php echo htmlspecialchars($lesson->content ?? ''); ?></textarea>
@@ -92,41 +116,107 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function wrapText(style) {
+        function wrapText(style, value = null) {
             const textarea = document.getElementById('content');
             const start = textarea.selectionStart;
             const end = textarea.selectionEnd;
             const selectedText = textarea.value.substring(start, end);
+            let prefix = '';
+            let suffix = '';
             let replacement = selectedText;
 
             switch (style) {
                 case 'bold':
-                    replacement = "'''" + selectedText + "'''";
+                    prefix = "'''";
+                    suffix = "'''";
                     break;
                 case 'italic':
-                    replacement = "''" + selectedText + "''";
+                    prefix = "''";
+                    suffix = "''";
+                    break;
+                case 'h1':
+                    prefix = "\n= ";
+                    suffix = " =\n";
+                    break;
+                case 'h2':
+                    prefix = "\n== ";
+                    suffix = " ==\n";
+                    break;
+                case 'h3':
+                    prefix = "\n=== ";
+                    suffix = " ===\n";
+                    break;
+                case 'hr':
+                    replacement = "\n----\n";
+                    break;
+                case 'ul':
+                    replacement = selectedText.split('\n').map(line => `* ${line}`).join('\n');
+                     if(!selectedText) replacement = "* Elemento 1\n* Elemento 2";
+                    break;
+                case 'ol':
+                    replacement = selectedText.split('\n').map(line => `# ${line}`).join('\n');
+                    if(!selectedText) replacement = "# Elemento 1\n# Elemento 2";
+                    break;
+                case 'color':
+                    const color = prompt("Inserisci un colore (es. red, #ff0000):", "red");
+                    if (color) {
+                        prefix = `{{color:${color}|`;
+                        suffix = `}}`;
+                    }
                     break;
                 case 'internal-link':
-                    replacement = "[[" + (selectedText || 'Titolo Pagina') + "]]";
+                    prefix = "[[";
+                    suffix = "]]";
+                    if (!selectedText) replacement = "Titolo Pagina";
                     break;
                 case 'external-link':
-                    replacement = "[" + (selectedText || 'https://example.com') + " Testo del link]";
+                    const urlExt = selectedText.startsWith('http') ? selectedText : prompt("Inserisci URL:", "https://");
+                    if(urlExt) {
+                         replacement = `[${urlExt} Testo del link]`;
+                    }
                     break;
+                case 'image':
+                    const imgUrl = prompt("Inserisci l'URL dell'immagine:");
+                    if (imgUrl) {
+                        const caption = prompt("Inserisci una didascalia:", "didascalia");
+                        replacement = `[[Image:${imgUrl}|${caption}]]`;
+                    }
+                    break;
+                case 'video':
+                    const videoUrl = prompt("Inserisci l'URL del video (YouTube):");
+                    if (videoUrl) {
+                        replacement = `[[Video:${videoUrl}]]`;
+                    }
+                    break;
+                case 'table':
+                    replacement = "\n| Header 1 | Header 2 |\n|----------|----------|\n| Cella 1  | Cella 2  |\n| Cella 3  | Cella 4  |\n";
+                    break;
+            }
+
+            if (prefix || suffix) {
+                replacement = prefix + selectedText + suffix;
             }
 
             textarea.setRangeText(replacement, start, end);
             textarea.focus();
 
-            // Move cursor to a logical position after insertion
-            if (selectedText) {
-                 textarea.selectionStart = textarea.selectionEnd = start + replacement.length;
-            } else {
-                if(style === 'internal-link') {
-                    textarea.selectionStart = start + 2;
-                    textarea.selectionEnd = start + 2 + 'Titolo Pagina'.length;
+            // Adjust cursor position
+            textarea.selectionStart = start + replacement.length;
+            textarea.selectionEnd = start + replacement.length;
+
+             // A more intelligent cursor placement for some tags
+            if (!selectedText) {
+                if(style.startsWith('h')) {
+                     textarea.selectionStart = start + prefix.length -1;
+                     textarea.selectionEnd = start + prefix.length -1;
+                } else if (style === 'internal-link') {
+                    textarea.selectionStart = start + prefix.length;
+                    textarea.selectionEnd = start + prefix.length + "Titolo Pagina".length;
                 } else if (style === 'external-link') {
-                     textarea.selectionStart = start + 1;
-                     textarea.selectionEnd = start + 1 + 'https://example.com'.length;
+                    textarea.selectionStart = start + replacement.indexOf(']') + 1;
+                } else if (style === 'color') {
+                    textarea.selectionStart = start + prefix.length;
+                    textarea.selectionEnd = end + prefix.length;
                 }
             }
         }
