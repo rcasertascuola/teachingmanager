@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once '../src/init.php';
 // Redirect to login if not logged in
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     header("location: ../login.php");
