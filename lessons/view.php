@@ -29,6 +29,7 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $lesson ? htmlspecialchars($lesson->title) : 'Lezione non trovata'; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.13.1/font/bootstrap-icons.min.css" integrity="sha512-t7Few9xlddEmgd3oKZQahkNI4dS6l80+eGEzFQiqtyVYdvcSG2D3Iub77R20BdotfRPA9caaRkg1tyaJiPmO0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         .wikitext-content h2 {
             border-bottom: 1px solid #dee2e6;
@@ -61,6 +62,31 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
             padding: 10px;
             margin-top: 5px;
             border-left: 5px solid #2196F3;
+        }
+        #student-tools {
+            position: absolute;
+            display: none;
+            z-index: 1050;
+            background-color: #343a40;
+            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            gap: 5px;
+        }
+        #student-tools .btn {
+            color: white;
+            border-color: #6c757d;
+            width: 38px;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #student-tools .form-control-color {
+            width: 40px;
+            height: 38px;
+            padding: .1rem;
+            border: none;
         }
     </style>
 </head>
@@ -100,17 +126,19 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
                 <div class="card-footer">
                     <?php if ($_SESSION['role'] === 'teacher'): ?>
                         <a href="edit.php?id=<?php echo $lesson->id; ?>" class="btn btn-primary">Modifica Lezione</a>
-                    <?php else: ?>
-                        <div id="student-tools" class="d-flex flex-wrap align-items-center gap-2">
-                            <button id="highlight-btn" class="btn btn-secondary">Evidenzia</button>
-                            <input type="color" id="highlight-color-picker" class="form-control form-control-color" value="#ffff00" title="Scegli un colore per evidenziare">
-                            <button id="annotate-btn" class="btn btn-secondary">Annota</button>
-                            <button id="question-btn" class="btn btn-secondary">Fai una domanda</button>
-                            <button id="summary-btn" class="btn btn-secondary">Aggiungi riassunto</button>
-                        </div>
                     <?php endif; ?>
                 </div>
             </div>
+
+            <?php if ($_SESSION['role'] === 'student'): ?>
+            <div id="student-tools">
+                <button id="highlight-btn" class="btn btn-sm btn-secondary" title="Evidenzia"><i class="bi bi-highlighter"></i></button>
+                <input type="color" id="highlight-color-picker" class="form-control form-control-color" value="#ffff00" title="Scegli un colore per evidenziare">
+                <button id="annotate-btn" class="btn btn-sm btn-secondary" title="Annota"><i class="bi bi-chat-square-text"></i></button>
+                <button id="question-btn" class="btn btn-sm btn-secondary" title="Fai una domanda"><i class="bi bi-question-circle"></i></button>
+                <button id="summary-btn" class="btn btn-sm btn-secondary" title="Aggiungi riassunto"><i class="bi bi-card-text"></i></button>
+            </div>
+            <?php endif; ?>
 
             <!-- Annotation Modal -->
             <div class="modal fade" id="annotation-modal" tabindex="-1" aria-labelledby="annotation-modal-label" aria-hidden="true">
@@ -203,6 +231,7 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
 
     document.addEventListener('DOMContentLoaded', function () {
         const lessonContent = document.getElementById('lesson-content');
+        const studentTools = document.getElementById('student-tools');
         const highlightBtn = document.getElementById('highlight-btn');
         const questionBtn = document.getElementById('question-btn');
         const summaryBtn = document.getElementById('summary-btn');
@@ -216,14 +245,65 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
 
         loadStudentData();
 
-        lessonContent.addEventListener('mouseup', () => {
-            const selection = window.getSelection();
-            if (selection.rangeCount > 0 && !selection.isCollapsed) {
-                currentSelection = selection.getRangeAt(0);
-            } else {
-                currentSelection = null;
-            }
-        });
+        function handleSelection(event) {
+            setTimeout(() => {
+                if (!studentTools) return;
+                const selection = window.getSelection();
+                if (selection && selection.rangeCount > 0 && !selection.isCollapsed) {
+                    const range = selection.getRangeAt(0);
+                    const rect = range.getBoundingClientRect();
+
+                    if (rect.width > 1 || rect.height > 1) {
+                        currentSelection = range;
+                        studentTools.style.display = 'flex';
+
+                        let top = rect.top + window.scrollY - studentTools.offsetHeight - 10;
+                        if (top < window.scrollY) {
+                            top = rect.bottom + window.scrollY + 10;
+                        }
+
+                        let left = rect.left + window.scrollX + rect.width / 2 - studentTools.offsetWidth / 2;
+                        if (left < 0) left = 5;
+                        if (left + studentTools.offsetWidth > window.innerWidth) {
+                            left = window.innerWidth - studentTools.offsetWidth - 5;
+                        }
+
+                        studentTools.style.top = `${top}px`;
+                        studentTools.style.left = `${left}px`;
+                    }
+                } else {
+                    if (studentTools && event && event.target && !studentTools.contains(event.target)) {
+                       studentTools.style.display = 'none';
+                    }
+                }
+            }, 10);
+        }
+
+        if (studentTools) {
+            lessonContent.addEventListener('mouseup', handleSelection);
+            lessonContent.addEventListener('touchend', handleSelection);
+
+            lessonContent.addEventListener('contextmenu', e => e.preventDefault());
+
+            document.addEventListener('mousedown', function(e) {
+                if (studentTools.style.display === 'flex') {
+                    const isClickInsideLesson = lessonContent.contains(e.target);
+                    const isClickInsideToolbar = studentTools.contains(e.target);
+
+                    if (!isClickInsideLesson && !isClickInsideToolbar) {
+                        studentTools.style.display = 'none';
+                        currentSelection = null;
+                        if (window.getSelection) {
+                            if (window.getSelection().empty) {  // Chrome
+                                window.getSelection().empty();
+                            } else if (window.getSelection().removeAllRanges) {  // Firefox
+                                window.getSelection().removeAllRanges();
+                            }
+                        }
+                    }
+                }
+            });
+        }
 
         function loadStudentData() {
             if (typeof studentData !== 'undefined' && studentData.length > 0) {
@@ -329,12 +409,24 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
                     return null;
                 }
 
+                const startNodeLength = (startContainer.nodeType === Node.TEXT_NODE) ? startContainer.length : startContainer.childNodes.length;
+                if (selectionData.startOffset > startNodeLength) {
+                    console.warn("Start offset out of bounds for node. Skipping this item.", { selection: selectionData, node: startContainer });
+                    return null;
+                }
+
+                const endNodeLength = (endContainer.nodeType === Node.TEXT_NODE) ? endContainer.length : endContainer.childNodes.length;
+                if (selectionData.endOffset > endNodeLength) {
+                    console.warn("End offset out of bounds for node. Skipping this item.", { selection: selectionData, node: endContainer });
+                    return null;
+                }
+
                 const range = document.createRange();
                 range.setStart(startContainer, selectionData.startOffset);
                 range.setEnd(endContainer, selectionData.endOffset);
                 return range;
             } catch (e) {
-                console.error("Error deserializing range:", e);
+                console.error("Error deserializing range:", e, { selection: selectionData });
                 return null;
             }
         }
