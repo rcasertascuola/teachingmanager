@@ -88,6 +88,15 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
             padding: .1rem;
             border: none;
         }
+        .figure-thumbnail {
+            border: 1px solid #dee2e6;
+            background-color: #f8f9fa;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .figure-wrapper.mx-auto {
+            clear: both;
+        }
     </style>
 </head>
 <body>

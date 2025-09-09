@@ -192,14 +192,130 @@ function parse_wikitext($text) {
     // --- Inline elements ---
 
     // 7. Images and Videos (as block-level figures/divs, so placeholder them)
-    $text = preg_replace_callback('/\[\[Image:(https?:\/\/[^\s|\]]+)\|([^\]]+)\]\]/', function ($matches) use ($make_placeholder) {
+    $text = preg_replace_callback('/\[\[Image:(https?:\/\/[^\s|\]]+)((?:\|[^|\]]*)*)\]\]/', function ($matches) use ($make_placeholder) {
+        // Parse URL and options
         $url = htmlspecialchars_decode($matches[1]);
-        $caption = trim($matches[2]);
-        $figure = '<figure class="figure">
-                     <img src="' . $url . '" class="img-fluid" alt="' . htmlspecialchars($caption) . '">
-                     <figcaption class="figure-caption">' . htmlspecialchars($caption) . '</figcaption>
-                   </figure>';
-        return $make_placeholder($figure);
+        $options_str = $matches[2];
+        $parts = explode('|', $options_str);
+        array_shift($parts); // Remove the empty string from the first pipe
+
+        $options = [
+            'type' => 'default', 'align' => null, 'size' => null, 'upright' => null,
+            'alt' => null, 'link' => null, 'class' => null, 'border' => false, 'caption' => ''
+        ];
+        $caption_parts = [];
+
+        foreach ($parts as $part) {
+            $part = trim($part);
+            if (in_array($part, ['thumb', 'thumbnail', 'frame', 'frameless'])) {
+                $options['type'] = ($part === 'thumbnail' ? 'thumb' : $part);
+            } elseif (in_array($part, ['left', 'right', 'center', 'none'])) {
+                $options['align'] = $part;
+            } elseif ($part === 'border') {
+                $options['border'] = true;
+            } elseif (preg_match('/^upright\s*=\s*([0-9\.]+)/', $part, $m)) {
+                $options['upright'] = (float)$m[1];
+            } elseif ($part === 'upright') {
+                $options['upright'] = 0.75;
+            } elseif (preg_match('/^(\d+)\s*px$/', $part, $m)) {
+                $options['size'] = $m[1] . 'px';
+            } elseif (preg_match('/^x(\d+)\s*px$/', $part, $m)) {
+                $options['size'] = 'x' . $m[1] . 'px';
+            } elseif (preg_match('/^(\d+)\s*x\s*(\d+)\s*px$/', $part, $m)) {
+                $options['size'] = $m[1] . 'x' . $m[2] . 'px';
+            } elseif (preg_match('/^alt\s*=\s*(.*)/', $part, $m)) {
+                $options['alt'] = $m[1];
+            } elseif (preg_match('/^link\s*=\s*(.*)/', $part, $m)) {
+                $options['link'] = $m[1];
+            } elseif (preg_match('/^class\s*=\s*(.*)/', $part, $m)) {
+                $options['class'] = $m[1];
+            } else {
+                $caption_parts[] = $part;
+            }
+        }
+        $options['caption'] = implode('|', $caption_parts);
+
+        // --- HTML Generation ---
+        $img_attrs = ['src' => $url, 'class' => 'img-fluid'];
+        $figure_classes = ['figure'];
+        $wrapper_classes = [];
+
+        // Alt text
+        $img_attrs['alt'] = htmlspecialchars($options['alt'] ?: $options['caption']);
+
+        // Alignment
+        if ($options['align']) {
+            if ($options['type'] === 'thumb' || $options['type'] === 'frame') {
+                 $wrapper_classes[] = 'figure-wrapper'; // Wrapper for alignment
+                 if ($options['align'] === 'left') $wrapper_classes[] = 'float-start me-3';
+                 if ($options['align'] === 'right') $wrapper_classes[] = 'float-end ms-3';
+                 if ($options['align'] === 'center') $wrapper_classes[] = 'mx-auto d-table';
+            } else {
+                 // Plain image alignment
+                 if ($options['align'] === 'left') $img_attrs['class'] .= ' float-start me-3';
+                 if ($options['align'] === 'right') $img_attrs['class'] .= ' float-end ms-3';
+                 if ($options['align'] === 'center') $img_attrs['class'] .= ' mx-auto d-block';
+            }
+        }
+
+        // Sizing
+        $img_styles = [];
+        $figure_styles = [];
+        if ($options['size']) {
+            if (preg_match('/^(\d+)px$/', $options['size'], $m)) {
+                $img_styles[] = 'width: ' . $m[1] . 'px; height: auto;';
+                if ($options['type'] === 'thumb') $figure_styles[] = 'width: ' . $m[1] . 'px;';
+            } elseif (preg_match('/^x(\d+)px$/', $options['size'], $m)) {
+                $img_styles[] = 'height: ' . $m[1] . 'px; width: auto;';
+            } elseif (preg_match('/^(\d+)x(\d+)px$/', $options['size'], $m)) {
+                $img_styles[] = 'max-width: ' . $m[1] . 'px; max-height: ' . $m[2] . 'px;';
+                 if ($options['type'] === 'thumb') $figure_styles[] = 'max-width: ' . $m[1] . 'px;';
+            }
+        } elseif ($options['upright']) {
+            $width = round(220 * $options['upright']); // Assuming default 220px
+            $img_styles[] = 'width: ' . $width . 'px; height: auto;';
+            if ($options['type'] === 'thumb') $figure_styles[] = 'width: ' . $width . 'px;';
+        }
+
+        if ($options['class']) $img_attrs['class'] .= ' ' . htmlspecialchars($options['class']);
+        if ($options['border']) $img_attrs['class'] .= ' border';
+        if (!empty($img_styles)) $img_attrs['style'] = implode(' ', $img_styles);
+
+        $img_attr_str = '';
+        foreach ($img_attrs as $key => $val) {
+            $img_attr_str .= ' ' . $key . '="' . $val . '"';
+        }
+        $img_tag = '<img' . $img_attr_str . '>';
+
+        if ($options['link']) {
+            $img_tag = '<a href="' . htmlspecialchars($options['link']) . '">' . $img_tag . '</a>';
+        }
+
+        $html = '';
+        if ($options['type'] === 'thumb' || $options['type'] === 'frame') {
+            if($options['type'] === 'thumb') $figure_classes[] = 'figure-thumbnail';
+            $figure_attrs = ['class' => implode(' ', $figure_classes)];
+            if(!empty($figure_styles)) $figure_attrs['style'] = implode(' ', $figure_styles);
+
+            $figure_attr_str = '';
+            foreach ($figure_attrs as $key => $val) {
+                $figure_attr_str .= ' ' . $key . '="' . $val . '"';
+            }
+
+            $html = '<div class="' . implode(' ', $wrapper_classes) . '">';
+            $html .= '<figure' . $figure_attr_str . '>';
+            $html .= $img_tag;
+            if (!empty($options['caption'])) {
+                $html .= '<figcaption class="figure-caption">' . parse_inline_wikitext($options['caption']) . '</figcaption>';
+            }
+            $html .= '</figure></div>';
+            if(empty($wrapper_classes)) $html = substr($html, 5, -6); // remove wrapper if not needed
+
+        } else { // Plain image
+            $html = $img_tag;
+        }
+
+        return $make_placeholder($html);
     }, $text);
 
     $text = preg_replace_callback('/\[\[Video:(https?:\/\/(?:www\.youtube\.com\/watch\?v=|youtu\.be\/)[^\s\]]+)\]\]/', function ($matches) use ($make_placeholder) {
