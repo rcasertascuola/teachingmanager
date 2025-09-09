@@ -1,5 +1,38 @@
 <?php
 
+function parse_inline_wikitext($text) {
+    // This function assumes the text has already been through htmlspecialchars.
+
+    // Bold and Italic
+    $text = preg_replace("/'''(.*?)'''/", '<strong>$1</strong>', $text);
+    $text = preg_replace("/''(.*?)''/", '<em>$1</em>', $text);
+
+    // Colored Text
+    $text = preg_replace_callback('/\{\{color:([a-zA-Z]+|#[0-9a-fA-F]{3,6})\|(.*?)\}\}/', function ($matches) {
+        $color = htmlspecialchars_decode($matches[1]);
+        $content = $matches[2];
+        if (!preg_match('/^(?:[a-zA-Z]+|#[0-9a-fA-F]{3,6})$/', $color)) {
+            return $matches[0]; // Invalid color
+        }
+        return '<span style="color:' . $color . ';">' . $content . '</span>';
+    }, $text);
+
+    // Links (Internal and External)
+    // Exclude [[Image...]] and [[Video...]]
+    $text = preg_replace_callback('/\[\[([^\]|:\n]+)(?:\|([^\]\n]+))?\]\]/', function ($matches) {
+        $page = trim($matches[1]);
+        $display = isset($matches[2]) ? trim($matches[2]) : $page;
+        $url = 'view.php?title=' . urlencode($page);
+        // The display text is already escaped from the initial call in parse_wikitext
+        return '<a href="' . $url . '">' . $display . '</a>';
+    }, $text);
+
+    $text = preg_replace('/\[(https?:\/\/[^\s\]]+)\s+([^\]]+)\]/', '<a href="$1" target="_blank" rel="noopener noreferrer">$2</a>', $text);
+
+    return $text;
+}
+
+
 function parse_wikitext($text) {
     // The order of operations is important.
 
@@ -29,21 +62,82 @@ function parse_wikitext($text) {
     $text = preg_replace('/^----/m', '<hr>', $text);
 
     // 4. Lists (Bulleted and Numbered)
-    $text = preg_replace_callback('/((?:(?:^\*|\#)\s.*(?:\n|$))+)/m', function ($matches) use ($make_placeholder) {
-        $list_text = trim($matches[1]);
+    $text = preg_replace_callback('/((?:(?:^[*#]+)\s.*(?:\n|$))+)/m', function ($matches) use ($make_placeholder) {
+        $list_text = trim($matches[0]);
         $lines = explode("\n", $list_text);
-        $type = (strpos($lines[0], '*') === 0) ? 'ul' : 'ol';
 
-        $items_html = '';
+        // --- Tree-based parser for nested lists ---
+
+        // 1. Build a tree from the list lines
+        $list_tree = [];
+        $path = []; // A stack of indices to the current node
+
         foreach ($lines as $line) {
-            $line = trim($line);
-            if(empty($line)) continue;
-            // Remove the marker (* or #) and trim
-            $item_content = trim(substr($line, 1));
-            $items_html .= '<li>' . $item_content . '</li>';
+            if (trim($line) === '') continue;
+
+            preg_match('/^([*#]+)\s*(.*)/', $line, $item_matches);
+            if (!$item_matches) continue;
+
+            $markers = $item_matches[1];
+            $content = $item_matches[2];
+            $level = strlen($markers);
+            $type = ($markers[0] === '*') ? 'ul' : 'ol';
+
+            // Adjust path to find the correct parent
+            while (count($path) >= $level) {
+                array_pop($path);
+            }
+
+            // Traverse to the parent node
+            $parent = &$list_tree;
+            foreach ($path as $index) {
+                $parent = &$parent[count($parent) - 1]['children'];
+            }
+
+            // Add the new item
+            $parent[] = ['type' => $type, 'content' => $content, 'children' => []];
+
+            // Update the path to point to the new item
+            $path[] = count($parent) - 1;
         }
 
-        $list_html = "<{$type}>" . $items_html . "</{$type}>";
+        // 2. Render the tree into HTML
+        $render_list_tree = function($tree) use (&$render_list_tree) {
+            if (empty($tree)) {
+                return '';
+            }
+
+            $html = '';
+            $current_list_type = null;
+            $buffer = [];
+
+            $flush_buffer = function() use (&$html, &$buffer, &$current_list_type, &$render_list_tree) {
+                if (empty($buffer)) return;
+
+                $html .= '<' . $current_list_type . '>';
+                foreach ($buffer as $item) {
+                    $html .= '<li>' . parse_inline_wikitext($item['content']);
+                    $html .= $render_list_tree($item['children']);
+                    $html .= '</li>';
+                }
+                $html .= '</' . $current_list_type . '>';
+                $buffer = [];
+            };
+
+            foreach ($tree as $item) {
+                if ($item['type'] !== $current_list_type) {
+                    $flush_buffer();
+                    $current_list_type = $item['type'];
+                }
+                $buffer[] = $item;
+            }
+            $flush_buffer(); // Flush the last group
+
+            return $html;
+        };
+
+        $list_html = $render_list_tree($list_tree);
+
         return $make_placeholder($list_html);
     }, $text);
 
@@ -72,7 +166,7 @@ function parse_wikitext($text) {
             $tag = $in_header ? 'th' : 'td';
             $row_html = "<tr>";
             foreach ($cells as $cell) {
-                $row_html .= "<{$tag}>" . trim($cell) . "</{$tag}>";
+                $row_html .= "<{$tag}>" . parse_inline_wikitext(trim($cell)) . "</{$tag}>";
             }
             $row_html .= "</tr>";
 
@@ -96,10 +190,6 @@ function parse_wikitext($text) {
 
 
     // --- Inline elements ---
-
-    // 6. Bold and Italic
-    $text = preg_replace("/'''(.*?)'''/", '<strong>$1</strong>', $text);
-    $text = preg_replace("/''(.*?)''/", '<em>$1</em>', $text);
 
     // 7. Images and Videos (as block-level figures/divs, so placeholder them)
     $text = preg_replace_callback('/\[\[Image:(https?:\/\/[^\s|\]]+)\|([^\]]+)\]\]/', function ($matches) use ($make_placeholder) {
@@ -127,27 +217,6 @@ function parse_wikitext($text) {
         return $make_placeholder($video_div);
     }, $text);
 
-    // 8. Colored Text
-    $text = preg_replace_callback('/\{\{color:([a-zA-Z]+|#[0-9a-fA-F]{3,6})\|(.*?)\}\}/', function ($matches) {
-        $color = htmlspecialchars_decode($matches[1]);
-        $content = $matches[2];
-        if (!preg_match('/^(?:[a-zA-Z]+|#[0-9a-fA-F]{3,6})$/', $color)) {
-            return $matches[0]; // Invalid color
-        }
-        return '<span style="color:' . $color . ';">' . $content . '</span>';
-    }, $text);
-
-    // 9. Links (Internal and External)
-    // Exclude [[Image...]] and [[Video...]]
-    $text = preg_replace_callback('/\[\[([^\]|:\n]+)(?:\|([^\]\n]+))?\]\]/', function ($matches) {
-        $page = trim($matches[1]);
-        $display = isset($matches[2]) ? trim($matches[2]) : $page;
-        $url = 'view.php?title=' . urlencode($page);
-        return '<a href="' . $url . '">' . htmlspecialchars($display) . '</a>';
-    }, $text);
-
-    $text = preg_replace('/\[(https?:\/\/[^\s\]]+)\s+([^\]]+)\]/', '<a href="$1" target="_blank" rel="noopener noreferrer">$2</a>', $text);
-
     // --- Final Processing ---
 
     // 10. Paragraphs
@@ -158,13 +227,16 @@ function parse_wikitext($text) {
         $block = trim($block);
         if (empty($block)) continue;
 
+        // Parse inline elements for the whole block first.
+        $parsed_block = parse_inline_wikitext($block);
+
         if (strpos($block, '%%PLACEHOLDER_') === false) {
-            // This is a simple paragraph, apply nl2br for single line breaks
-            $html .= '<p>' . nl2br($block, false) . "</p>\n";
+            // This is a simple paragraph, wrap in <p> and apply nl2br for single line breaks
+            $html .= '<p>' . nl2br($parsed_block, false) . "</p>\n";
         } else {
-            // This block contains placeholders, so just add it.
+            // This block contains placeholders, so just add it without <p> tags.
             // The nl2br is not needed as block elements handle their own spacing.
-            $html .= $block . "\n";
+            $html .= $parsed_block . "\n";
         }
     }
 
