@@ -45,6 +45,33 @@ class Lesson
     }
 
     /**
+     * Find all lessons a specific student has interacted with.
+     *
+     * @param int $studentId
+     * @return Lesson[]
+     */
+    public static function findForStudent($studentId)
+    {
+        $database = new Database();
+        $pdo = $database->getConnection();
+        $stmt = $pdo->prepare('
+            SELECT l.* FROM lessons l
+            JOIN (SELECT DISTINCT lesson_id FROM student_lesson_data WHERE user_id = :user_id) sld
+            ON l.id = sld.lesson_id
+            ORDER BY l.updated_at DESC
+        ');
+        $stmt->execute(['user_id' => $studentId]);
+
+        $lessonsData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $lessons = [];
+        foreach ($lessonsData as $data) {
+            $lessons[] = new self($data);
+        }
+        return $lessons;
+    }
+
+    /**
      * Count all lessons.
      * @return int
      */

@@ -77,6 +77,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                         </div>
                     </div>
                     <?php endif; ?>
+                    <?php if ($_SESSION['role'] === 'teacher'): ?>
                     <div class="col-md-6">
                         <div class="card mb-4">
                             <div class="card-header">Riscontro Alunni</div>
@@ -86,6 +87,17 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                             </div>
                         </div>
                     </div>
+                    <?php else: // Student view ?>
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">Riscontro Personale</div>
+                            <div class="card-body feature-slot d-flex flex-column justify-content-center align-items-center">
+                                <p>Rivedi i tuoi riscontri e le annotazioni sulle lezioni.</p>
+                                <a href="feedback/index.php" class="btn btn-success">Rivedi i tuoi Riscontri</a>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
 
