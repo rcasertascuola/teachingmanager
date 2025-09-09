@@ -62,6 +62,26 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
             margin-top: 5px;
             border-left: 5px solid #2196F3;
         }
+        #student-tools {
+            position: absolute;
+            display: none;
+            z-index: 1050;
+            background-color: #343a40;
+            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            gap: 5px;
+        }
+        #student-tools .btn {
+            color: white;
+            border-color: #6c757d;
+        }
+        #student-tools .form-control-color {
+            width: 40px;
+            height: 38px;
+            padding: .1rem;
+            border: none;
+        }
     </style>
 </head>
 <body>
@@ -100,17 +120,19 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
                 <div class="card-footer">
                     <?php if ($_SESSION['role'] === 'teacher'): ?>
                         <a href="edit.php?id=<?php echo $lesson->id; ?>" class="btn btn-primary">Modifica Lezione</a>
-                    <?php else: ?>
-                        <div id="student-tools" class="d-flex flex-wrap align-items-center gap-2">
-                            <button id="highlight-btn" class="btn btn-secondary">Evidenzia</button>
-                            <input type="color" id="highlight-color-picker" class="form-control form-control-color" value="#ffff00" title="Scegli un colore per evidenziare">
-                            <button id="annotate-btn" class="btn btn-secondary">Annota</button>
-                            <button id="question-btn" class="btn btn-secondary">Fai una domanda</button>
-                            <button id="summary-btn" class="btn btn-secondary">Aggiungi riassunto</button>
-                        </div>
                     <?php endif; ?>
                 </div>
             </div>
+
+            <?php if ($_SESSION['role'] === 'student'): ?>
+            <div id="student-tools">
+                <button id="highlight-btn" class="btn btn-sm btn-secondary">Evidenzia</button>
+                <input type="color" id="highlight-color-picker" class="form-control form-control-color" value="#ffff00" title="Scegli un colore per evidenziare">
+                <button id="annotate-btn" class="btn btn-sm btn-secondary">Annota</button>
+                <button id="question-btn" class="btn btn-sm btn-secondary">Fai una domanda</button>
+                <button id="summary-btn" class="btn btn-sm btn-secondary">Aggiungi riassunto</button>
+            </div>
+            <?php endif; ?>
 
             <!-- Annotation Modal -->
             <div class="modal fade" id="annotation-modal" tabindex="-1" aria-labelledby="annotation-modal-label" aria-hidden="true">
@@ -203,6 +225,7 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
 
     document.addEventListener('DOMContentLoaded', function () {
         const lessonContent = document.getElementById('lesson-content');
+        const studentTools = document.getElementById('student-tools');
         const highlightBtn = document.getElementById('highlight-btn');
         const questionBtn = document.getElementById('question-btn');
         const summaryBtn = document.getElementById('summary-btn');
@@ -216,14 +239,65 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
 
         loadStudentData();
 
-        lessonContent.addEventListener('mouseup', () => {
-            const selection = window.getSelection();
-            if (selection.rangeCount > 0 && !selection.isCollapsed) {
-                currentSelection = selection.getRangeAt(0);
-            } else {
-                currentSelection = null;
-            }
-        });
+        function handleSelection(event) {
+            setTimeout(() => {
+                if (!studentTools) return;
+                const selection = window.getSelection();
+                if (selection && selection.rangeCount > 0 && !selection.isCollapsed) {
+                    const range = selection.getRangeAt(0);
+                    const rect = range.getBoundingClientRect();
+
+                    if (rect.width > 1 || rect.height > 1) {
+                        currentSelection = range;
+                        studentTools.style.display = 'flex';
+
+                        let top = rect.top + window.scrollY - studentTools.offsetHeight - 10;
+                        if (top < window.scrollY) {
+                            top = rect.bottom + window.scrollY + 10;
+                        }
+
+                        let left = rect.left + window.scrollX + rect.width / 2 - studentTools.offsetWidth / 2;
+                        if (left < 0) left = 5;
+                        if (left + studentTools.offsetWidth > window.innerWidth) {
+                            left = window.innerWidth - studentTools.offsetWidth - 5;
+                        }
+
+                        studentTools.style.top = `${top}px`;
+                        studentTools.style.left = `${left}px`;
+                    }
+                } else {
+                    if (studentTools && event && event.target && !studentTools.contains(event.target)) {
+                       studentTools.style.display = 'none';
+                    }
+                }
+            }, 10);
+        }
+
+        if (studentTools) {
+            lessonContent.addEventListener('mouseup', handleSelection);
+            lessonContent.addEventListener('touchend', handleSelection);
+
+            lessonContent.addEventListener('contextmenu', e => e.preventDefault());
+
+            document.addEventListener('mousedown', function(e) {
+                if (studentTools.style.display === 'flex') {
+                    const isClickInsideLesson = lessonContent.contains(e.target);
+                    const isClickInsideToolbar = studentTools.contains(e.target);
+
+                    if (!isClickInsideLesson && !isClickInsideToolbar) {
+                        studentTools.style.display = 'none';
+                        currentSelection = null;
+                        if (window.getSelection) {
+                            if (window.getSelection().empty) {  // Chrome
+                                window.getSelection().empty();
+                            } else if (window.getSelection().removeAllRanges) {  // Firefox
+                                window.getSelection().removeAllRanges();
+                            }
+                        }
+                    }
+                }
+            });
+        }
 
         function loadStudentData() {
             if (typeof studentData !== 'undefined' && studentData.length > 0) {
