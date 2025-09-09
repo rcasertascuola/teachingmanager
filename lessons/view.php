@@ -29,6 +29,7 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $lesson ? htmlspecialchars($lesson->title) : 'Lezione non trovata'; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.13.1/font/bootstrap-icons.min.css" integrity="sha512-pOEB3B9sGdQ3CdkkrNbHa4unCanWyLVp/sBuoIsi5iKtgCrMeMcN3pzhMCgSWN5L2pPZslpZ7i6ekEkeO+A2QQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         .wikitext-content h2 {
             border-bottom: 1px solid #dee2e6;
@@ -75,6 +76,11 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
         #student-tools .btn {
             color: white;
             border-color: #6c757d;
+            width: 38px;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
         #student-tools .form-control-color {
             width: 40px;
@@ -126,11 +132,11 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
 
             <?php if ($_SESSION['role'] === 'student'): ?>
             <div id="student-tools">
-                <button id="highlight-btn" class="btn btn-sm btn-secondary">Evidenzia</button>
+                <button id="highlight-btn" class="btn btn-sm btn-secondary" title="Evidenzia"><i class="bi bi-highlighter"></i></button>
                 <input type="color" id="highlight-color-picker" class="form-control form-control-color" value="#ffff00" title="Scegli un colore per evidenziare">
-                <button id="annotate-btn" class="btn btn-sm btn-secondary">Annota</button>
-                <button id="question-btn" class="btn btn-sm btn-secondary">Fai una domanda</button>
-                <button id="summary-btn" class="btn btn-sm btn-secondary">Aggiungi riassunto</button>
+                <button id="annotate-btn" class="btn btn-sm btn-secondary" title="Annota"><i class="bi bi-chat-square-text"></i></button>
+                <button id="question-btn" class="btn btn-sm btn-secondary" title="Fai una domanda"><i class="bi bi-question-circle"></i></button>
+                <button id="summary-btn" class="btn btn-sm btn-secondary" title="Aggiungi riassunto"><i class="bi bi-card-text"></i></button>
             </div>
             <?php endif; ?>
 
