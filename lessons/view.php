@@ -29,7 +29,7 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $lesson ? htmlspecialchars($lesson->title) : 'Lezione non trovata'; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.13.1/font/bootstrap-icons.min.css" integrity="sha512-pOEB3B9sGdQ3CdkkrNbHa4unCanWyLVp/sBuoIsi5iKtgCrMeMcN3pzhMCgSWN5L2pPZslpZ7i6ekEkeO+A2QQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.13.1/font/bootstrap-icons.min.css" integrity="sha512-t7Few9xlddEmgd3oKZQahkNI4dS6l80+eGEzFQiqtyVYdvcSG2D3Iub77R20BdotfRPA9caaRkg1tyaJiPmO0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         .wikitext-content h2 {
             border-bottom: 1px solid #dee2e6;
@@ -409,12 +409,24 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
                     return null;
                 }
 
+                const startNodeLength = (startContainer.nodeType === Node.TEXT_NODE) ? startContainer.length : startContainer.childNodes.length;
+                if (selectionData.startOffset > startNodeLength) {
+                    console.warn("Start offset out of bounds for node. Skipping this item.", { selection: selectionData, node: startContainer });
+                    return null;
+                }
+
+                const endNodeLength = (endContainer.nodeType === Node.TEXT_NODE) ? endContainer.length : endContainer.childNodes.length;
+                if (selectionData.endOffset > endNodeLength) {
+                    console.warn("End offset out of bounds for node. Skipping this item.", { selection: selectionData, node: endContainer });
+                    return null;
+                }
+
                 const range = document.createRange();
                 range.setStart(startContainer, selectionData.startOffset);
                 range.setEnd(endContainer, selectionData.endOffset);
                 return range;
             } catch (e) {
-                console.error("Error deserializing range:", e);
+                console.error("Error deserializing range:", e, { selection: selectionData });
                 return null;
             }
         }
