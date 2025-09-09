@@ -62,21 +62,82 @@ function parse_wikitext($text) {
     $text = preg_replace('/^----/m', '<hr>', $text);
 
     // 4. Lists (Bulleted and Numbered)
-    $text = preg_replace_callback('/((?:(?:^\*|\#)\s.*(?:\n|$))+)/m', function ($matches) use ($make_placeholder) {
-        $list_text = trim($matches[1]);
+    $text = preg_replace_callback('/((?:(?:^[*#]+)\s.*(?:\n|$))+)/m', function ($matches) use ($make_placeholder) {
+        $list_text = trim($matches[0]);
         $lines = explode("\n", $list_text);
-        $type = (strpos($lines[0], '*') === 0) ? 'ul' : 'ol';
 
-        $items_html = '';
+        // --- Tree-based parser for nested lists ---
+
+        // 1. Build a tree from the list lines
+        $list_tree = [];
+        $path = []; // A stack of indices to the current node
+
         foreach ($lines as $line) {
-            $line = trim($line);
-            if(empty($line)) continue;
-            // Remove the marker (* or #) and trim
-            $item_content = trim(substr($line, 1));
-            $items_html .= '<li>' . parse_inline_wikitext($item_content) . '</li>';
+            if (trim($line) === '') continue;
+
+            preg_match('/^([*#]+)\s*(.*)/', $line, $item_matches);
+            if (!$item_matches) continue;
+
+            $markers = $item_matches[1];
+            $content = $item_matches[2];
+            $level = strlen($markers);
+            $type = ($markers[0] === '*') ? 'ul' : 'ol';
+
+            // Adjust path to find the correct parent
+            while (count($path) >= $level) {
+                array_pop($path);
+            }
+
+            // Traverse to the parent node
+            $parent = &$list_tree;
+            foreach ($path as $index) {
+                $parent = &$parent[count($parent) - 1]['children'];
+            }
+
+            // Add the new item
+            $parent[] = ['type' => $type, 'content' => $content, 'children' => []];
+
+            // Update the path to point to the new item
+            $path[] = count($parent) - 1;
         }
 
-        $list_html = "<{$type}>" . $items_html . "</{$type}>";
+        // 2. Render the tree into HTML
+        $render_list_tree = function($tree) use (&$render_list_tree) {
+            if (empty($tree)) {
+                return '';
+            }
+
+            $html = '';
+            $current_list_type = null;
+            $buffer = [];
+
+            $flush_buffer = function() use (&$html, &$buffer, &$current_list_type, &$render_list_tree) {
+                if (empty($buffer)) return;
+
+                $html .= '<' . $current_list_type . '>';
+                foreach ($buffer as $item) {
+                    $html .= '<li>' . parse_inline_wikitext($item['content']);
+                    $html .= $render_list_tree($item['children']);
+                    $html .= '</li>';
+                }
+                $html .= '</' . $current_list_type . '>';
+                $buffer = [];
+            };
+
+            foreach ($tree as $item) {
+                if ($item['type'] !== $current_list_type) {
+                    $flush_buffer();
+                    $current_list_type = $item['type'];
+                }
+                $buffer[] = $item;
+            }
+            $flush_buffer(); // Flush the last group
+
+            return $html;
+        };
+
+        $list_html = $render_list_tree($list_tree);
+
         return $make_placeholder($list_html);
     }, $text);
 
