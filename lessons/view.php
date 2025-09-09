@@ -9,6 +9,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 require_once '../src/Database.php';
 require_once '../src/Lesson.php';
 require_once '../src/wikitext_parser.php';
+require_once '../src/Exercise.php';
 
 $lesson = null;
 if (isset($_GET['id'])) {
@@ -20,6 +21,11 @@ if (isset($_GET['id'])) {
 $student_data = [];
 if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
     $student_data = Lesson::getStudentData($_SESSION['id'], $lesson->id);
+}
+
+$linked_exercises = [];
+if ($lesson) {
+    $linked_exercises = Exercise::findForLesson($lesson->id);
 }
 ?>
 <!DOCTYPE html>
@@ -138,6 +144,21 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
                     <?php endif; ?>
                 </div>
             </div>
+
+            <?php if (!empty($linked_exercises)): ?>
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h3 class="h4 mb-0">Esercizi Collegati</h3>
+                </div>
+                <div class="list-group list-group-flush">
+                    <?php foreach ($linked_exercises as $exercise): ?>
+                        <a href="../exercises/view.php?id=<?php echo $exercise->id; ?>" class="list-group-item list-group-item-action">
+                            <?php echo htmlspecialchars($exercise->title); ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
 
             <?php if ($_SESSION['role'] === 'student'): ?>
             <div id="student-tools">

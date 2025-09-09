@@ -80,6 +80,15 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                     <?php if ($_SESSION['role'] === 'teacher'): ?>
                     <div class="col-md-6">
                         <div class="card mb-4">
+                            <div class="card-header">Gestisci Esercizi</div>
+                            <div class="card-body feature-slot d-flex flex-column justify-content-center align-items-center">
+                                <p>Crea, assegna e correggi esercizi.</p>
+                                <a href="exercises/index.php" class="btn btn-info">Vai a Esercizi</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-4">
                             <div class="card-header">Riscontro Alunni</div>
                             <div class="card-body feature-slot d-flex flex-column justify-content-center align-items-center">
                                 <p>Visualizza il lavoro degli alunni sulle lezioni.</p>
@@ -88,6 +97,15 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                         </div>
                     </div>
                     <?php else: // Student view ?>
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">Esercizi</div>
+                            <div class="card-body feature-slot d-flex flex-column justify-content-center align-items-center">
+                                <p>Svolgi gli esercizi assegnati dal docente.</p>
+                                <a href="exercises/index.php" class="btn btn-info">Vai a Esercizi</a>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-md-6">
                         <div class="card mb-4">
                             <div class="card-header">Riscontro Personale</div>
