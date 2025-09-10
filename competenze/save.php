@@ -10,6 +10,12 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Server-side validation for mandatory fields
+    if (empty($_POST['nome']) || empty($_POST['tipologia_id'])) {
+        // In a real app, you'd use a more sophisticated error handling/messaging system
+        header('Location: edit.php?id=' . ($_POST['id'] ?? '') . '&error=missing_fields');
+        exit;
+    }
     $data = [
         'id' => $_POST['id'] ?? null,
         'nome' => $_POST['nome'],
@@ -18,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'conoscenze' => $_POST['conoscenze'] ?? [],
         'abilita' => $_POST['abilita'] ?? [],
         'discipline' => $_POST['discipline'] ?? [],
-        'anni_corso' => $_POST['anni_corso'] ?? []
+        'anni_corso' => ($_POST['anno_type'] === 'specifici') ? ($_POST['anni_corso'] ?? []) : []
     ];
 
     $competenza = new Competenza($data);

@@ -87,9 +87,7 @@ $derived_discipline_ids = array_unique($derived_discipline_ids);
                         <?php endforeach; ?>
                     </ul>
                 <?php else: ?>
-
                     <p>Nessuna disciplina derivata (collegare a conoscenze per vederle).</p>
-
                 <?php endif; ?>
 
                 <h5 class="card-title mt-4">Anni di Corso</h5>

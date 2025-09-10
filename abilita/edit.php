@@ -13,7 +13,6 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION
 
 // Fetch related data for form fields
 $all_conoscenze = Conoscenza::findAll();
-
 $anni_corso_options = range(1, 5);
 $tipi_options = ['cognitiva', 'tecnico/pratica'];
 

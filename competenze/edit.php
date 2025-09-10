@@ -54,15 +54,16 @@ $formAction = 'save.php';
             </div>
 
             <div class="form-group">
-                <label for="tipologia_id">Tipologia</label>
-                <select class="form-control" id="tipologia_id" name="tipologia_id">
-                    <option value="">Nessuna</option>
+                <label for="tipologia_id">Tipologia (obbligatorio)</label>
+                <select class="form-control" id="tipologia_id" name="tipologia_id" required>
+                    <option value="">Seleziona una tipologia...</option>
                     <?php foreach ($all_tipologie as $tipologia): ?>
                         <option value="<?php echo $tipologia->id; ?>" <?php echo ($competenza && $competenza->tipologia_id == $tipologia->id) ? 'selected' : ''; ?>>
                             <?php echo htmlspecialchars($tipologia->nome); ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
+                <small class="form-text text-muted">(Lasciare vuoto per non assegnare)</small>
             </div>
 
             <div class="form-group">
@@ -74,6 +75,7 @@ $formAction = 'save.php';
                         </option>
                     <?php endforeach; ?>
                 </select>
+                <small class="form-text text-muted">(Lasciare vuoto per non assegnare)</small>
             </div>
 
             <div class="form-group">
@@ -85,6 +87,7 @@ $formAction = 'save.php';
                         </option>
                     <?php endforeach; ?>
                 </select>
+                <small class="form-text text-muted">(Lasciare vuoto per non assegnare)</small>
             </div>
 
             <div class="form-group">
@@ -100,7 +103,19 @@ $formAction = 'save.php';
 
             <div class="form-group">
                 <label>Anni di Corso</label>
-                <div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="anno_type" id="anno_tutti" value="tutti" <?php echo (empty($competenza->anni_corso)) ? 'checked' : ''; ?>>
+                    <label class="form-check-label" for="anno_tutti">
+                        Tutti gli anni
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="anno_type" id="anno_specifici" value="specifici" <?php echo (!empty($competenza->anni_corso)) ? 'checked' : ''; ?>>
+                    <label class="form-check-label" for="anno_specifici">
+                        Anni specifici
+                    </label>
+                </div>
+                <div id="anni-specifici-container" class="mt-2" style="<?php echo (empty($competenza->anni_corso)) ? 'display: none;' : ''; ?>">
                     <?php foreach ($anni_corso_options as $anno): ?>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="checkbox" id="anno_<?php echo $anno; ?>" name="anni_corso[]" value="<?php echo $anno; ?>" <?php echo ($competenza && in_array($anno, $competenza->anni_corso)) ? 'checked' : ''; ?>>
@@ -114,5 +129,23 @@ $formAction = 'save.php';
             <a href="index.php" class="btn btn-secondary">Annulla</a>
         </form>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const radioTutti = document.getElementById('anno_tutti');
+            const radioSpecifici = document.getElementById('anno_specifici');
+            const specificiContainer = document.getElementById('anni-specifici-container');
+
+            function toggleAnniContainer() {
+                if (radioSpecifici.checked) {
+                    specificiContainer.style.display = 'block';
+                } else {
+                    specificiContainer.style.display = 'none';
+                }
+            }
+
+            radioTutti.addEventListener('change', toggleAnniContainer);
+            radioSpecifici.addEventListener('change', toggleAnniContainer);
+        });
+    </script>
 </body>
 </html>
