@@ -106,6 +106,45 @@ CREATE TABLE `student_exercise_answers` (
   UNIQUE KEY `user_exercise_unique` (`user_id`,`exercise_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Table structure for table `udas`
+--
+
+CREATE TABLE `udas` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `description` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Table structure for table `modules`
+--
+
+CREATE TABLE `modules` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uda_id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` text,
+  PRIMARY KEY (`id`),
+  KEY `uda_id` (`uda_id`),
+  CONSTRAINT `modules_ibfk_1` FOREIGN KEY (`uda_id`) REFERENCES `udas` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Table structure for table `module_lessons`
+--
+
+CREATE TABLE `module_lessons` (
+  `module_id` int(11) NOT NULL,
+  `lesson_id` int(11) NOT NULL,
+  PRIMARY KEY (`module_id`, `lesson_id`),
+  KEY `module_id` (`module_id`),
+  KEY `lesson_id` (`lesson_id`),
+  CONSTRAINT `module_lessons_ibfk_1` FOREIGN KEY (`module_id`) REFERENCES `modules` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `module_lessons_ibfk_2` FOREIGN KEY (`lesson_id`) REFERENCES `lessons` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Nuove tabelle per la gestione di conoscenze, abilità e competenze
 
 -- Tabella per le tipologie di competenze
