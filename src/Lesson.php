@@ -7,6 +7,7 @@ class Lesson
     public $content;
     public $tags;
     public $module_id;
+    public $previous_lesson_id;
     public $created_at;
     public $updated_at;
 
@@ -21,6 +22,7 @@ class Lesson
         $this->content = $data['content'] ?? '';
         $this->tags = $data['tags'] ?? '';
         $this->module_id = $data['module_id'] ?? null;
+        $this->previous_lesson_id = $data['previous_lesson_id'] ?? null;
         $this->created_at = $data['created_at'] ?? null;
         $this->updated_at = $data['updated_at'] ?? null;
 
@@ -36,13 +38,23 @@ class Lesson
      * @param int $offset
      * @return Lesson[]
      */
-    public static function findAll($limit, $offset)
+    public static function findAll($limit = 10, $offset = 0)
     {
         $database = new Database();
         $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM lessons ORDER BY updated_at DESC LIMIT :limit OFFSET :offset');
-        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+
+        $sql = 'SELECT * FROM lessons ORDER BY updated_at DESC';
+        if ($limit !== null) {
+            $sql .= ' LIMIT :limit OFFSET :offset';
+        }
+
+        $stmt = $pdo->prepare($sql);
+
+        if ($limit !== null) {
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        }
+
         $stmt->execute();
 
         $lessonsData = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -148,21 +160,23 @@ class Lesson
             $pdo->beginTransaction();
 
             if ($this->id) {
-                $stmt = $pdo->prepare('UPDATE lessons SET title = :title, content = :content, tags = :tags, module_id = :module_id WHERE id = :id');
+                $stmt = $pdo->prepare('UPDATE lessons SET title = :title, content = :content, tags = :tags, module_id = :module_id, previous_lesson_id = :previous_lesson_id WHERE id = :id');
                 $params = [
                     'id' => $this->id,
                     'title' => $this->title,
                     'content' => $this->content,
                     'tags' => $this->tags,
                     'module_id' => $this->module_id,
+                    'previous_lesson_id' => $this->previous_lesson_id,
                 ];
             } else {
-                $stmt = $pdo->prepare('INSERT INTO lessons (title, content, tags, module_id) VALUES (:title, :content, :tags, :module_id)');
+                $stmt = $pdo->prepare('INSERT INTO lessons (title, content, tags, module_id, previous_lesson_id) VALUES (:title, :content, :tags, :module_id, :previous_lesson_id)');
                 $params = [
                     'title' => $this->title,
                     'content' => $this->content,
                     'tags' => $this->tags,
                     'module_id' => $this->module_id,
+                    'previous_lesson_id' => $this->previous_lesson_id,
                 ];
             }
 
