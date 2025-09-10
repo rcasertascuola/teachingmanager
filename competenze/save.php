@@ -16,7 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: edit.php?id=' . ($_POST['id'] ?? '') . '&error=missing_fields');
         exit;
     }
-
     $data = [
         'id' => $_POST['id'] ?? null,
         'nome' => $_POST['nome'],
