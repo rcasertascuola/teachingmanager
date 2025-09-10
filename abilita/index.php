@@ -1,24 +1,18 @@
 <?php
 require_once '../src/Database.php';
 require_once '../src/Abilita.php';
+include '../header.php';
 
-session_start();
-
-if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION['role'] !== 'teacher') {
-    header('Location: ../login.php');
+// Additional check for teacher role
+if ($_SESSION['role'] !== 'teacher') {
+    // Redirect or show an error message
+    echo "<div class='alert alert-danger'>Accesso negato.</div>";
+    include '../footer.php';
     exit;
 }
 
 $abilita_items = Abilita::findAll();
 ?>
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <title>Gestione Abilità</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
     <div class="container mt-5">
         <h2>Abilità</h2>
         <a href="edit.php" class="btn btn-success mb-3">Crea Nuova Abilità</a>
@@ -53,7 +47,5 @@ $abilita_items = Abilita::findAll();
                 <?php endforeach; ?>
             </tbody>
         </table>
-        <a href="../dashboard.php" class="btn btn-secondary">Torna alla Dashboard</a>
     </div>
-</body>
-</html>
+<?php include '../footer.php'; ?>

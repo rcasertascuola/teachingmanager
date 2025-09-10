@@ -1,11 +1,11 @@
 <?php
 require_once '../src/Database.php';
 require_once '../src/TipologiaCompetenza.php';
+include '../header.php';
 
-session_start();
-
-if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION['role'] !== 'teacher') {
-    header('Location: ../login.php');
+if ($_SESSION['role'] !== 'teacher') {
+    echo "<div class='alert alert-danger'>Accesso negato.</div>";
+    include '../footer.php';
     exit;
 }
 
@@ -17,14 +17,6 @@ if (isset($_GET['id'])) {
 $pageTitle = $tipologia ? 'Modifica Tipologia' : 'Crea Nuova Tipologia';
 $formAction = 'save.php';
 ?>
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <title><?php echo $pageTitle; ?></title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
     <div class="container mt-5">
         <h2><?php echo $pageTitle; ?></h2>
         <form action="<?php echo $formAction; ?>" method="post">
@@ -41,5 +33,4 @@ $formAction = 'save.php';
             <a href="index.php" class="btn btn-secondary">Annulla</a>
         </form>
     </div>
-</body>
-</html>
+<?php include '../footer.php'; ?>

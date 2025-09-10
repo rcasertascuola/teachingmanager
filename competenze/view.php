@@ -5,13 +5,8 @@ require_once '../src/TipologiaCompetenza.php';
 require_once '../src/Conoscenza.php';
 require_once '../src/Abilita.php';
 require_once '../src/Disciplina.php';
+include '../header.php';
 
-session_start();
-
-if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
-    header('Location: ../login.php');
-    exit;
-}
 
 if (!isset($_GET['id'])) {
     header('Location: index.php');
@@ -47,14 +42,6 @@ foreach ($all_discipline as $d) {
 }
 
 ?>
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <title>Dettaglio Competenza</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
     <div class="container mt-5">
         <h2>Dettaglio: <?php echo htmlspecialchars($competenza->nome); ?></h2>
 
@@ -113,5 +100,4 @@ foreach ($all_discipline as $d) {
             <a href="index.php" class="btn btn-secondary">Torna all'elenco</a>
         </div>
     </div>
-</body>
-</html>
+<?php include '../footer.php'; ?>
