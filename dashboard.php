@@ -66,6 +66,15 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="fas fa-sitemap"></i> Synoptic View</h5>
+                                <p class="card-text">View a synoptic overview of the educational structure.</p>
+                                <a href="synoptic_view.php" class="btn btn-info">Go to Synoptic View</a>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-md-6">
                         <div class="card mb-4">
                             <div class="card-header">Gestisci UDA</div>
