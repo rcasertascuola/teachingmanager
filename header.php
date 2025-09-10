@@ -68,5 +68,8 @@ function is_active($path) {
             <li class="nav-item"><a class="nav-link <?php echo is_active('/competenze/'); ?>" href="/competenze/index.php"><i class="fas fa-graduation-cap"></i> Competencies</a></li>
             <li class="nav-item"><a class="nav-link <?php echo is_active('/discipline/'); ?>" href="/discipline/index.php"><i class="fas fa-atom"></i> Disciplines</a></li>
             <li class="nav-item"><a class="nav-link <?php echo is_active('/synoptic_view.php'); ?>" href="/synoptic_view.php"><i class="fas fa-sitemap"></i> Synoptic View</a></li>
+            <?php if ($_SESSION['role'] === 'teacher'): ?>
+                <li class="nav-item"><a class="nav-link <?php echo is_active('/users/'); ?>" href="/users/index.php"><i class="fas fa-users-cog"></i> Gestione Utenti</a></li>
+            <?php endif; ?>
         </ul>
     </div>
