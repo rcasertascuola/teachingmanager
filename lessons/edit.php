@@ -16,6 +16,7 @@ if ($_SESSION["role"] !== 'teacher') {
 
 $lesson = null;
 $modules = Module::findAll();
+$all_lessons = Lesson::findAll(null);
 $all_conoscenze = Conoscenza::findAll();
 $all_abilita = Abilita::findAll();
 $pageTitle = 'Aggiungi Nuova Lezione';
@@ -57,6 +58,19 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                             <?php foreach ($modules as $module): ?>
                                 <option value="<?php echo $module->id; ?>" <?php echo (isset($lesson) && $lesson->module_id == $module->id) ? 'selected' : ''; ?>>
                                     <?php echo htmlspecialchars($module->name); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="previous_lesson_id" class="form-label">Lezione Precedente</label>
+                        <select class="form-select" id="previous_lesson_id" name="previous_lesson_id">
+                            <option value="">Nessuna (prima lezione)</option>
+                            <?php foreach ($all_lessons as $prev_lesson): ?>
+                                <?php if (isset($lesson) && $lesson->id === $prev_lesson->id) continue; ?>
+                                <option value="<?php echo $prev_lesson->id; ?>" <?php echo (isset($lesson) && $lesson->previous_lesson_id == $prev_lesson->id) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($prev_lesson->title); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>

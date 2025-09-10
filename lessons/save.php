@@ -20,6 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'content' => trim($_POST['content']),
             'tags' => isset($_POST['tags']) ? trim($_POST['tags']) : '',
             'module_id' => isset($_POST['module_id']) && !empty($_POST['module_id']) ? (int)$_POST['module_id'] : null,
+            'previous_lesson_id' => isset($_POST['previous_lesson_id']) && !empty($_POST['previous_lesson_id']) ? (int)$_POST['previous_lesson_id'] : null,
             'conoscenze' => $_POST['conoscenze'] ?? [],
             'abilita' => $_POST['abilita'] ?? []
         ];
