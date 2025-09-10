@@ -14,7 +14,7 @@ $conoscenze = Conoscenza::findAll();
 ?>
     <div class="container mt-5">
         <h2>Conoscenze</h2>
-        <a href="edit.php" class="btn btn-success mb-3">Crea Nuova Conoscenza</a>
+        <a href="edit.php" class="btn btn-success mb-3"><i class="fas fa-plus"></i> Crea Nuova Conoscenza</a>
         <?php if (isset($_GET['success'])): ?>
             <div class="alert alert-success">
                 <?php if ($_GET['success'] == 'create'): echo "Conoscenza creata con successo!"; endif; ?>
@@ -36,9 +36,9 @@ $conoscenze = Conoscenza::findAll();
                     <td><?php echo htmlspecialchars($conoscenza->id); ?></td>
                     <td><?php echo htmlspecialchars($conoscenza->nome); ?></td>
                     <td>
-                        <a href="view.php?id=<?php echo $conoscenza->id; ?>" class="btn btn-info btn-sm">Vedi</a>
-                        <a href="edit.php?id=<?php echo $conoscenza->id; ?>" class="btn btn-primary btn-sm">Modifica</a>
-                        <a href="delete.php?id=<?php echo $conoscenza->id; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Sei sicuro di voler eliminare questa conoscenza?');">Elimina</a>
+                        <a href="view.php?id=<?php echo $conoscenza->id; ?>" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>
+                        <a href="edit.php?id=<?php echo $conoscenza->id; ?>" class="btn btn-primary btn-sm"><i class="fas fa-pencil-alt"></i></a>
+                        <a href="delete.php?id=<?php echo $conoscenza->id; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Sei sicuro di voler eliminare questa conoscenza?');"><i class="fas fa-trash"></i></a>
                     </td>
                 </tr>
                 <?php endforeach; ?>

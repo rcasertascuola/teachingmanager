@@ -14,7 +14,7 @@ $discipline = Disciplina::findAll();
 ?>
     <div class="container mt-5">
         <h2>Discipline</h2>
-        <a href="edit.php" class="btn btn-success mb-3">Crea Nuova Disciplina</a>
+        <a href="edit.php" class="btn btn-success mb-3"><i class="fas fa-plus"></i> Crea Nuova Disciplina</a>
         <?php if (isset($_GET['success'])): ?>
             <div class="alert alert-success">
                 <?php if ($_GET['success'] == 'create'): echo "Disciplina creata con successo!"; endif; ?>
@@ -36,8 +36,8 @@ $discipline = Disciplina::findAll();
                     <td><?php echo htmlspecialchars($disciplina->id); ?></td>
                     <td><?php echo htmlspecialchars($disciplina->nome); ?></td>
                     <td>
-                        <a href="edit.php?id=<?php echo $disciplina->id; ?>" class="btn btn-primary btn-sm">Modifica</a>
-                        <a href="delete.php?id=<?php echo $disciplina->id; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Sei sicuro di voler eliminare questa disciplina?');">Elimina</a>
+                        <a href="edit.php?id=<?php echo $disciplina->id; ?>" class="btn btn-primary btn-sm"><i class="fas fa-pencil-alt"></i></a>
+                        <a href="delete.php?id=<?php echo $disciplina->id; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Sei sicuro di voler eliminare questa disciplina?');"><i class="fas fa-trash"></i></a>
                     </td>
                 </tr>
                 <?php endforeach; ?>

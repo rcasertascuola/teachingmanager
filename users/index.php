@@ -20,7 +20,7 @@ $users = $user->findAll();
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h2">Gestione Utenti</h1>
-        <a href="edit.php" class="btn btn-primary">Aggiungi Nuovo Utente</a>
+        <a href="edit.php" class="btn btn-primary"><i class="fas fa-plus"></i> Aggiungi Nuovo Utente</a>
     </div>
 
     <div class="card">
@@ -54,8 +54,8 @@ $users = $user->findAll();
                                     <td><?php echo htmlspecialchars($row['corso'] ?? 'N/A'); ?></td>
                                     <td><?php echo htmlspecialchars($row['anno_scolastico'] ?? 'N/A'); ?></td>
                                     <td>
-                                        <a href="edit.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-warning">Modifica</a>
-                                        <a href="delete.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Sei sicuro di voler eliminare questo utente?');">Cancella</a>
+                                        <a href="edit.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-warning"><i class="fas fa-pencil-alt"></i></a>
+                                        <a href="delete.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Sei sicuro di voler eliminare questo utente?');"><i class="fas fa-trash"></i></a>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>

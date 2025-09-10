@@ -23,7 +23,7 @@ foreach ($udas as $uda) {
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h2">Gestione Moduli</h1>
-            <a href="edit.php" class="btn btn-primary">Aggiungi Nuovo Modulo</a>
+            <a href="edit.php" class="btn btn-primary"><i class="fas fa-plus"></i> Aggiungi Nuovo Modulo</a>
         </div>
 
         <div class="card">
@@ -53,8 +53,8 @@ foreach ($udas as $uda) {
                                         <td><?php echo htmlspecialchars($module->description); ?></td>
                                         <td><?php echo htmlspecialchars($udaNameMap[$module->uda_id] ?? 'N/A'); ?></td>
                                         <td>
-                                            <a href="edit.php?id=<?php echo $module->id; ?>" class="btn btn-sm btn-warning">Modifica</a>
-                                            <a href="delete.php?id=<?php echo $module->id; ?>" class="btn btn-sm btn-danger">Cancella</a>
+                                            <a href="edit.php?id=<?php echo $module->id; ?>" class="btn btn-sm btn-warning"><i class="fas fa-pencil-alt"></i></a>
+                                            <a href="delete.php?id=<?php echo $module->id; ?>" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
