@@ -1,6 +1,8 @@
 <?php
 require_once '../src/Database.php';
 require_once '../src/Lesson.php';
+require_once '../src/Module.php';
+require_once '../src/Uda.php';
 require_once '../src/wikitext_parser.php';
 require_once '../src/Exercise.php';
 require_once '../src/Conoscenza.php';
@@ -13,6 +15,15 @@ if (isset($_GET['id'])) {
     $lesson = Lesson::findById((int)$_GET['id']);
 } elseif (isset($_GET['title'])) {
     $lesson = Lesson::findByTitle(urldecode($_GET['title']));
+}
+
+$module = null;
+$uda = null;
+if ($lesson && $lesson->module_id) {
+    $module = Module::findById($lesson->module_id);
+    if ($module && $module->uda_id) {
+        $uda = Uda::findById($module->uda_id);
+    }
 }
 
 $student_data = [];
@@ -111,6 +122,18 @@ if ($lesson) {
 
     <div class="container mt-4">
         <?php if ($lesson): ?>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <?php if ($uda): ?>
+                        <li class="breadcrumb-item"><a href="../udas/view.php?id=<?php echo $uda->id; ?>"><?php echo htmlspecialchars($uda->name); ?></a></li>
+                    <?php endif; ?>
+                    <?php if ($module): ?>
+                        <li class="breadcrumb-item"><a href="../modules/view.php?id=<?php echo $module->id; ?>"><?php echo htmlspecialchars($module->name); ?></a></li>
+                    <?php endif; ?>
+                    <li class="breadcrumb-item active" aria-current="page"><?php echo htmlspecialchars($lesson->title); ?></li>
+                </ol>
+            </nav>
+
             <div class="card">
                 <div class="card-header">
                     <h1 class="h2 mb-0"><?php echo htmlspecialchars($lesson->title); ?></h1>
