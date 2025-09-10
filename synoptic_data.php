@@ -127,24 +127,20 @@ foreach ($udas as $uda) {
             }
         }
 
-        if (!empty($lessonData) || !$anno_corso) {
-            $moduleData[] = [
-                'id' => $module->id,
-                'name' => $module->name,
-                'description' => $module->description,
-                'lessons' => $lessonData,
-            ];
-        }
-    }
-
-    if (!empty($moduleData) || !$anno_corso) {
-        $result[] = [
-            'id' => $uda->id,
-            'name' => $uda->name,
-            'description' => $uda->description,
-            'modules' => $moduleData,
+        $moduleData[] = [
+            'id' => $module->id,
+            'name' => $module->name,
+            'description' => $module->description,
+            'lessons' => $lessonData,
         ];
     }
+
+    $result[] = [
+        'id' => $uda->id,
+        'name' => $uda->name,
+        'description' => $uda->description,
+        'modules' => $moduleData,
+    ];
 }
 
 echo json_encode($result, JSON_PRETTY_PRINT);
