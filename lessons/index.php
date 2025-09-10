@@ -2,13 +2,22 @@
 require_once '../src/Database.php';
 require_once '../src/Lesson.php';
 require_once '../src/Module.php';
+require_once '../src/Uda.php';
 include '../header.php';
 
 
 $modules = Module::findAll();
 $moduleNameMap = [];
+$moduleUdaMap = [];
 foreach ($modules as $module) {
     $moduleNameMap[$module->id] = $module->name;
+    $moduleUdaMap[$module->id] = $module->uda_id;
+}
+
+$udas = Uda::findAll();
+$udaNameMap = [];
+foreach ($udas as $uda) {
+    $udaNameMap[$uda->id] = $uda->name;
 }
 
 // Pagination settings
@@ -107,6 +116,7 @@ $is_teacher = $_SESSION['role'] === 'teacher';
                         <thead>
                             <tr>
                                 <th scope="col">Titolo</th>
+                                <th scope="col">UDA</th>
                                 <th scope="col">Modulo</th>
                                 <th scope="col">Tags</th>
                                 <th scope="col">Azioni</th>
@@ -115,18 +125,24 @@ $is_teacher = $_SESSION['role'] === 'teacher';
                         <tbody>
                             <?php if (empty($lessons)): ?>
                                 <tr>
-                                    <td colspan="4" class="text-center">Nessuna lezione trovata.</td>
+                                    <td colspan="5" class="text-center">Nessuna lezione trovata.</td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($lessons as $lesson): ?>
+                                    <?php
+                                    $moduleId = $lesson->module_id;
+                                    $moduleName = $moduleNameMap[$moduleId] ?? 'N/A';
+                                    $udaId = $moduleUdaMap[$moduleId] ?? null;
+                                    $udaName = $udaId ? ($udaNameMap[$udaId] ?? 'N/A') : 'N/A';
+                                    ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($lesson->title); ?></td>
-                                        <td><?php echo htmlspecialchars($moduleNameMap[$lesson->module_id] ?? 'N/A'); ?></td>
+                                        <td><?php echo htmlspecialchars($udaName); ?></td>
+                                        <td><?php echo htmlspecialchars($moduleName); ?></td>
                                         <td><?php echo htmlspecialchars($lesson->tags); ?></td>
                                         <td>
                                             <a href="view.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-info">Visualizza</a>
                                             <?php if ($is_teacher): ?>
-                                            <a href="feedback.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-success">Riscontro Alunni</a>
                                             <a href="edit.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-warning">Modifica</a>
                                             <a href="delete.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-danger">Cancella</a>
                                             <?php endif; ?>
