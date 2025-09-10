@@ -114,7 +114,7 @@ $is_teacher = $_SESSION['role'] === 'teacher';
             <div class="card-header">
                 Elenco Lezioni (Pagina <?php echo $page; ?> di <?php echo $total_pages; ?>)
             </div>
-            <div class="card-body">
+            <div class="card-body table-responsive">
                 <table class="table table-striped">
                     <thead>
                         <tr>
