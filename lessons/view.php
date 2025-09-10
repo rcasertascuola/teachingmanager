@@ -10,6 +10,8 @@ require_once '../src/Database.php';
 require_once '../src/Lesson.php';
 require_once '../src/wikitext_parser.php';
 require_once '../src/Exercise.php';
+require_once '../src/Conoscenza.php';
+require_once '../src/Abilita.php';
 
 $lesson = null;
 if (isset($_GET['id'])) {
@@ -24,8 +26,22 @@ if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
 }
 
 $linked_exercises = [];
+$conoscenze_map = [];
+$abilita_map = [];
+
 if ($lesson) {
     $linked_exercises = Exercise::findForLesson($lesson->id);
+
+    // Fetch maps for displaying names
+    $all_conoscenze = Conoscenza::findAll();
+    foreach ($all_conoscenze as $c) {
+        $conoscenze_map[$c->id] = $c->nome;
+    }
+
+    $all_abilita = Abilita::findAll();
+    foreach ($all_abilita as $a) {
+        $abilita_map[$a->id] = $a->nome;
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -142,6 +158,40 @@ if ($lesson) {
                     <?php if ($_SESSION['role'] === 'teacher'): ?>
                         <a href="edit.php?id=<?php echo $lesson->id; ?>" class="btn btn-primary">Modifica Lezione</a>
                     <?php endif; ?>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h3 class="h4 mb-0">Dettagli Strutturali</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Conoscenze Collegate</h5>
+                            <?php if (!empty($lesson->conoscenze)): ?>
+                                <ul class="list-group">
+                                    <?php foreach ($lesson->conoscenze as $id): ?>
+                                        <li class="list-group-item"><?php echo htmlspecialchars($conoscenze_map[$id] ?? 'ID Sconosciuto'); ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php else: ?>
+                                <p>Nessuna conoscenza collegata.</p>
+                            <?php endif; ?>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Abilità Collegate</h5>
+                            <?php if (!empty($lesson->abilita)): ?>
+                                <ul class="list-group">
+                                    <?php foreach ($lesson->abilita as $id): ?>
+                                        <li class="list-group-item"><?php echo htmlspecialchars($abilita_map[$id] ?? 'ID Sconosciuto'); ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php else: ?>
+                                <p>Nessuna abilità collegata.</p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                 </div>
             </div>
 
