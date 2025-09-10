@@ -298,3 +298,71 @@ CREATE TABLE `competenza_anni_corso` (
     PRIMARY KEY (`competenza_id`, `anno_corso`),
     FOREIGN KEY (`competenza_id`) REFERENCES `competenze`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Nuove tabelle per la gestione delle Verifiche
+--
+
+-- Tabella per le verifiche
+CREATE TABLE `verifiche` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `titolo` VARCHAR(255) NOT NULL,
+  `descrizione` TEXT,
+  `tipo` ENUM('scritto', 'orale') NOT NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Relazione Verifiche -> Abilità (N a N)
+CREATE TABLE `verifica_abilita` (
+  `verifica_id` INT(11) NOT NULL,
+  `abilita_id` INT(11) NOT NULL,
+  PRIMARY KEY (`verifica_id`, `abilita_id`),
+  FOREIGN KEY (`verifica_id`) REFERENCES `verifiche`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`abilita_id`) REFERENCES `abilita`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Relazione Verifiche -> Competenze (N a N)
+CREATE TABLE `verifica_competenze` (
+  `verifica_id` INT(11) NOT NULL,
+  `competenza_id` INT(11) NOT NULL,
+  PRIMARY KEY (`verifica_id`, `competenza_id`),
+  FOREIGN KEY (`verifica_id`) REFERENCES `verifiche`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`competenza_id`) REFERENCES `competenze`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Tabella per le griglie di valutazione
+CREATE TABLE `griglie_valutazione` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `verifica_id` INT(11) NOT NULL,
+  `nome` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`verifica_id`) REFERENCES `verifiche`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Tabella per i descrittori delle griglie
+CREATE TABLE `griglia_descrittori` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `griglia_id` INT(11) NOT NULL,
+  `descrittore` TEXT NOT NULL,
+  `punteggio_max` DECIMAL(4,2) NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`griglia_id`) REFERENCES `griglie_valutazione`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Tabella per il registro delle verifiche (valutazioni degli studenti)
+CREATE TABLE `registri_verifiche` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `verifica_id` INT(11) NOT NULL,
+  `user_id` INT(11) NOT NULL,
+  `data_svolgimento` DATE NOT NULL,
+  `punteggio_totale` DECIMAL(4,2) NOT NULL,
+  `note` TEXT,
+  `corretto_da` INT(11),
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`verifica_id`) REFERENCES `verifiche`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`corretto_da`) REFERENCES `users`(`id`) ON DELETE SET NULL,
+  UNIQUE KEY `verifica_studente_data_unique` (`verifica_id`, `user_id`, `data_svolgimento`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
