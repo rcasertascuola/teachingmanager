@@ -56,3 +56,36 @@ CREATE TABLE `student_exercise_answers` (
 -- Add unique constraint to prevent multiple answers from the same user for the same exercise
 --
 ALTER TABLE `student_exercise_answers` ADD UNIQUE KEY `user_exercise_unique` (`user_id`, `exercise_id`);
+
+--
+-- Table structure for table `udas`
+--
+CREATE TABLE `udas` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `description` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Table structure for table `modules`
+--
+CREATE TABLE `modules` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uda_id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` text,
+  PRIMARY KEY (`id`),
+  KEY `uda_id` (`uda_id`),
+  CONSTRAINT `modules_ibfk_1` FOREIGN KEY (`uda_id`) REFERENCES `udas` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Add module_id to lessons table
+--
+ALTER TABLE `lessons` ADD `module_id` INT(11) NULL DEFAULT NULL AFTER `tags`, ADD INDEX (`module_id`);
+
+--
+-- Add foreign key constraint to lessons table
+--
+ALTER TABLE `lessons` ADD CONSTRAINT `lessons_ibfk_1` FOREIGN KEY (`module_id`) REFERENCES `modules`(`id`) ON DELETE SET NULL;
