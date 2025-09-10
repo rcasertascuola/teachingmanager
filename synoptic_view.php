@@ -94,6 +94,68 @@ include 'header.php';
                             `;
                             lessonsContainer.appendChild(lessonCard);
 
+
+                            // Populate Knowledge
+                            const conoscenzeList = document.getElementById(`lesson-${lesson.id}-conoscenze`);
+                            if (lesson.conoscenze.length > 0) {
+                                lesson.conoscenze.forEach(conoscenza => {
+                                    const li = document.createElement('li');
+                                    li.innerHTML = `<span>${conoscenza.nome}</span>`;
+                                    const competenzaList = document.createElement('ul');
+                                    conoscenza.competenze.forEach(competenza => {
+                                        const compLi = document.createElement('li');
+                                        compLi.className = 'competenza';
+                                        compLi.innerHTML = `<span><i class="fas fa-graduation-cap"></i> ${competenza.nome}</span>`;
+                                        const disciplinaList = document.createElement('ul');
+                                        competenza.discipline.forEach(disciplina => {
+                                            const discLi = document.createElement('li');
+                                            discLi.className = 'disciplina';
+                                            discLi.innerHTML = `<span><i class="fas fa-atom"></i> ${disciplina.nome}</span>`;
+                                            disciplinaList.appendChild(discLi);
+                                        });
+                                        compLi.appendChild(disciplinaList);
+                                        competenzaList.appendChild(compLi);
+                                    });
+                                    li.appendChild(competenzaList);
+                                    conoscenzeList.appendChild(li);
+                                });
+                            } else {
+                                const li = document.createElement('li');
+                                li.textContent = 'No knowledge points for this lesson.';
+                                conoscenzeList.appendChild(li);
+                            }
+
+                            // Populate Skills
+                            const abilitaList = document.getElementById(`lesson-${lesson.id}-abilita`);
+                            if (lesson.abilita.length > 0) {
+                                lesson.abilita.forEach(abilita => {
+                                    const li = document.createElement('li');
+                                    li.innerHTML = `<span>${abilita.nome}</span>`;
+                                    const competenzaList = document.createElement('ul');
+                                    abilita.competenze.forEach(competenza => {
+                                        const compLi = document.createElement('li');
+                                        compLi.className = 'competenza';
+                                        compLi.innerHTML = `<span><i class="fas fa-graduation-cap"></i> ${competenza.nome}</span>`;
+                                        const disciplinaList = document.createElement('ul');
+                                        competenza.discipline.forEach(disciplina => {
+                                            const discLi = document.createElement('li');
+                                            discLi.className = 'disciplina';
+                                            discLi.innerHTML = `<span><i class="fas fa-atom"></i> ${disciplina.nome}</span>`;
+                                            disciplinaList.appendChild(discLi);
+                                        });
+                                        compLi.appendChild(disciplinaList);
+                                        competenzaList.appendChild(compLi);
+                                    });
+                                    li.appendChild(competenzaList);
+                                    abilitaList.appendChild(li);
+                                });
+                            } else {
+                                const li = document.createElement('li');
+                                li.textContent = 'No skills for this lesson.';
+                                abilitaList.appendChild(li);
+                            }
+
+                            // Populate Exercises
                             const exercisesList = document.getElementById(`lesson-${lesson.id}-exercises`);
                             if (lesson.exercises.length > 0) {
                                 lesson.exercises.forEach(exercise => {

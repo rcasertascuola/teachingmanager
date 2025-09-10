@@ -176,6 +176,13 @@ class Lesson
             $this->syncRelatedData($pdo, 'lezione_conoscenze', 'lezione_id', 'conoscenza_id', $this->conoscenze);
             $this->syncRelatedData($pdo, 'lezione_abilita', 'lezione_id', 'abilita_id', $this->abilita);
 
+            // Sync module relationship to pivot table for synoptic view
+            if ($this->module_id) {
+                $this->syncRelatedData($pdo, 'module_lessons', 'lesson_id', 'module_id', [$this->module_id]);
+            } else {
+                $this->syncRelatedData($pdo, 'module_lessons', 'lesson_id', 'module_id', []);
+            }
+
             $pdo->commit();
             return true;
         } catch (Exception $e) {
