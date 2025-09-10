@@ -112,10 +112,6 @@ foreach ($udas as $uda) {
                         }
                     }
 
-                    if (empty($conoscenze) && empty($abilita) && $anno_corso) {
-                        continue;
-                    }
-
                     // Fetch exercises
                     $exercises = Exercise::findForLesson($lesson->id);
 
