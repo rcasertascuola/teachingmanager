@@ -9,9 +9,13 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION
 require_once '../src/Database.php';
 require_once '../src/Lesson.php';
 require_once '../src/Module.php';
+require_once '../src/Conoscenza.php';
+require_once '../src/Abilita.php';
 
 $lesson = null;
 $modules = Module::findAll();
+$all_conoscenze = Conoscenza::findAll();
+$all_abilita = Abilita::findAll();
 $pageTitle = 'Aggiungi Nuova Lezione';
 $formAction = 'save.php';
 
@@ -81,6 +85,39 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                     <div class="mb-3">
                         <label for="tags" class="form-label">Tags (separati da virgola)</label>
                         <input type="text" class="form-control" id="tags" name="tags" value="<?php echo htmlspecialchars($lesson->tags ?? ''); ?>">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Conoscenze Collegate</label>
+                                <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
+                                    <?php foreach ($all_conoscenze as $conoscenza): ?>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="conoscenze[]" value="<?php echo $conoscenza->id; ?>" id="conoscenza_<?php echo $conoscenza->id; ?>" <?php echo ($lesson && in_array($conoscenza->id, $lesson->conoscenze)) ? 'checked' : ''; ?>>
+                                            <label class="form-check-label" for="conoscenza_<?php echo $conoscenza->id; ?>">
+                                                <?php echo htmlspecialchars($conoscenza->nome); ?>
+                                            </label>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Abilità Collegate</label>
+                                <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
+                                    <?php foreach ($all_abilita as $item): ?>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="abilita[]" value="<?php echo $item->id; ?>" id="abilita_<?php echo $item->id; ?>" <?php echo ($lesson && in_array($item->id, $lesson->abilita)) ? 'checked' : ''; ?>>
+                                            <label class="form-check-label" for="abilita_<?php echo $item->id; ?>">
+                                                <?php echo htmlspecialchars($item->nome); ?> (<?php echo $item->tipo; ?>)
+                                            </label>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="mb-3">
