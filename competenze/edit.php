@@ -67,38 +67,48 @@ $formAction = 'save.php';
             </div>
 
             <div class="form-group">
-                <label for="conoscenze">Conoscenze</label>
-                <select multiple class="form-control" id="conoscenze" name="conoscenze[]" size="5">
+                <label>Conoscenze</label>
+                <div class="border p-2" style="max-height: 150px; overflow-y: auto;">
                     <?php foreach ($all_conoscenze as $conoscenza): ?>
-                        <option value="<?php echo $conoscenza->id; ?>" <?php echo ($competenza && in_array($conoscenza->id, $competenza->conoscenze)) ? 'selected' : ''; ?>>
-                            <?php echo htmlspecialchars($conoscenza->nome); ?>
-                        </option>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="conoscenze[]" value="<?php echo $conoscenza->id; ?>" <?php echo ($competenza && in_array($conoscenza->id, $competenza->conoscenze)) ? 'checked' : ''; ?>>
+                            <label class="form-check-label">
+                                <?php echo htmlspecialchars($conoscenza->nome); ?>
+                            </label>
+                        </div>
                     <?php endforeach; ?>
-                </select>
+                </div>
                 <small class="form-text text-muted">(Lasciare vuoto per non assegnare)</small>
             </div>
 
             <div class="form-group">
-                <label for="abilita">Abilità</label>
-                <select multiple class="form-control" id="abilita" name="abilita[]" size="5">
+                <label>Abilità</label>
+                <div class="border p-2" style="max-height: 150px; overflow-y: auto;">
                     <?php foreach ($all_abilita as $item): ?>
-                        <option value="<?php echo $item->id; ?>" <?php echo ($competenza && in_array($item->id, $competenza->abilita)) ? 'selected' : ''; ?>>
-                            <?php echo htmlspecialchars($item->nome); ?>
-                        </option>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="abilita[]" value="<?php echo $item->id; ?>" <?php echo ($competenza && in_array($item->id, $competenza->abilita)) ? 'checked' : ''; ?>>
+                            <label class="form-check-label">
+                                <?php echo htmlspecialchars($item->nome); ?>
+                            </label>
+                        </div>
                     <?php endforeach; ?>
-                </select>
+                </div>
                 <small class="form-text text-muted">(Lasciare vuoto per non assegnare)</small>
             </div>
 
             <div class="form-group">
-                <label for="discipline">Discipline</label>
-                <select multiple class="form-control" id="discipline" name="discipline[]" size="5">
+                <label>Discipline</label>
+                <div class="border p-2" style="max-height: 150px; overflow-y: auto;">
                     <?php foreach ($all_discipline as $disciplina): ?>
-                        <option value="<?php echo $disciplina->id; ?>" <?php echo ($competenza && in_array($disciplina->id, $competenza->discipline)) ? 'selected' : ''; ?>>
-                            <?php echo htmlspecialchars($disciplina->nome); ?>
-                        </option>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="discipline[]" value="<?php echo $disciplina->id; ?>" <?php echo ($competenza && in_array($disciplina->id, $competenza->discipline)) ? 'checked' : ''; ?>>
+                            <label class="form-check-label">
+                                <?php echo htmlspecialchars($disciplina->nome); ?>
+                            </label>
+                        </div>
                     <?php endforeach; ?>
-                </select>
+                </div>
+                <small class="form-text text-muted">(Lasciare vuoto per non assegnare)</small>
             </div>
 
             <div class="form-group">
