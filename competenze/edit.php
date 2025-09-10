@@ -129,7 +129,6 @@ $formAction = 'save.php';
             <a href="index.php" class="btn btn-secondary">Annulla</a>
         </form>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const radioTutti = document.getElementById('anno_tutti');
