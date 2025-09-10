@@ -10,6 +10,10 @@ class Lesson
     public $created_at;
     public $updated_at;
 
+    // Related data
+    public $conoscenze;
+    public $abilita;
+
     public function __construct($data)
     {
         $this->id = $data['id'] ?? null;
@@ -19,6 +23,10 @@ class Lesson
         $this->module_id = $data['module_id'] ?? null;
         $this->created_at = $data['created_at'] ?? null;
         $this->updated_at = $data['updated_at'] ?? null;
+
+        // For relationships
+        $this->conoscenze = $data['conoscenze'] ?? [];
+        $this->abilita = $data['abilita'] ?? [];
     }
 
     /**
@@ -99,7 +107,9 @@ class Lesson
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($data) {
-            return new self($data);
+            $lesson = new self($data);
+            $lesson->loadRelatedData($pdo);
+            return $lesson;
         }
         return null;
     }
@@ -134,43 +144,82 @@ class Lesson
         $database = new Database();
         $pdo = $database->getConnection();
 
-        if (!$pdo) {
-            return "Failed to connect to the database.";
-        }
+        try {
+            $pdo->beginTransaction();
 
-        if ($this->id) {
-            // Update existing lesson
-            $sql = 'UPDATE lessons SET title = :title, content = :content, tags = :tags, module_id = :module_id WHERE id = :id';
-            $params = [
-                'id' => $this->id,
-                'title' => $this->title,
-                'content' => $this->content,
-                'tags' => $this->tags,
-                'module_id' => $this->module_id,
-            ];
-        } else {
-            // Insert new lesson
-            $sql = 'INSERT INTO lessons (title, content, tags, module_id) VALUES (:title, :content, :tags, :module_id)';
-            $params = [
-                'title' => $this->title,
-                'content' => $this->content,
-                'tags' => $this->tags,
-                'module_id' => $this->module_id,
-            ];
-        }
+            if ($this->id) {
+                $stmt = $pdo->prepare('UPDATE lessons SET title = :title, content = :content, tags = :tags, module_id = :module_id WHERE id = :id');
+                $params = [
+                    'id' => $this->id,
+                    'title' => $this->title,
+                    'content' => $this->content,
+                    'tags' => $this->tags,
+                    'module_id' => $this->module_id,
+                ];
+            } else {
+                $stmt = $pdo->prepare('INSERT INTO lessons (title, content, tags, module_id) VALUES (:title, :content, :tags, :module_id)');
+                $params = [
+                    'title' => $this->title,
+                    'content' => $this->content,
+                    'tags' => $this->tags,
+                    'module_id' => $this->module_id,
+                ];
+            }
 
-        $stmt = $pdo->prepare($sql);
-        $result = $stmt->execute($params);
+            $stmt->execute($params);
 
-        if ($result) {
             if (!$this->id) {
                 $this->id = $pdo->lastInsertId();
             }
+
+            // Sync relationships
+            $this->syncRelatedData($pdo, 'lezione_conoscenze', 'lezione_id', 'conoscenza_id', $this->conoscenze);
+            $this->syncRelatedData($pdo, 'lezione_abilita', 'lezione_id', 'abilita_id', $this->abilita);
+
+            $pdo->commit();
             return true;
-        } else {
-            $errorInfo = $stmt->errorInfo();
-            // Return a formatted error message: [SQLSTATE] [Driver Code] Driver Message
-            return "DB Error: " . ($errorInfo[2] ?? 'Unknown error');
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            return "DB Error: " . $e->getMessage();
+        }
+    }
+
+    /**
+     * Loads related data.
+     */
+    private function loadRelatedData($pdo)
+    {
+        // Load conoscenze
+        $stmt = $pdo->prepare('SELECT conoscenza_id FROM lezione_conoscenze WHERE lezione_id = :id');
+        $stmt->execute(['id' => $this->id]);
+        $this->conoscenze = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+
+        // Load abilita
+        $stmt = $pdo->prepare('SELECT abilita_id FROM lezione_abilita WHERE lezione_id = :id');
+        $stmt->execute(['id' => $this->id]);
+        $this->abilita = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+    }
+
+    /**
+     * A generic helper to sync many-to-many relationships.
+     */
+    private function syncRelatedData($pdo, $tableName, $thisIdColumn, $relatedIdColumn, $relatedIds)
+    {
+        $stmt = $pdo->prepare("DELETE FROM {$tableName} WHERE {$thisIdColumn} = :id");
+        $stmt->execute(['id' => $this->id]);
+
+        if (!empty($relatedIds)) {
+            $sql = "INSERT INTO {$tableName} ({$thisIdColumn}, {$relatedIdColumn}) VALUES ";
+            $placeholders = [];
+            $values = [];
+            foreach ($relatedIds as $relatedId) {
+                $placeholders[] = '(?, ?)';
+                $values[] = $this->id;
+                $values[] = $relatedId;
+            }
+            $sql .= implode(', ', $placeholders);
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($values);
         }
     }
 
