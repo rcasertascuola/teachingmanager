@@ -66,13 +66,31 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">Gestisci UDA</div>
+                            <div class="card-body feature-slot d-flex flex-column justify-content-center align-items-center">
+                                <p>Crea e organizza le Unità di Apprendimento.</p>
+                                <a href="udas/index.php" class="btn btn-secondary">Gestisci UDA</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">Gestisci Moduli</div>
+                            <div class="card-body feature-slot d-flex flex-column justify-content-center align-items-center">
+                                <p>Crea e organizza i moduli didattici.</p>
+                                <a href="modules/index.php" class="btn btn-secondary">Gestisci Moduli</a>
+                            </div>
+                        </div>
+                    </div>
                     <?php else: // Student view ?>
                     <div class="col-md-6">
                         <div class="card mb-4">
                             <div class="card-header">Lezioni</div>
                             <div class="card-body feature-slot d-flex flex-column justify-content-center align-items-center">
                                 <p>Visualizza le lezioni e i tuoi materiali di studio.</p>
-                                <a href="lessons/index.php" class="btn btn-primary">Vai a Lezioni</a>
+                                <a href="udas/view.php" class="btn btn-primary">Sfoglia Lezioni per UDA</a>
                             </div>
                         </div>
                     </div>
