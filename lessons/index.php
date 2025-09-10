@@ -115,37 +115,39 @@ $is_teacher = $_SESSION['role'] === 'teacher';
                 Elenco Lezioni (Pagina <?php echo $page; ?> di <?php echo $total_pages; ?>)
             </div>
             <div class="card-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th scope="col">Titolo</th>
-                            <th scope="col">Tags</th>
-                            <th scope="col">Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (empty($lessons)): ?>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
                             <tr>
-                                <td colspan="3" class="text-center">Nessuna lezione trovata.</td>
+                                <th scope="col">Titolo</th>
+                                <th scope="col">Tags</th>
+                                <th scope="col">Azioni</th>
                             </tr>
-                        <?php else: ?>
-                            <?php foreach ($lessons as $lesson): ?>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($lessons)): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($lesson->title); ?></td>
-                                    <td><?php echo htmlspecialchars($lesson->tags); ?></td>
-                                    <td>
-                                        <a href="view.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-info">Visualizza</a>
-                                        <?php if ($is_teacher): ?>
-                                        <a href="feedback.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-success">Riscontro Alunni</a>
-                                        <a href="edit.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-warning">Modifica</a>
-                                        <a href="delete.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-danger">Cancella</a>
-                                        <?php endif; ?>
-                                    </td>
+                                    <td colspan="3" class="text-center">Nessuna lezione trovata.</td>
                                 </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+                            <?php else: ?>
+                                <?php foreach ($lessons as $lesson): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($lesson->title); ?></td>
+                                        <td><?php echo htmlspecialchars($lesson->tags); ?></td>
+                                        <td>
+                                            <a href="view.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-info">Visualizza</a>
+                                            <?php if ($is_teacher): ?>
+                                            <a href="feedback.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-success">Riscontro Alunni</a>
+                                            <a href="edit.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-warning">Modifica</a>
+                                            <a href="delete.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-danger">Cancella</a>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <?php if ($total_pages > 1): ?>
             <div class="card-footer">

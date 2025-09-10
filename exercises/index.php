@@ -79,43 +79,45 @@ $total_pages = ceil($total_exercises / $limit);
                 Elenco Esercizi (Pagina <?php echo $page; ?> di <?php echo $total_pages; ?>)
             </div>
             <div class="card-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th scope="col">Titolo</th>
-                            <th scope="col">Tipo</th>
-                            <th scope="col">Stato</th>
-                            <th scope="col">Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (empty($exercises)): ?>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
                             <tr>
-                                <td colspan="4" class="text-center">Nessun esercizio trovato.</td>
+                                <th scope="col">Titolo</th>
+                                <th scope="col">Tipo</th>
+                                <th scope="col">Stato</th>
+                                <th scope="col">Azioni</th>
                             </tr>
-                        <?php else: ?>
-                            <?php foreach ($exercises as $exercise): ?>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($exercises)): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($exercise->title); ?></td>
-                                    <td><?php echo htmlspecialchars($exercise->type); ?></td>
-                                    <td>
-                                        <?php if ($exercise->enabled): ?>
-                                            <span class="badge bg-success">Abilitato</span>
-                                        <?php else: ?>
-                                            <span class="badge bg-secondary">Disabilitato</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <a href="view.php?id=<?php echo $exercise->id; ?>" class="btn btn-sm btn-info">Visualizza</a>
-                                        <a href="edit.php?id=<?php echo $exercise->id; ?>" class="btn btn-sm btn-warning">Modifica</a>
-                                        <a href="delete.php?id=<?php echo $exercise->id; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Sei sicuro di voler cancellare questo esercizio?');">Cancella</a>
-                                        <!-- TODO: Add enable/disable toggle -->
-                                    </td>
+                                    <td colspan="4" class="text-center">Nessun esercizio trovato.</td>
                                 </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+                            <?php else: ?>
+                                <?php foreach ($exercises as $exercise): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($exercise->title); ?></td>
+                                        <td><?php echo htmlspecialchars($exercise->type); ?></td>
+                                        <td>
+                                            <?php if ($exercise->enabled): ?>
+                                                <span class="badge bg-success">Abilitato</span>
+                                            <?php else: ?>
+                                                <span class="badge bg-secondary">Disabilitato</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <a href="view.php?id=<?php echo $exercise->id; ?>" class="btn btn-sm btn-info">Visualizza</a>
+                                            <a href="edit.php?id=<?php echo $exercise->id; ?>" class="btn btn-sm btn-warning">Modifica</a>
+                                            <a href="delete.php?id=<?php echo $exercise->id; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Sei sicuro di voler cancellare questo esercizio?');">Cancella</a>
+                                            <!-- TODO: Add enable/disable toggle -->
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <?php if ($total_pages > 1): ?>
             <div class="card-footer">
