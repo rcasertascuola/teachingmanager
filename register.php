@@ -13,6 +13,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $user->password = $_POST['password'];
     $user->role = $_POST['role'];
 
+    if ($user->role === 'student') {
+        $user->classe = $_POST['classe'];
+        $user->corso = $_POST['corso'];
+        $user->anno_scolastico = $_POST['anno_scolastico'];
+    }
+
     if ($user->register()) {
         $message = "<div class='alert alert-success'>Registrazione completata con successo. Puoi <a href='login.php'>accedere</a> ora.</div>";
     } else {
@@ -54,6 +60,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <option value="teacher">Insegnante</option>
                                 </select>
                             </div>
+                            <div id="student-fields" style="display: none;">
+                                <div class="mb-3">
+                                    <label for="classe" class="form-label">Classe</label>
+                                    <input type="text" class="form-control" id="classe" name="classe">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="corso" class="form-label">Corso</label>
+                                    <input type="text" class="form-control" id="corso" name="corso">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="anno_scolastico" class="form-label">Anno Scolastico</label>
+                                    <input type="text" class="form-control" id="anno_scolastico" name="anno_scolastico" placeholder="Es. 2023/2024">
+                                </div>
+                            </div>
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary">Registrati</button>
                             </div>
@@ -67,5 +87,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('role').addEventListener('change', function () {
+        var studentFields = document.getElementById('student-fields');
+        if (this.value === 'student') {
+            studentFields.style.display = 'block';
+        } else {
+            studentFields.style.display = 'none';
+        }
+    });
+
+    // Trigger the change event on page load to set the initial state
+    document.getElementById('role').dispatchEvent(new Event('change'));
+</script>
 </body>
 </html>

@@ -445,7 +445,7 @@ class Lesson
         $database = new Database();
         $pdo = $database->getConnection();
         $stmt = $pdo->prepare('
-            SELECT DISTINCT u.id, u.username
+            SELECT DISTINCT u.id, u.username, u.classe, u.corso, u.anno_scolastico
             FROM student_lesson_data sld
             JOIN users u ON sld.user_id = u.id
             WHERE sld.lesson_id = :lesson_id

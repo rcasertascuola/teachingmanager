@@ -104,7 +104,7 @@ if ($is_teacher) {
                 </div>
                 <div class="tab-pane fade" id="individual" role="tabpanel" aria-labelledby="individual-tab">
                     <h3>Dati per singolo alunno</h3>
-                    <div class="mb-3"><label for="studentSelector" class="form-label">Seleziona un alunno:</label><select class="form-select" id="studentSelector"><option value="">-- Seleziona --</option><?php foreach ($studentsOnLesson as $student): ?><option value="<?php echo $student['id']; ?>"><?php echo htmlspecialchars($student['username']); ?></option><?php endforeach; ?></select></div>
+                    <div class="mb-3"><label for="studentSelector" class="form-label">Seleziona un alunno:</label><select class="form-select" id="studentSelector"><option value="">-- Seleziona --</option><?php foreach ($studentsOnLesson as $student): ?><option value="<?php echo $student['id']; ?>"><?php echo htmlspecialchars($student['username']); if (!empty($student['classe']) || !empty($student['corso']) || !empty($student['anno_scolastico'])) { echo " (" . htmlspecialchars($student['classe'] ?? '') . " " . htmlspecialchars($student['corso'] ?? '') . " - " . htmlspecialchars($student['anno_scolastico'] ?? '') . ")"; } ?></option><?php endforeach; ?></select></div>
                     <div id="student-data-container"><p class="text-muted">Seleziona un alunno per vedere i suoi dati.</p></div>
                 </div>
             </div>

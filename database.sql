@@ -14,6 +14,9 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `role` enum('teacher','student') NOT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `classe` varchar(10) DEFAULT NULL,
+  `corso` varchar(255) DEFAULT NULL,
+  `anno_scolastico` varchar(9) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
