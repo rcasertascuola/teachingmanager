@@ -90,26 +90,32 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="conoscenze" class="form-label">Conoscenze Collegate</label>
-                                <select multiple class="form-select" id="conoscenze" name="conoscenze[]" size="8">
+                                <label class="form-label">Conoscenze Collegate</label>
+                                <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
                                     <?php foreach ($all_conoscenze as $conoscenza): ?>
-                                        <option value="<?php echo $conoscenza->id; ?>" <?php echo ($lesson && in_array($conoscenza->id, $lesson->conoscenze)) ? 'selected' : ''; ?>>
-                                            <?php echo htmlspecialchars($conoscenza->nome); ?>
-                                        </option>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="conoscenze[]" value="<?php echo $conoscenza->id; ?>" id="conoscenza_<?php echo $conoscenza->id; ?>" <?php echo ($lesson && in_array($conoscenza->id, $lesson->conoscenze)) ? 'checked' : ''; ?>>
+                                            <label class="form-check-label" for="conoscenza_<?php echo $conoscenza->id; ?>">
+                                                <?php echo htmlspecialchars($conoscenza->nome); ?>
+                                            </label>
+                                        </div>
                                     <?php endforeach; ?>
-                                </select>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="abilita" class="form-label">Abilità Collegate</label>
-                                <select multiple class="form-select" id="abilita" name="abilita[]" size="8">
+                                <label class="form-label">Abilità Collegate</label>
+                                <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
                                     <?php foreach ($all_abilita as $item): ?>
-                                        <option value="<?php echo $item->id; ?>" <?php echo ($lesson && in_array($item->id, $lesson->abilita)) ? 'selected' : ''; ?>>
-                                            <?php echo htmlspecialchars($item->nome); ?> (<?php echo $item->tipo; ?>)
-                                        </option>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="abilita[]" value="<?php echo $item->id; ?>" id="abilita_<?php echo $item->id; ?>" <?php echo ($lesson && in_array($item->id, $lesson->abilita)) ? 'checked' : ''; ?>>
+                                            <label class="form-check-label" for="abilita_<?php echo $item->id; ?>">
+                                                <?php echo htmlspecialchars($item->nome); ?> (<?php echo $item->tipo; ?>)
+                                            </label>
+                                        </div>
                                     <?php endforeach; ?>
-                                </select>
+                                </div>
                             </div>
                         </div>
                     </div>
