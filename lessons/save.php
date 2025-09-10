@@ -19,7 +19,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'title' => trim($_POST['title']),
             'content' => trim($_POST['content']),
             'tags' => isset($_POST['tags']) ? trim($_POST['tags']) : '',
-            'module_id' => isset($_POST['module_id']) && !empty($_POST['module_id']) ? (int)$_POST['module_id'] : null
+            'module_id' => isset($_POST['module_id']) && !empty($_POST['module_id']) ? (int)$_POST['module_id'] : null,
+            'conoscenze' => $_POST['conoscenze'] ?? [],
+            'abilita' => $_POST['abilita'] ?? []
         ];
 
         $lesson = new Lesson($data);

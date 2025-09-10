@@ -9,9 +9,13 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION
 require_once '../src/Database.php';
 require_once '../src/Lesson.php';
 require_once '../src/Module.php';
+require_once '../src/Conoscenza.php';
+require_once '../src/Abilita.php';
 
 $lesson = null;
 $modules = Module::findAll();
+$all_conoscenze = Conoscenza::findAll();
+$all_abilita = Abilita::findAll();
 $pageTitle = 'Aggiungi Nuova Lezione';
 $formAction = 'save.php';
 
@@ -81,6 +85,33 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                     <div class="mb-3">
                         <label for="tags" class="form-label">Tags (separati da virgola)</label>
                         <input type="text" class="form-control" id="tags" name="tags" value="<?php echo htmlspecialchars($lesson->tags ?? ''); ?>">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="conoscenze" class="form-label">Conoscenze Collegate</label>
+                                <select multiple class="form-select" id="conoscenze" name="conoscenze[]" size="8">
+                                    <?php foreach ($all_conoscenze as $conoscenza): ?>
+                                        <option value="<?php echo $conoscenza->id; ?>" <?php echo ($lesson && in_array($conoscenza->id, $lesson->conoscenze)) ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($conoscenza->nome); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="abilita" class="form-label">Abilità Collegate</label>
+                                <select multiple class="form-select" id="abilita" name="abilita[]" size="8">
+                                    <?php foreach ($all_abilita as $item): ?>
+                                        <option value="<?php echo $item->id; ?>" <?php echo ($lesson && in_array($item->id, $lesson->abilita)) ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($item->nome); ?> (<?php echo $item->tipo; ?>)
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="mb-3">
