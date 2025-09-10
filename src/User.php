@@ -1,6 +1,7 @@
 <?php
 
-class User {
+class User
+{
     private $conn;
     private $table_name = "users";
 
@@ -12,62 +13,28 @@ class User {
     public $corso;
     public $anno_scolastico;
 
-    public function __construct($db) {
+    public function __construct($db)
+    {
         $this->conn = $db;
     }
 
-    function register() {
+    function register()
+    {
         // Check if username already exists
         $query = "SELECT id FROM " . $this->table_name . " WHERE username = :username";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':username', $this->username);
         $stmt->execute();
 
-        if($stmt->rowCount() > 0){
+        if ($stmt->rowCount() > 0) {
             return false; // Username already exists
         }
 
-        $query = "INSERT INTO " . $this->table_name . "
-                    SET
-                        username = :username,
-                        password = :password,
-                        role = :role";
-
-        if ($this->role === 'student') {
-            $query .= ", classe = :classe, corso = :corso, anno_scolastico = :anno_scolastico";
-        }
-
-        $stmt = $this->conn->prepare($query);
-
-        // Sanitize
-        $this->username = htmlspecialchars(strip_tags($this->username));
-        $this->role = htmlspecialchars(strip_tags($this->role));
-
-        // Hash the password
-        $password_hash = password_hash($this->password, PASSWORD_BCRYPT);
-
-        // Bind the values
-        $stmt->bindParam(':username', $this->username);
-        $stmt->bindParam(':password', $password_hash);
-        $stmt->bindParam(':role', $this->role);
-
-        if ($this->role === 'student') {
-            $this->classe = htmlspecialchars(strip_tags($this->classe));
-            $this->corso = htmlspecialchars(strip_tags($this->corso));
-            $this->anno_scolastico = htmlspecialchars(strip_tags($this->anno_scolastico));
-            $stmt->bindParam(':classe', $this->classe);
-            $stmt->bindParam(':corso', $this->corso);
-            $stmt->bindParam(':anno_scolastico', $this->anno_scolastico);
-        }
-
-        if ($stmt->execute()) {
-            return true;
-        }
-
-        return false;
+        return $this->create();
     }
 
-    function login() {
+    function login()
+    {
         $query = "SELECT id, username, password, role, classe, corso, anno_scolastico FROM " . $this->table_name . " WHERE username = :username";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':username', $this->username);
@@ -91,6 +58,127 @@ class User {
         }
 
         return false;
+    }
+
+    public function findAll()
+    {
+        $query = "SELECT * FROM " . $this->table_name;
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
+    }
+
+    public function findById($id)
+    {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function create() {
+        $query = "INSERT INTO " . $this->table_name . "
+            SET
+                username = :username,
+                password = :password,
+                role = :role,
+                classe = :classe,
+                corso = :corso,
+                anno_scolastico = :anno_scolastico";
+
+        $stmt = $this->conn->prepare($query);
+
+        // Sanitize
+        $this->username = htmlspecialchars(strip_tags($this->username));
+        $this->role = htmlspecialchars(strip_tags($this->role));
+        $this->classe = htmlspecialchars(strip_tags($this->classe));
+        $this->corso = htmlspecialchars(strip_tags($this->corso));
+        $this->anno_scolastico = htmlspecialchars(strip_tags($this->anno_scolastico));
+
+        // Hash the password
+        $password_hash = password_hash($this->password, PASSWORD_BCRYPT);
+
+        // Bind the values
+        $stmt->bindParam(':username', $this->username);
+        $stmt->bindParam(':password', $password_hash);
+        $stmt->bindParam(':role', $this->role);
+        $stmt->bindParam(':classe', $this->classe);
+        $stmt->bindParam(':corso', $this->corso);
+        $stmt->bindParam(':anno_scolastico', $this->anno_scolastico);
+
+        if ($stmt->execute()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function update()
+    {
+        $query = "UPDATE " . $this->table_name . " SET username = :username, role = :role, classe = :classe, corso = :corso, anno_scolastico = :anno_scolastico";
+
+        if (!empty($this->password)) {
+            $query .= ", password = :password";
+        }
+
+        $query .= " WHERE id = :id";
+
+        $stmt = $this->conn->prepare($query);
+
+        // Sanitize
+        $this->username = htmlspecialchars(strip_tags($this->username));
+        $this->role = htmlspecialchars(strip_tags($this->role));
+        $this->classe = htmlspecialchars(strip_tags($this->classe));
+        $this->corso = htmlspecialchars(strip_tags($this->corso));
+        $this->anno_scolastico = htmlspecialchars(strip_tags($this->anno_scolastico));
+        $this->id = htmlspecialchars(strip_tags($this->id));
+
+        // Bind the values
+        $stmt->bindParam(':username', $this->username);
+        $stmt->bindParam(':role', $this->role);
+        $stmt->bindParam(':classe', $this->classe);
+        $stmt->bindParam(':corso', $this->corso);
+        $stmt->bindParam(':anno_scolastico', $this->anno_scolastico);
+        $stmt->bindParam(':id', $this->id);
+
+        if (!empty($this->password)) {
+            $password_hash = password_hash($this->password, PASSWORD_BCRYPT);
+            $stmt->bindParam(':password', $password_hash);
+        }
+
+        if ($stmt->execute()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    function delete($id)
+    {
+        $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+
+        // Sanitize
+        $id = htmlspecialchars(strip_tags($id));
+
+        // Bind the value
+        $stmt->bindParam(':id', $id);
+
+        if ($stmt->execute()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function count()
+    {
+        $query = "SELECT COUNT(*) as total_rows FROM " . $this->table_name;
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['total_rows'];
     }
 
     /**
