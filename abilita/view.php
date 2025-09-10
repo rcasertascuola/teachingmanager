@@ -36,6 +36,18 @@ foreach ($all_discipline as $d) {
     $discipline_map[$d->id] = $d->nome;
 }
 
+// Derive disciplines from linked conoscenze
+$derived_discipline_ids = [];
+if (!empty($abilita->conoscenze)) {
+    foreach ($abilita->conoscenze as $conoscenza_id) {
+        $conoscenza = Conoscenza::findById($conoscenza_id);
+        if ($conoscenza && !empty($conoscenza->discipline)) {
+            $derived_discipline_ids = array_merge($derived_discipline_ids, $conoscenza->discipline);
+        }
+    }
+}
+$derived_discipline_ids = array_unique($derived_discipline_ids);
+
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -67,15 +79,17 @@ foreach ($all_discipline as $d) {
                     <p>Nessuna conoscenza collegata.</p>
                 <?php endif; ?>
 
-                <h5 class="card-title mt-4">Discipline Correlate</h5>
-                <?php if (!empty($abilita->discipline)): ?>
+                <h5 class="card-title mt-4">Discipline (derivate dalle conoscenze)</h5>
+                <?php if (!empty($derived_discipline_ids)): ?>
                     <ul>
-                        <?php foreach ($abilita->discipline as $disciplina_id): ?>
+                        <?php foreach ($derived_discipline_ids as $disciplina_id): ?>
                             <li><?php echo htmlspecialchars($discipline_map[$disciplina_id] ?? 'ID Sconosciuto'); ?></li>
                         <?php endforeach; ?>
                     </ul>
                 <?php else: ?>
-                    <p>Nessuna disciplina correlata.</p>
+
+                    <p>Nessuna disciplina derivata (collegare a conoscenze per vederle).</p>
+
                 <?php endif; ?>
 
                 <h5 class="card-title mt-4">Anni di Corso</h5>

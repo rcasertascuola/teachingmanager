@@ -16,7 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'descrizione' => $_POST['descrizione'],
         'tipo' => $_POST['tipo'],
         'conoscenze' => $_POST['conoscenze'] ?? [],
-        'discipline' => $_POST['discipline'] ?? [],
         'anni_corso' => $_POST['anni_corso'] ?? []
     ];
 

@@ -224,15 +224,6 @@ CREATE TABLE `conoscenza_discipline` (
     FOREIGN KEY (`disciplina_id`) REFERENCES `discipline`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Relazione Abilità -> Discipline (N a N)
-CREATE TABLE `abilita_discipline` (
-    `abilita_id` INT NOT NULL,
-    `disciplina_id` INT NOT NULL,
-    PRIMARY KEY (`abilita_id`, `disciplina_id`),
-    FOREIGN KEY (`abilita_id`) REFERENCES `abilita`(`id`) ON DELETE CASCADE,
-    FOREIGN KEY (`disciplina_id`) REFERENCES `discipline`(`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 -- Relazione Competenze -> Discipline (N a N)
 CREATE TABLE `competenza_discipline` (
     `competenza_id` INT NOT NULL,

@@ -13,7 +13,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION
 
 // Fetch related data for form fields
 $all_conoscenze = Conoscenza::findAll();
-$all_discipline = Disciplina::findAll();
+
 $anni_corso_options = range(1, 5);
 $tipi_options = ['cognitiva', 'tecnico/pratica'];
 
@@ -62,25 +62,18 @@ $formAction = 'save.php';
             </div>
 
             <div class="form-group">
-                <label for="conoscenze">Conoscenze Collegate</label>
-                <select multiple class="form-control" id="conoscenze" name="conoscenze[]" size="5">
+                <label>Conoscenze Collegate</label>
+                <div class="border p-2" style="max-height: 150px; overflow-y: auto;">
                     <?php foreach ($all_conoscenze as $conoscenza): ?>
-                        <option value="<?php echo $conoscenza->id; ?>" <?php echo ($abilita && in_array($conoscenza->id, $abilita->conoscenze)) ? 'selected' : ''; ?>>
-                            <?php echo htmlspecialchars($conoscenza->nome); ?>
-                        </option>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="conoscenza_<?php echo $conoscenza->id; ?>" name="conoscenze[]" value="<?php echo $conoscenza->id; ?>" <?php echo ($abilita && in_array($conoscenza->id, $abilita->conoscenze)) ? 'checked' : ''; ?>>
+                            <label class="form-check-label" for="conoscenza_<?php echo $conoscenza->id; ?>">
+                                <?php echo htmlspecialchars($conoscenza->nome); ?>
+                            </label>
+                        </div>
                     <?php endforeach; ?>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="discipline">Discipline Correlate</label>
-                <select multiple class="form-control" id="discipline" name="discipline[]" size="5">
-                    <?php foreach ($all_discipline as $disciplina): ?>
-                        <option value="<?php echo $disciplina->id; ?>" <?php echo ($abilita && in_array($disciplina->id, $abilita->discipline)) ? 'selected' : ''; ?>>
-                            <?php echo htmlspecialchars($disciplina->nome); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+                </div>
+                <small class="form-text text-muted">Seleziona una o più conoscenze.</small>
             </div>
 
             <div class="form-group">

@@ -4,9 +4,7 @@ require_once '../src/Conoscenza.php';
 
 session_start();
 
-
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION['role'] !== 'teacher') {
-
     header('Location: ../login.php');
     exit;
 }
