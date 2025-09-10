@@ -1,14 +1,16 @@
 <?php
-session_start();
-// Auth check - only teachers can correct exercises
-if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION["role"] !== 'teacher') {
-    header("location: ../login.php");
-    exit;
-}
-
 require_once '../src/Database.php';
 require_once '../src/Exercise.php';
 require_once '../src/exercise_parser.php';
+include '../header.php';
+
+// Auth check - only teachers can correct exercises
+if ( $_SESSION["role"] !== 'teacher') {
+    echo "<div class='alert alert-danger'>Accesso negato.</div>";
+    include '../footer.php';
+    exit;
+}
+
 
 $exercise = null;
 $answers = [];
@@ -22,23 +24,6 @@ if (isset($_GET['id'])) {
 }
 
 ?>
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Correzione Esercizio: <?php echo $exercise ? htmlspecialchars($exercise->title) : 'Esercizio non trovato'; ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="../dashboard.php">Gestionale Studio</a>
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="../logout.php">Logout</a></li>
-            </ul>
-        </div>
-    </nav>
 
     <div class="container mt-4">
         <?php if ($exercise): ?>
@@ -93,6 +78,4 @@ if (isset($_GET['id'])) {
         <?php endif; ?>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<?php include '../footer.php'; ?>

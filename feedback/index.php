@@ -1,12 +1,8 @@
 <?php
-session_start();
-if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
-    header("location: ../login.php");
-    exit;
-}
-
 require_once '../src/Database.php';
 require_once '../src/Lesson.php';
+include '../header.php';
+
 
 $is_teacher = $_SESSION["role"] === 'teacher';
 $lessons = [];
@@ -20,23 +16,6 @@ if ($is_teacher) {
 }
 
 ?>
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Riscontro Lezioni</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="../dashboard.php">Gestionale Studio</a>
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="../logout.php">Logout</a></li>
-            </ul>
-        </div>
-    </nav>
 
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -89,6 +68,4 @@ if ($is_teacher) {
         <?php endif; ?>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<?php include '../footer.php'; ?>

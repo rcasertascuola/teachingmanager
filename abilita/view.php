@@ -3,13 +3,8 @@ require_once '../src/Database.php';
 require_once '../src/Abilita.php';
 require_once '../src/Conoscenza.php';
 require_once '../src/Disciplina.php';
+include '../header.php';
 
-session_start();
-
-if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
-    header('Location: ../login.php');
-    exit;
-}
 
 if (!isset($_GET['id'])) {
     header('Location: index.php');
@@ -49,14 +44,6 @@ if (!empty($abilita->conoscenze)) {
 $derived_discipline_ids = array_unique($derived_discipline_ids);
 
 ?>
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <title>Dettaglio Abilità</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
     <div class="container mt-5">
         <h2>Dettaglio: <?php echo htmlspecialchars($abilita->nome); ?></h2>
 
@@ -104,5 +91,4 @@ $derived_discipline_ids = array_unique($derived_discipline_ids);
             <a href="index.php" class="btn btn-secondary">Torna all'elenco</a>
         </div>
     </div>
-</body>
-</html>
+<?php include '../footer.php'; ?>

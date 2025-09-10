@@ -1,17 +1,12 @@
 <?php
-session_start();
-// Auth check
-if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
-    header("location: ../login.php");
-    exit;
-}
-
 require_once '../src/Database.php';
 require_once '../src/Lesson.php';
 require_once '../src/wikitext_parser.php';
 require_once '../src/Exercise.php';
 require_once '../src/Conoscenza.php';
 require_once '../src/Abilita.php';
+include '../header.php';
+
 
 $lesson = null;
 if (isset($_GET['id'])) {
@@ -44,13 +39,6 @@ if ($lesson) {
     }
 }
 ?>
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $lesson ? htmlspecialchars($lesson->title) : 'Lezione non trovata'; ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.13.1/font/bootstrap-icons.min.css" integrity="sha512-t7Few9xlddEmgd3oKZQahkNI4dS6l80+eGEzFQiqtyVYdvcSG2D3Iub77R20BdotfRPA9caaRkg1tyaJiPmO0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         .wikitext-content h2 {
@@ -120,25 +108,6 @@ if ($lesson) {
             clear: both;
         }
     </style>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="../dashboard.php">Gestionale Studio</a>
-            <div class="collapse navbar-collapse">
-                 <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php">Torna a Elenco Lezioni</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="../logout.php">Logout</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
     <div class="container mt-4">
         <?php if ($lesson): ?>
@@ -304,7 +273,6 @@ if ($lesson) {
         <?php endif; ?>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <?php if ($_SESSION['role'] === 'student'): ?>
     <script>
     const studentData = <?php echo json_encode($student_data); ?>;
@@ -710,5 +678,4 @@ if ($lesson) {
     });
     </script>
     <?php endif; ?>
-</body>
-</html>
+<?php include '../footer.php'; ?>

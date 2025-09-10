@@ -1,37 +1,18 @@
 <?php
-session_start();
+require_once '../src/Database.php';
+require_once '../src/Uda.php';
+include '../header.php';
+
 // Redirect to login if not logged in or not a teacher
-if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION["role"] !== 'teacher') {
-    header("location: ../login.php");
+if ($_SESSION["role"] !== 'teacher') {
+    echo "<div class='alert alert-danger'>Accesso negato.</div>";
+    include '../footer.php';
     exit;
 }
 
-require_once '../src/Database.php';
-require_once '../src/Uda.php';
 
 $udas = Uda::findAll();
 ?>
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestisci UDA</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="../dashboard.php">Gestionale Studio</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="../logout.php">Logout</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -77,6 +58,4 @@ $udas = Uda::findAll();
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<?php include '../footer.php'; ?>
