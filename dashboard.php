@@ -84,6 +84,18 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-12">
+                        <div class="card mb-4">
+                            <div class="card-header">Gestione Dati Strutturali</div>
+                            <div class="card-body feature-slot d-flex flex-wrap justify-content-center align-items-center">
+                                <a href="tipologie/index.php" class="btn btn-outline-dark m-2">Gestisci Tipologie</a>
+                                <a href="discipline/index.php" class="btn btn-outline-dark m-2">Gestisci Discipline</a>
+                                <a href="conoscenze/index.php" class="btn btn-outline-primary m-2">Gestisci Conoscenze</a>
+                                <a href="abilita/index.php" class="btn btn-outline-primary m-2">Gestisci Abilità</a>
+                                <a href="competenze/index.php" class="btn btn-outline-primary m-2">Gestisci Competenze</a>
+                            </div>
+                        </div>
+                    </div>
                     <?php else: // Student view ?>
                     <div class="col-md-6">
                         <div class="card mb-4">
