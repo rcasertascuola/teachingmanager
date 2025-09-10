@@ -166,6 +166,9 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                                 <ul id="lesson-${lesson.id}-abilita"></ul>
                                             </div>
                                         </div>
+                                        <hr>
+                                        <strong><i class="fas fa-pencil-ruler"></i> Exercises:</strong>
+                                        <ul id="lesson-${lesson.id}-exercises"></ul>
                                     </div>
                                 </div>
                             `;
@@ -215,6 +218,13 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                 });
                                 li.appendChild(competenzaList);
                                 abilitaList.appendChild(li);
+                            });
+
+                            const exercisesList = document.getElementById(`lesson-${lesson.id}-exercises`);
+                            lesson.exercises.forEach(exercise => {
+                                const li = document.createElement('li');
+                                li.textContent = exercise.title;
+                                exercisesList.appendChild(li);
                             });
                         });
                     });

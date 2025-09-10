@@ -9,6 +9,7 @@ require_once 'src/Conoscenza.php';
 require_once 'src/Abilita.php';
 require_once 'src/Competenza.php';
 require_once 'src/Disciplina.php';
+require_once 'src/Exercise.php';
 
 $database = new Database();
 $pdo = $database->getConnection();
@@ -115,12 +116,16 @@ foreach ($udas as $uda) {
                         continue;
                     }
 
+                    // Fetch exercises
+                    $exercises = Exercise::findForLesson($lesson->id);
+
                     $lessonData[] = [
                         'id' => $lesson->id,
                         'title' => $lesson->title,
                         'content' => $lesson->content,
                         'conoscenze' => $conoscenze,
                         'abilita' => $abilita,
+                        'exercises' => $exercises,
                     ];
                 }
             }
