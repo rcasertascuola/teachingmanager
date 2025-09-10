@@ -13,7 +13,7 @@ $tipologie = TipologiaCompetenza::findAll();
 ?>
     <div class="container mt-5">
         <h2>Tipologie di Competenze</h2>
-        <a href="edit.php" class="btn btn-success mb-3">Crea Nuova Tipologia</a>
+        <a href="edit.php" class="btn btn-success mb-3"><i class="fas fa-plus"></i> Crea Nuova Tipologia</a>
         <?php if (isset($_GET['success'])): ?>
             <div class="alert alert-success">
                 <?php if ($_GET['success'] == 'create'): echo "Tipologia creata con successo!"; endif; ?>
@@ -35,8 +35,8 @@ $tipologie = TipologiaCompetenza::findAll();
                     <td><?php echo htmlspecialchars($tipologia->id); ?></td>
                     <td><?php echo htmlspecialchars($tipologia->nome); ?></td>
                     <td>
-                        <a href="edit.php?id=<?php echo $tipologia->id; ?>" class="btn btn-primary btn-sm">Modifica</a>
-                        <a href="delete.php?id=<?php echo $tipologia->id; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Sei sicuro di voler eliminare questa tipologia?');">Elimina</a>
+                        <a href="edit.php?id=<?php echo $tipologia->id; ?>" class="btn btn-primary btn-sm"><i class="fas fa-pencil-alt"></i></a>
+                        <a href="delete.php?id=<?php echo $tipologia->id; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Sei sicuro di voler eliminare questa tipologia?');"><i class="fas fa-trash"></i></a>
                     </td>
                 </tr>
                 <?php endforeach; ?>
