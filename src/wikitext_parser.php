@@ -143,12 +143,11 @@ function parse_wikitext($text) {
 
 
     // 5. Tables
-        $text = preg_replace_callback('/((?:^\|[^\n]*\n?)+)/m', function ($matches) use ($make_placeholder) {
+    $text = preg_replace_callback('/((?:^\|[^\n]*\n?)+)/m', function ($matches) use ($make_placeholder) {
         $table_text = trim($matches[1]);
         $rows = explode("\n", $table_text);
 
-        // Removed 'table' class, added inline-table style for content-width
-        $table_html = "<table class=\"table-bordered\" style=\"display: inline-table;\">\n";
+        $table_html = "<div class=\"table-responsive\"><table class=\"table table-striped table-bordered\">\n";
         $thead_html = '';
         $tbody_html = '';
         $in_header = true;
@@ -184,7 +183,7 @@ function parse_wikitext($text) {
             $table_html .= "<tbody>{$tbody_html}</tbody>\n";
         }
 
-        $table_html .= "</table>";
+        $table_html .= "</table></div>";
         return $make_placeholder($table_html);
     }, $text);
 
