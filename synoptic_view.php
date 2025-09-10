@@ -1,13 +1,10 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
+    header("location: login.php");
     exit;
 }
-
-require_once 'src/User.php';
-$user = User::findById($_SESSION['user_id']);
 
 ?>
 <!DOCTYPE html>
