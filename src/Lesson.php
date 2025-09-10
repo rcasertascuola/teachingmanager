@@ -6,6 +6,7 @@ class Lesson
     public $title;
     public $content;
     public $tags;
+    public $module_id;
     public $created_at;
     public $updated_at;
 
@@ -15,6 +16,7 @@ class Lesson
         $this->title = $data['title'] ?? '';
         $this->content = $data['content'] ?? '';
         $this->tags = $data['tags'] ?? '';
+        $this->module_id = $data['module_id'] ?? null;
         $this->created_at = $data['created_at'] ?? null;
         $this->updated_at = $data['updated_at'] ?? null;
     }
@@ -138,20 +140,22 @@ class Lesson
 
         if ($this->id) {
             // Update existing lesson
-            $sql = 'UPDATE lessons SET title = :title, content = :content, tags = :tags WHERE id = :id';
+            $sql = 'UPDATE lessons SET title = :title, content = :content, tags = :tags, module_id = :module_id WHERE id = :id';
             $params = [
                 'id' => $this->id,
                 'title' => $this->title,
                 'content' => $this->content,
                 'tags' => $this->tags,
+                'module_id' => $this->module_id,
             ];
         } else {
             // Insert new lesson
-            $sql = 'INSERT INTO lessons (title, content, tags) VALUES (:title, :content, :tags)';
+            $sql = 'INSERT INTO lessons (title, content, tags, module_id) VALUES (:title, :content, :tags, :module_id)';
             $params = [
                 'title' => $this->title,
                 'content' => $this->content,
                 'tags' => $this->tags,
+                'module_id' => $this->module_id,
             ];
         }
 
@@ -182,6 +186,28 @@ class Lesson
         $pdo = $database->getConnection();
         $stmt = $pdo->prepare('DELETE FROM lessons WHERE id = :id');
         return $stmt->execute(['id' => $id]);
+    }
+
+    /**
+     * Find all lessons for a given module.
+     *
+     * @param int $moduleId
+     * @return Lesson[]
+     */
+    public static function findByModuleId($moduleId)
+    {
+        $database = new Database();
+        $pdo = $database->getConnection();
+        $stmt = $pdo->prepare('SELECT * FROM lessons WHERE module_id = :module_id ORDER BY updated_at DESC');
+        $stmt->execute(['module_id' => $moduleId]);
+
+        $lessonsData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $lessons = [];
+        foreach ($lessonsData as $data) {
+            $lessons[] = new self($data);
+        }
+        return $lessons;
     }
 
     /**

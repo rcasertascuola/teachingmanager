@@ -8,8 +8,10 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION
 
 require_once '../src/Database.php';
 require_once '../src/Lesson.php';
+require_once '../src/Module.php';
 
 $lesson = null;
+$modules = Module::findAll();
 $pageTitle = 'Aggiungi Nuova Lezione';
 $formAction = 'save.php';
 
@@ -62,6 +64,18 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                     <div class="mb-3">
                         <label for="title" class="form-label">Titolo</label>
                         <input type="text" class="form-control" id="title" name="title" value="<?php echo htmlspecialchars($lesson->title ?? ''); ?>" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="module_id" class="form-label">Modulo di appartenenza</label>
+                        <select class="form-select" id="module_id" name="module_id">
+                            <option value="">Nessun modulo</option>
+                            <?php foreach ($modules as $module): ?>
+                                <option value="<?php echo $module->id; ?>" <?php echo (isset($lesson) && $lesson->module_id == $module->id) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($module->name); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
 
                     <div class="mb-3">
