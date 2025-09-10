@@ -15,7 +15,7 @@ $abilita_items = Abilita::findAll();
 ?>
     <div class="container mt-5">
         <h2>Abilità</h2>
-        <a href="edit.php" class="btn btn-success mb-3">Crea Nuova Abilità</a>
+        <a href="edit.php" class="btn btn-success mb-3"><i class="fas fa-plus"></i> Crea Nuova Abilità</a>
         <?php if (isset($_GET['success'])): ?>
             <div class="alert alert-success">
                 <?php if ($_GET['success'] == 'create'): echo "Abilità creata con successo!"; endif; ?>
@@ -39,9 +39,9 @@ $abilita_items = Abilita::findAll();
                     <td><?php echo htmlspecialchars($abilita->nome); ?></td>
                     <td><?php echo htmlspecialchars(ucfirst($abilita->tipo)); ?></td>
                     <td>
-                        <a href="view.php?id=<?php echo $abilita->id; ?>" class="btn btn-info btn-sm">Vedi</a>
-                        <a href="edit.php?id=<?php echo $abilita->id; ?>" class="btn btn-primary btn-sm">Modifica</a>
-                        <a href="delete.php?id=<?php echo $abilita->id; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Sei sicuro di voler eliminare questa abilità?');">Elimina</a>
+                        <a href="view.php?id=<?php echo $abilita->id; ?>" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>
+                        <a href="edit.php?id=<?php echo $abilita->id; ?>" class="btn btn-primary btn-sm"><i class="fas fa-pencil-alt"></i></a>
+                        <a href="delete.php?id=<?php echo $abilita->id; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Sei sicuro di voler eliminare questa abilità?');"><i class="fas fa-trash"></i></a>
                     </td>
                 </tr>
                 <?php endforeach; ?>

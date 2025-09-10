@@ -13,7 +13,7 @@ $is_teacher = isset($_SESSION['role']) && $_SESSION['role'] === 'teacher';
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h2">Gestione Verifiche</h1>
         <?php if ($is_teacher): ?>
-            <a href="edit.php" class="btn btn-primary">Aggiungi Nuova Verifica</a>
+            <a href="edit.php" class="btn btn-primary"><i class="fas fa-plus"></i> Aggiungi Nuova Verifica</a>
         <?php endif; ?>
     </div>
 
@@ -44,11 +44,11 @@ $is_teacher = isset($_SESSION['role']) && $_SESSION['role'] === 'teacher';
                                     <td><?php echo htmlspecialchars(ucfirst($verifica->tipo)); ?></td>
                                     <td><?php echo htmlspecialchars($verifica->created_at); ?></td>
                                     <td>
-                                        <a href="view.php?id=<?php echo $verifica->id; ?>" class="btn btn-sm btn-info">Visualizza</a>
+                                        <a href="view.php?id=<?php echo $verifica->id; ?>" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
                                         <?php if ($is_teacher): ?>
-                                        <a href="registro.php?id=<?php echo $verifica->id; ?>" class="btn btn-sm btn-success">Registro</a>
-                                        <a href="edit.php?id=<?php echo $verifica->id; ?>" class="btn btn-sm btn-warning">Modifica</a>
-                                        <a href="delete.php?id=<?php echo $verifica->id; ?>" class="btn btn-sm btn-danger">Cancella</a>
+                                        <a href="registro.php?id=<?php echo $verifica->id; ?>" class="btn btn-sm btn-success"><i class="fas fa-book"></i></a>
+                                        <a href="edit.php?id=<?php echo $verifica->id; ?>" class="btn btn-sm btn-warning"><i class="fas fa-pencil-alt"></i></a>
+                                        <a href="delete.php?id=<?php echo $verifica->id; ?>" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
                                         <?php endif; ?>
                                     </td>
                                 </tr>

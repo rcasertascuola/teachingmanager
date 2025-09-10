@@ -55,7 +55,6 @@ include 'header.php';
                         </div>
                         <div id="uda-${uda.id}" class="collapse">
                             <div class="card-body">
-                                <p>${uda.description}</p>
                                 <div id="uda-${uda.id}-modules"></div>
                             </div>
                         </div>
@@ -72,7 +71,6 @@ include 'header.php';
                             </div>
                             <div id="module-${module.id}" class="collapse">
                                 <div class="card-body">
-                                    <p>${module.description}</p>
                                     <div id="module-${module.id}-lessons"></div>
                                 </div>
                             </div>
@@ -89,24 +87,13 @@ include 'header.php';
                                 </div>
                                 <div id="lesson-${lesson.id}" class="collapse">
                                     <div class="card-body">
-                                        <p>${lesson.content}</p>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <strong><i class="fas fa-lightbulb"></i> Knowledge:</strong>
-                                                <ul id="lesson-${lesson.id}-conoscenze"></ul>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <strong><i class="fas fa-tools"></i> Skills:</strong>
-                                                <ul id="lesson-${lesson.id}-abilita"></ul>
-                                            </div>
-                                        </div>
-                                        <hr>
                                         <strong><i class="fas fa-pencil-ruler"></i> Exercises:</strong>
-                                        <ul id="lesson-${lesson.id}-exercises"></ul>
+                                        <ul id="lesson-${lesson.id}-exercises" class="list-group list-group-flush"></ul>
                                     </div>
                                 </div>
                             `;
                             lessonsContainer.appendChild(lessonCard);
+
 
                             // Populate Knowledge
                             const conoscenzeList = document.getElementById(`lesson-${lesson.id}-conoscenze`);

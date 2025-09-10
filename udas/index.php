@@ -17,7 +17,7 @@ $udas = Uda::findAll();
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h2">Gestione UDA</h1>
-            <a href="edit.php" class="btn btn-primary">Aggiungi Nuova UDA</a>
+            <a href="edit.php" class="btn btn-primary"><i class="fas fa-plus"></i> Aggiungi Nuova UDA</a>
         </div>
 
         <div class="card">
@@ -45,8 +45,8 @@ $udas = Uda::findAll();
                                         <td><?php echo htmlspecialchars($uda->name); ?></td>
                                         <td><?php echo htmlspecialchars($uda->description); ?></td>
                                         <td>
-                                            <a href="edit.php?id=<?php echo $uda->id; ?>" class="btn btn-sm btn-warning">Modifica</a>
-                                            <a href="delete.php?id=<?php echo $uda->id; ?>" class="btn btn-sm btn-danger">Cancella</a>
+                                            <a href="edit.php?id=<?php echo $uda->id; ?>" class="btn btn-sm btn-warning"><i class="fas fa-pencil-alt"></i></a>
+                                            <a href="delete.php?id=<?php echo $uda->id; ?>" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

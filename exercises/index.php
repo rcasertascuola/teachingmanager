@@ -39,7 +39,7 @@ $total_pages = ceil($total_exercises / $limit);
         ?>
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h2">Gestione Esercizi</h1>
-            <a href="edit.php" class="btn btn-primary">Aggiungi Nuovo Esercizio</a>
+            <a href="edit.php" class="btn btn-primary"><i class="fas fa-plus"></i> Aggiungi Nuovo Esercizio</a>
         </div>
 
         <div class="card mb-4">
@@ -50,7 +50,7 @@ $total_pages = ceil($total_exercises / $limit);
                         <label for="jsonFile" class="form-label">Seleziona file JSON</label>
                         <input class="form-control" type="file" id="jsonFile" name="jsonFile" accept="application/json" required>
                     </div>
-                    <button type="submit" class="btn btn-success">Carica File</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-upload"></i> Carica File</button>
                 </form>
             </div>
         </div>
@@ -88,9 +88,9 @@ $total_pages = ceil($total_exercises / $limit);
                                             <?php endif; ?>
                                         </td>
                                         <td>
-                                            <a href="view.php?id=<?php echo $exercise->id; ?>" class="btn btn-sm btn-info">Visualizza</a>
-                                            <a href="edit.php?id=<?php echo $exercise->id; ?>" class="btn btn-sm btn-warning">Modifica</a>
-                                            <a href="delete.php?id=<?php echo $exercise->id; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Sei sicuro di voler cancellare questo esercizio?');">Cancella</a>
+                                            <a href="view.php?id=<?php echo $exercise->id; ?>" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
+                                            <a href="edit.php?id=<?php echo $exercise->id; ?>" class="btn btn-sm btn-warning"><i class="fas fa-pencil-alt"></i></a>
+                                            <a href="delete.php?id=<?php echo $exercise->id; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Sei sicuro di voler cancellare questo esercizio?');"><i class="fas fa-trash"></i></a>
                                             <!-- TODO: Add enable/disable toggle -->
                                         </td>
                                     </tr>

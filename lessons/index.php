@@ -65,7 +65,7 @@ $is_teacher = $_SESSION['role'] === 'teacher';
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h2"><?php echo $is_teacher ? 'Gestione Lezioni' : 'Lezioni Disponibili'; ?></h1>
             <?php if ($is_teacher): ?>
-                <a href="edit.php" class="btn btn-primary">Aggiungi Nuova Lezione</a>
+                <a href="edit.php" class="btn btn-primary"><i class="fas fa-plus"></i> Aggiungi Nuova Lezione</a>
             <?php endif; ?>
         </div>
 
@@ -85,8 +85,8 @@ $is_teacher = $_SESSION['role'] === 'teacher';
                                 <input type="text" class="form-control" id="search_tags" name="search_tags" value="<?php echo htmlspecialchars($search_tags); ?>">
                             </div>
                             <div class="col-12">
-                                <button type="submit" class="btn btn-info">Cerca</button>
-                                <a href="index.php" class="btn btn-secondary">Reset</a>
+                                <button type="submit" class="btn btn-info"><i class="fas fa-search"></i> Cerca</button>
+                                <a href="index.php" class="btn btn-secondary"><i class="fas fa-undo"></i> Reset</a>
                             </div>
                         </form>
                     </div>
@@ -98,7 +98,7 @@ $is_teacher = $_SESSION['role'] === 'teacher';
                                 <label for="jsonFile" class="form-label">Seleziona file JSON</label>
                                 <input class="form-control" type="file" id="jsonFile" name="jsonFile" accept="application/json" required>
                             </div>
-                            <button type="submit" class="btn btn-success">Carica File</button>
+                            <button type="submit" class="btn btn-success"><i class="fas fa-upload"></i> Carica File</button>
                         </form>
                     </div>
                     <?php endif; ?>
@@ -141,10 +141,10 @@ $is_teacher = $_SESSION['role'] === 'teacher';
                                         <td><?php echo htmlspecialchars($moduleName); ?></td>
                                         <td><?php echo htmlspecialchars($lesson->tags); ?></td>
                                         <td>
-                                            <a href="view.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-info">Visualizza</a>
+                                            <a href="view.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
                                             <?php if ($is_teacher): ?>
-                                            <a href="edit.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-warning">Modifica</a>
-                                            <a href="delete.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-danger">Cancella</a>
+                                            <a href="edit.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-warning"><i class="fas fa-pencil-alt"></i></a>
+                                            <a href="delete.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
