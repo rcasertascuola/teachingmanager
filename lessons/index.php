@@ -8,6 +8,13 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 
 require_once '../src/Database.php';
 require_once '../src/Lesson.php';
+require_once '../src/Module.php';
+
+$modules = Module::findAll();
+$moduleNameMap = [];
+foreach ($modules as $module) {
+    $moduleNameMap[$module->id] = $module->name;
+}
 
 // Pagination settings
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -19,8 +26,14 @@ $offset = ($page - 1) * $limit;
 $search_content = trim($_GET['search_content'] ?? '');
 $search_tags = trim($_GET['search_tags'] ?? '');
 $is_search = !empty($search_content) || !empty($search_tags);
+$module_id_filter = isset($_GET['module_id']) ? (int)$_GET['module_id'] : null;
 
-if ($is_search) {
+if ($module_id_filter) {
+    // For now, no pagination on this view
+    $lessons = Lesson::findByModuleId($module_id_filter);
+    $total_lessons = count($lessons);
+    $limit = $total_lessons; //
+} elseif ($is_search) {
     $total_lessons = Lesson::countSearch($search_content, $search_tags);
     $lessons = Lesson::search($search_content, $search_tags, $limit, $offset);
 } else {
@@ -120,6 +133,7 @@ $is_teacher = $_SESSION['role'] === 'teacher';
                         <thead>
                             <tr>
                                 <th scope="col">Titolo</th>
+                                <th scope="col">Modulo</th>
                                 <th scope="col">Tags</th>
                                 <th scope="col">Azioni</th>
                             </tr>
@@ -127,12 +141,13 @@ $is_teacher = $_SESSION['role'] === 'teacher';
                         <tbody>
                             <?php if (empty($lessons)): ?>
                                 <tr>
-                                    <td colspan="3" class="text-center">Nessuna lezione trovata.</td>
+                                    <td colspan="4" class="text-center">Nessuna lezione trovata.</td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($lessons as $lesson): ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($lesson->title); ?></td>
+                                        <td><?php echo htmlspecialchars($moduleNameMap[$lesson->module_id] ?? 'N/A'); ?></td>
                                         <td><?php echo htmlspecialchars($lesson->tags); ?></td>
                                         <td>
                                             <a href="view.php?id=<?php echo $lesson->id; ?>" class="btn btn-sm btn-info">Visualizza</a>

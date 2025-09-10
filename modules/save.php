@@ -7,27 +7,26 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION
 }
 
 require_once '../src/Database.php';
-require_once '../src/Lesson.php';
+require_once '../src/Module.php';
 
 // Check if the form was submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Basic validation
-    if (isset($_POST['title']) && isset($_POST['content'])) {
+    if (isset($_POST['name']) && isset($_POST['uda_id'])) {
 
         $data = [
             'id' => isset($_POST['id']) && !empty($_POST['id']) ? (int)$_POST['id'] : null,
-            'title' => trim($_POST['title']),
-            'content' => trim($_POST['content']),
-            'tags' => isset($_POST['tags']) ? trim($_POST['tags']) : '',
-            'module_id' => isset($_POST['module_id']) && !empty($_POST['module_id']) ? (int)$_POST['module_id'] : null
+            'name' => trim($_POST['name']),
+            'description' => isset($_POST['description']) ? trim($_POST['description']) : '',
+            'uda_id' => (int)$_POST['uda_id']
         ];
 
-        $lesson = new Lesson($data);
-        $lesson->save();
+        $module = new Module($data);
+        $module->save();
     }
 }
 
-// Redirect back to the lesson list
+// Redirect back to the module list
 header("location: index.php");
 exit;
 ?>
