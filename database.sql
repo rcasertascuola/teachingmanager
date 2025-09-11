@@ -30,12 +30,15 @@ CREATE TABLE `lessons` (
   `title` varchar(255) NOT NULL,
   `content` text NOT NULL,
   `tags` varchar(255) DEFAULT NULL,
+  `uda_id` int(11) DEFAULT NULL,
   `previous_lesson_id` int(11) DEFAULT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `previous_lesson_id` (`previous_lesson_id`),
-  CONSTRAINT `lessons_ibfk_1` FOREIGN KEY (`previous_lesson_id`) REFERENCES `lessons` (`id`) ON DELETE SET NULL
+  KEY `uda_id` (`uda_id`),
+  CONSTRAINT `lessons_ibfk_1` FOREIGN KEY (`previous_lesson_id`) REFERENCES `lessons` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `lessons_ibfk_2` FOREIGN KEY (`uda_id`) REFERENCES `udas` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
