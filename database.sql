@@ -22,45 +22,6 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Table structure for table `lessons`
---
-
-CREATE TABLE `lessons` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL,
-  `content` text NOT NULL,
-  `tags` varchar(255) DEFAULT NULL,
-  `uda_id` int(11) DEFAULT NULL,
-  `previous_lesson_id` int(11) DEFAULT NULL,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `previous_lesson_id` (`previous_lesson_id`),
-  KEY `uda_id` (`uda_id`),
-  CONSTRAINT `lessons_ibfk_1` FOREIGN KEY (`previous_lesson_id`) REFERENCES `lessons` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `lessons_ibfk_2` FOREIGN KEY (`uda_id`) REFERENCES `udas` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Table structure for table `student_lesson_data`
---
-
-CREATE TABLE `student_lesson_data` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `lesson_id` int(11) NOT NULL,
-  `type` varchar(50) NOT NULL,
-  `data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `lesson_id` (`lesson_id`),
-  CONSTRAINT `student_lesson_data_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `student_lesson_data_ibfk_2` FOREIGN KEY (`lesson_id`) REFERENCES `lessons` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `student_lesson_data_chk_1` CHECK (json_valid(`data`))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
 -- Table structure for table `exercises`
 --
 
@@ -75,20 +36,6 @@ CREATE TABLE `exercises` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   CONSTRAINT `exercises_chk_1` CHECK (json_valid(`options`))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Table structure for table `exercise_lesson`
---
-
-CREATE TABLE `exercise_lesson` (
-  `exercise_id` int(11) NOT NULL,
-  `lesson_id` int(11) NOT NULL,
-  PRIMARY KEY (`exercise_id`,`lesson_id`),
-  KEY `exercise_id` (`exercise_id`),
-  KEY `lesson_id` (`lesson_id`),
-  CONSTRAINT `exercise_lesson_ibfk_1` FOREIGN KEY (`exercise_id`) REFERENCES `exercises` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `exercise_lesson_ibfk_2` FOREIGN KEY (`lesson_id`) REFERENCES `lessons` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -150,20 +97,6 @@ CREATE TABLE `udas` (
   PRIMARY KEY (`id`),
   KEY `module_id` (`module_id`),
   CONSTRAINT `udas_ibfk_1` FOREIGN KEY (`module_id`) REFERENCES `modules` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Table structure for table `uda_lessons`
---
-
-CREATE TABLE `uda_lessons` (
-  `uda_id` int(11) NOT NULL,
-  `lesson_id` int(11) NOT NULL,
-  PRIMARY KEY (`uda_id`, `lesson_id`),
-  KEY `uda_id` (`uda_id`),
-  KEY `lesson_id` (`lesson_id`),
-  CONSTRAINT `uda_lessons_ibfk_1` FOREIGN KEY (`uda_id`) REFERENCES `udas` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `uda_lessons_ibfk_2` FOREIGN KEY (`lesson_id`) REFERENCES `lessons` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Nuove tabelle per la gestione di conoscenze, abilità e competenze
@@ -241,30 +174,6 @@ CREATE TABLE `competenza_abilita` (
   CONSTRAINT `competenza_abilita_ibfk_2` FOREIGN KEY (`abilita_id`) REFERENCES `abilita` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Relazione Lezioni -> Conoscenze (N a N)
-CREATE TABLE `lezione_conoscenze` (
-  `lezione_id` INT(11) NOT NULL,
-  `conoscenza_id` INT(11) NOT NULL,
-  PRIMARY KEY (`lezione_id`, `conoscenza_id`),
-  KEY `lezione_id` (`lezione_id`),
-  KEY `conoscenza_id` (`conoscenza_id`),
-  CONSTRAINT `lezione_conoscenze_ibfk_1` FOREIGN KEY (`lezione_id`) REFERENCES `lessons` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `lezione_conoscenze_ibfk_2` FOREIGN KEY (`conoscenza_id`) REFERENCES `conoscenze` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- Relazione Lezioni -> Abilità (N a N)
-CREATE TABLE `lezione_abilita` (
-  `lezione_id` INT(11) NOT NULL,
-  `abilita_id` INT(11) NOT NULL,
-  PRIMARY KEY (`lezione_id`, `abilita_id`),
-  KEY `lezione_id` (`lezione_id`),
-  KEY `abilita_id` (`abilita_id`),
-  CONSTRAINT `lezione_abilita_ibfk_1` FOREIGN KEY (`lezione_id`) REFERENCES `lessons` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `lezione_abilita_ibfk_2` FOREIGN KEY (`abilita_id`) REFERENCES `abilita` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
-
 --
 -- Nuove tabelle per la gestione delle Verifiche
 --
@@ -332,4 +241,93 @@ CREATE TABLE `registri_verifiche` (
   FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
   FOREIGN KEY (`corretto_da`) REFERENCES `users`(`id`) ON DELETE SET NULL,
   UNIQUE KEY `verifica_studente_data_unique` (`verifica_id`, `user_id`, `data_svolgimento`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Table structure for table `lessons`
+--
+
+CREATE TABLE `lessons` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `content` text NOT NULL,
+  `tags` varchar(255) DEFAULT NULL,
+  `uda_id` int(11) DEFAULT NULL,
+  `previous_lesson_id` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `previous_lesson_id` (`previous_lesson_id`),
+  KEY `uda_id` (`uda_id`),
+  CONSTRAINT `lessons_ibfk_1` FOREIGN KEY (`previous_lesson_id`) REFERENCES `lessons` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `lessons_ibfk_2` FOREIGN KEY (`uda_id`) REFERENCES `udas` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Table structure for table `student_lesson_data`
+--
+
+CREATE TABLE `student_lesson_data` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `lesson_id` int(11) NOT NULL,
+  `type` varchar(50) NOT NULL,
+  `data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `lesson_id` (`lesson_id`),
+  CONSTRAINT `student_lesson_data_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `student_lesson_data_ibfk_2` FOREIGN KEY (`lesson_id`) REFERENCES `lessons` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `student_lesson_data_chk_1` CHECK (json_valid(`data`))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Table structure for table `exercise_lesson`
+--
+
+CREATE TABLE `exercise_lesson` (
+  `exercise_id` int(11) NOT NULL,
+  `lesson_id` int(11) NOT NULL,
+  PRIMARY KEY (`exercise_id`,`lesson_id`),
+  KEY `exercise_id` (`exercise_id`),
+  KEY `lesson_id` (`lesson_id`),
+  CONSTRAINT `exercise_lesson_ibfk_1` FOREIGN KEY (`exercise_id`) REFERENCES `exercises` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `exercise_lesson_ibfk_2` FOREIGN KEY (`lesson_id`) REFERENCES `lessons` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Table structure for table `uda_lessons`
+--
+
+CREATE TABLE `uda_lessons` (
+  `uda_id` int(11) NOT NULL,
+  `lesson_id` int(11) NOT NULL,
+  PRIMARY KEY (`uda_id`, `lesson_id`),
+  KEY `uda_id` (`uda_id`),
+  KEY `lesson_id` (`lesson_id`),
+  CONSTRAINT `uda_lessons_ibfk_1` FOREIGN KEY (`uda_id`) REFERENCES `udas` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `uda_lessons_ibfk_2` FOREIGN KEY (`lesson_id`) REFERENCES `lessons` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Relazione Lezioni -> Conoscenze (N a N)
+CREATE TABLE `lezione_conoscenze` (
+  `lezione_id` INT(11) NOT NULL,
+  `conoscenza_id` INT(11) NOT NULL,
+  PRIMARY KEY (`lezione_id`, `conoscenza_id`),
+  KEY `lezione_id` (`lezione_id`),
+  KEY `conoscenza_id` (`conoscenza_id`),
+  CONSTRAINT `lezione_conoscenze_ibfk_1` FOREIGN KEY (`lezione_id`) REFERENCES `lessons` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `lezione_conoscenze_ibfk_2` FOREIGN KEY (`conoscenza_id`) REFERENCES `conoscenze` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Relazione Lezioni -> Abilità (N a N)
+CREATE TABLE `lezione_abilita` (
+  `lezione_id` INT(11) NOT NULL,
+  `abilita_id` INT(11) NOT NULL,
+  PRIMARY KEY (`lezione_id`, `abilita_id`),
+  KEY `lezione_id` (`lezione_id`),
+  KEY `abilita_id` (`abilita_id`),
+  CONSTRAINT `lezione_abilita_ibfk_1` FOREIGN KEY (`lezione_id`) REFERENCES `lessons` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `lezione_abilita_ibfk_2` FOREIGN KEY (`abilita_id`) REFERENCES `abilita` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
