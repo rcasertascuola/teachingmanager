@@ -16,14 +16,27 @@ $manager = new Uda($db);
 
 $page_title = 'Gestione UDA';
 $entity_name = 'UDA';
+$table_name = 'udas';
+$joins = [
+    'LEFT JOIN discipline ON udas.disciplina_id = discipline.id'
+];
+$selects = [
+    'udas.id as id',
+    'udas.name as name',
+    'udas.description as description',
+    'discipline.nome as disciplina_name',
+    'udas.anno_corso as anno_corso'
+];
 $columns = [
+    'id' => 'ID',
     'name' => 'Nome',
     'description' => 'Descrizione',
     'disciplina_name' => 'Disciplina',
     'anno_corso' => 'Anno Corso'
 ];
-$items = $manager->findAll();
 
 // Include the generic handler
 require_once '../handlers/index_handler.php';
 ?>
+
+<?php include '../footer.php'; ?>

@@ -15,25 +15,27 @@ if ($_SESSION['role'] !== 'teacher') {
 $db = Database::getInstance()->getConnection();
 $manager = new Module($db);
 
-// Fetch extra data needed for custom column rendering
-$uda_manager = new Uda($db);
-$udas = $uda_manager->findAll();
-$udaNameMap = [];
-foreach ($udas as $uda) {
-    $udaNameMap[$uda->id] = $uda->name;
-}
-
 $page_title = 'Gestione Moduli';
 $entity_name = 'Modulo';
+$table_name = 'modules';
+$joins = [
+    'LEFT JOIN udas ON modules.uda_id = udas.id'
+];
+$selects = [
+    'modules.id as id',
+    'modules.name as name',
+    'modules.description as description',
+    'udas.name as uda_name'
+];
 $columns = [
+    'id' => 'ID',
     'name' => 'Nome',
     'description' => 'Descrizione',
-    'uda_id' => function($item) use ($udaNameMap) {
-        return htmlspecialchars($udaNameMap[$item->uda_id] ?? 'N/A');
-    }
+    'uda_name' => 'UDA'
 ];
-$items = $manager->findAll();
 
 // Include the generic handler
 require_once '../handlers/index_handler.php';
 ?>
+
+<?php include '../footer.php'; ?>

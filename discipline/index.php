@@ -16,12 +16,14 @@ $manager = new Disciplina($db);
 
 $page_title = 'Gestione Discipline';
 $entity_name = 'Disciplina';
+$table_name = 'discipline';
 $columns = [
     'id' => 'ID',
     'nome' => 'Nome'
 ];
-$items = $manager->findAll();
 
 // Include the generic handler
 require_once '../handlers/index_handler.php';
 ?>
+
+<?php include '../footer.php'; ?>
