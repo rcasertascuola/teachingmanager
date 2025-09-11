@@ -61,5 +61,3 @@ $json_columns = json_encode(array_merge(array_keys($columns), ['actions']));
         </div>
     </div>
 </div>
-
-<?php include '../footer.php'; ?>

@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 payload.selects = JSON.parse(table.dataset.tableSelects);
             }
 
-            const response = await fetch('../handlers/search_handler.php', {
+            const response = await fetch('/handlers/search_handler.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)

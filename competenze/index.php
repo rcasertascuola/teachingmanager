@@ -35,3 +35,5 @@ $columns = [
 // Include the generic handler
 require_once '../handlers/index_handler.php';
 ?>
+
+<?php include '../footer.php'; ?>
