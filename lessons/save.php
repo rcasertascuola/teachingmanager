@@ -28,6 +28,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $redirect_url = 'index.php';
     $post_data = $_POST;
 
+    // Manually handle many-to-many relationships before the generic handler
+    // This ensures that if all items are unchecked, the relationship is cleared.
+    $entity->conoscenze = $post_data['conoscenze'] ?? [];
+    $entity->abilita = $post_data['abilita'] ?? [];
+
     // Include the generic handler
     require_once '../handlers/save_handler.php';
 } else {
