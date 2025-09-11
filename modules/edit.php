@@ -1,7 +1,7 @@
 <?php
 require_once '../src/Database.php';
 require_once '../src/Module.php';
-require_once '../src/Uda.php';
+require_once '../src/Disciplina.php';
 include '../header.php';
 
 // Auth check
@@ -15,21 +15,21 @@ if ($_SESSION["role"] !== 'teacher') {
 // Get the database connection
 $db = Database::getInstance()->getConnection();
 $module_manager = new Module($db);
+$disciplina_manager = new Disciplina($db);
+
+$all_discipline = $disciplina_manager->findAll();
 
 $module = null;
 $pageTitle = 'Aggiungi Nuovo Modulo';
 $formAction = 'save.php';
 
-$uda_manager = new Uda($db);
-$udas = $uda_manager->findAll();
-
-// Check if we are editing an existing module
+// Check if we are editing an existing UDA
 if (isset($_GET['id']) && !empty($_GET['id'])) {
     $module = $module_manager->findById((int)$_GET['id']);
     if ($module) {
         $pageTitle = 'Modifica Modulo';
     } else {
-        // Module not found, redirect to index
+        // UDA not found, redirect to index
         header("location: index.php");
         exit;
     }
@@ -59,16 +59,22 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                         <textarea class="form-control" id="description" name="description" rows="5"><?php echo htmlspecialchars($module->description ?? ''); ?></textarea>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="uda_id" class="form-label">UDA di appartenenza</label>
-                        <select class="form-select" id="uda_id" name="uda_id" required>
-                            <option value="">Seleziona un'UDA</option>
-                            <?php foreach ($udas as $uda): ?>
-                                <option value="<?php echo $uda->id; ?>" <?php echo (isset($module) && $module->uda_id == $uda->id) ? 'selected' : ''; ?>>
-                                    <?php echo htmlspecialchars($uda->name); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="disciplina_id" class="form-label">Disciplina</label>
+                            <select class="form-select" id="disciplina_id" name="disciplina_id">
+                                <option value="">Seleziona una disciplina</option>
+                                <?php foreach ($all_discipline as $disciplina): ?>
+                                    <option value="<?php echo $disciplina->id; ?>" <?php echo ($module->disciplina_id == $disciplina->id) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($disciplina->nome); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="anno_corso" class="form-label">Anno di Corso</label>
+                            <input type="number" class="form-control" id="anno_corso" name="anno_corso" min="1" max="5" value="<?php echo htmlspecialchars($module->anno_corso ?? ''); ?>">
+                        </div>
                     </div>
 
                     <a href="index.php" class="btn btn-secondary">Annulla</a>

@@ -30,12 +30,15 @@ CREATE TABLE `lessons` (
   `title` varchar(255) NOT NULL,
   `content` text NOT NULL,
   `tags` varchar(255) DEFAULT NULL,
+  `uda_id` int(11) DEFAULT NULL,
   `previous_lesson_id` int(11) DEFAULT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `previous_lesson_id` (`previous_lesson_id`),
-  CONSTRAINT `lessons_ibfk_1` FOREIGN KEY (`previous_lesson_id`) REFERENCES `lessons` (`id`) ON DELETE SET NULL
+  KEY `uda_id` (`uda_id`),
+  CONSTRAINT `lessons_ibfk_1` FOREIGN KEY (`previous_lesson_id`) REFERENCES `lessons` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `lessons_ibfk_2` FOREIGN KEY (`uda_id`) REFERENCES `udas` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -121,10 +124,10 @@ CREATE TABLE `discipline` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Table structure for table `udas`
+-- Table structure for table `modules`
 --
 
-CREATE TABLE `udas` (
+CREATE TABLE `modules` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `description` text,
@@ -132,35 +135,35 @@ CREATE TABLE `udas` (
   `anno_corso` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `disciplina_id` (`disciplina_id`),
-  CONSTRAINT `udas_ibfk_1` FOREIGN KEY (`disciplina_id`) REFERENCES `discipline` (`id`) ON DELETE SET NULL
+  CONSTRAINT `modules_ibfk_1` FOREIGN KEY (`disciplina_id`) REFERENCES `discipline` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Table structure for table `modules`
+-- Table structure for table `udas`
 --
 
-CREATE TABLE `modules` (
+CREATE TABLE `udas` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `uda_id` int(11) NOT NULL,
+  `module_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `description` text,
   PRIMARY KEY (`id`),
-  KEY `uda_id` (`uda_id`),
-  CONSTRAINT `modules_ibfk_1` FOREIGN KEY (`uda_id`) REFERENCES `udas` (`id`) ON DELETE CASCADE
+  KEY `module_id` (`module_id`),
+  CONSTRAINT `udas_ibfk_1` FOREIGN KEY (`module_id`) REFERENCES `modules` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Table structure for table `module_lessons`
+-- Table structure for table `uda_lessons`
 --
 
-CREATE TABLE `module_lessons` (
-  `module_id` int(11) NOT NULL,
+CREATE TABLE `uda_lessons` (
+  `uda_id` int(11) NOT NULL,
   `lesson_id` int(11) NOT NULL,
-  PRIMARY KEY (`module_id`, `lesson_id`),
-  KEY `module_id` (`module_id`),
+  PRIMARY KEY (`uda_id`, `lesson_id`),
+  KEY `uda_id` (`uda_id`),
   KEY `lesson_id` (`lesson_id`),
-  CONSTRAINT `module_lessons_ibfk_1` FOREIGN KEY (`module_id`) REFERENCES `modules` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `module_lessons_ibfk_2` FOREIGN KEY (`lesson_id`) REFERENCES `lessons` (`id`) ON DELETE CASCADE
+  CONSTRAINT `uda_lessons_ibfk_1` FOREIGN KEY (`uda_id`) REFERENCES `udas` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `uda_lessons_ibfk_2` FOREIGN KEY (`lesson_id`) REFERENCES `lessons` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Nuove tabelle per la gestione di conoscenze, abilità e competenze
