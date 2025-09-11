@@ -65,15 +65,43 @@ document.addEventListener('DOMContentLoaded', () => {
             if (table.dataset.tableSelects) {
                 payload.selects = JSON.parse(table.dataset.tableSelects);
             }
+            if (table.dataset.tableCustomActions) {
+                payload.custom_actions = JSON.parse(table.dataset.tableCustomActions);
+            }
+            if (table.dataset.tableRenderers) {
+                payload.renderers = JSON.parse(table.dataset.tableRenderers);
+            }
 
-            const response = await fetch('/handlers/search_handler.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const result = await response.json();
-            renderTable(result.data);
-            renderPagination(result.pagination);
+            try {
+                const response = await fetch('/handlers/search_handler.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("Server returned an error:", response.status, response.statusText);
+                    try {
+                        // Try to parse it as JSON to see our custom error
+                        const errorJson = JSON.parse(errorText);
+                        console.error("Server Error Details:", errorJson);
+                    } catch (e) {
+                        // Otherwise, just dump the raw text
+                        console.error("Raw Server Response:", errorText);
+                    }
+                    throw new Error('Server error');
+                }
+
+                const result = await response.json();
+                renderTable(result.data);
+                renderPagination(result.pagination);
+
+            } catch (error) {
+                console.error("Failed to fetch or process table data:", error);
+                const tBody = table.querySelector('tbody');
+                tBody.innerHTML = `<tr><td colspan="${columns.length}" class="text-center text-danger">Errore nel caricamento dei dati. Controllare la console per i dettagli.</td></tr>`;
+            }
         };
 
         const renderers = {
