@@ -26,11 +26,12 @@ if ($_SESSION['role'] !== 'teacher') {
                 <table class="table table-striped"
                        data-dynamic-table
                        data-table-name="users"
-                       data-columns='["username", "role", "classe", "corso", "anno_scolastico", "actions"]'>
+                       data-columns='["username", "role", "status", "classe", "corso", "anno_scolastico", "actions"]'>
                     <thead>
                         <tr>
                             <th scope="col">Username</th>
                             <th scope="col">Ruolo</th>
+                            <th scope="col">Stato</th>
                             <th scope="col">Classe</th>
                             <th scope="col">Corso</th>
                             <th scope="col">Anno Scolastico</th>

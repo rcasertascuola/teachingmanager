@@ -9,8 +9,7 @@ if ($_SESSION['role'] !== 'teacher') {
     exit;
 }
 
-$database = new Database();
-$db = $database->getConnection();
+$db = Database::getInstance()->getConnection();
 $user = new User($db);
 
 $pageTitle = 'Aggiungi Nuovo Utente';

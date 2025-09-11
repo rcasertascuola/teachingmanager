@@ -9,6 +9,7 @@ class User
     public $username;
     public $password;
     public $role;
+    public $status;
     public $classe;
     public $corso;
     public $anno_scolastico;
@@ -20,11 +21,17 @@ class User
 
     function register()
     {
+        // Set default status if not provided
+        if (empty($this->status)) {
+            $this->status = 'pending';
+        }
+
         $query = "INSERT INTO " . $this->table_name . "
             SET
                 username = :username,
                 password = :password,
                 role = :role,
+                status = :status,
                 classe = :classe,
                 corso = :corso,
                 anno_scolastico = :anno_scolastico";
@@ -34,6 +41,7 @@ class User
         // Sanitize
         $this->username = htmlspecialchars(strip_tags($this->username));
         $this->role = htmlspecialchars(strip_tags($this->role));
+        $this->status = htmlspecialchars(strip_tags($this->status));
         $this->classe = htmlspecialchars(strip_tags($this->classe));
         $this->corso = htmlspecialchars(strip_tags($this->corso));
         $this->anno_scolastico = htmlspecialchars(strip_tags($this->anno_scolastico));
@@ -45,6 +53,7 @@ class User
         $stmt->bindParam(':username', $this->username);
         $stmt->bindParam(':password', $password_hash);
         $stmt->bindParam(':role', $this->role);
+        $stmt->bindParam(':status', $this->status);
         $stmt->bindParam(':classe', $this->classe);
         $stmt->bindParam(':corso', $this->corso);
         $stmt->bindParam(':anno_scolastico', $this->anno_scolastico);
@@ -68,7 +77,7 @@ class User
 
     function login()
     {
-        $query = "SELECT id, username, password, role, classe, corso, anno_scolastico FROM " . $this->table_name . " WHERE username = :username";
+        $query = "SELECT id, username, password, role, status, classe, corso, anno_scolastico FROM " . $this->table_name . " WHERE username = :username";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':username', $this->username);
         $stmt->execute();
@@ -77,15 +86,22 @@ class User
 
         if ($num > 0) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            $this->id = $row['id'];
-            $this->username = $row['username'];
-            $this->role = $row['role'];
-            $this->classe = $row['classe'];
-            $this->corso = $row['corso'];
-            $this->anno_scolastico = $row['anno_scolastico'];
+
+            // Check user status
+            if ($row['status'] !== 'active') {
+                return false; // User is not active
+            }
+
             $password_from_db = $row['password'];
 
             if (password_verify($this->password, $password_from_db)) {
+                $this->id = $row['id'];
+                $this->username = $row['username'];
+                $this->role = $row['role'];
+                $this->status = $row['status'];
+                $this->classe = $row['classe'];
+                $this->corso = $row['corso'];
+                $this->anno_scolastico = $row['anno_scolastico'];
                 return true;
             }
         }
@@ -108,6 +124,26 @@ class User
         $stmt->bindParam(':id', $id);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function updateStatus($id, $status)
+    {
+        $query = "UPDATE " . $this->table_name . " SET status = :status WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+
+        // Sanitize
+        $id = htmlspecialchars(strip_tags($id));
+        $status = htmlspecialchars(strip_tags($status));
+
+        // Bind the values
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':status', $status);
+
+        if ($stmt->execute()) {
+            return true;
+        }
+
+        return false;
     }
 
     public function update()
