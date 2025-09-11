@@ -1,7 +1,7 @@
 <?php
 require_once '../src/Database.php';
 require_once '../src/Lesson.php';
-require_once '../src/Module.php';
+require_once '../src/Uda.php';
 require_once '../src/Conoscenza.php';
 require_once '../src/Abilita.php';
 include '../header.php';
