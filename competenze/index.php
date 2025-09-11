@@ -27,7 +27,6 @@ $selects = [
     'tipologie_competenze.nome as tipologia'
 ];
 $columns = [
-    'id' => 'ID',
     'nome' => 'Nome',
     'tipologia' => 'Tipologia'
 ];

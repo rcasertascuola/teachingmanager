@@ -27,7 +27,6 @@ $selects = [
     'modules.name as module_name'
 ];
 $columns = [
-    'id' => 'ID',
     'name' => 'Nome',
     'description' => 'Descrizione',
     'module_name' => 'Modulo'

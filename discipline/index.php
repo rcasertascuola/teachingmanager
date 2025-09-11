@@ -18,7 +18,6 @@ $page_title = 'Gestione Discipline';
 $entity_name = 'Disciplina';
 $table_name = 'discipline';
 $columns = [
-    'id' => 'ID',
     'nome' => 'Nome'
 ];
 
