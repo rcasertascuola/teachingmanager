@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if ($user->register()) {
-        $message = "<div class='alert alert-success'>Registrazione completata con successo. Puoi <a href='login.php'>accedere</a> ora.</div>";
+        $message = "<div class='alert alert-success'>Registrazione completata con successo. Il tuo account è in attesa di approvazione da parte di un amministratore.</div>";
     } else {
         $message = "<div class='alert alert-danger'>Errore durante la registrazione. L'username potrebbe essere già in uso.</div>";
     }

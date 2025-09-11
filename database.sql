@@ -13,6 +13,7 @@ CREATE TABLE `users` (
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
   `role` enum('teacher','student') NOT NULL,
+  `status` enum('pending','active','disabled') NOT NULL DEFAULT 'pending',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `classe` varchar(10) DEFAULT NULL,
   `corso` varchar(255) DEFAULT NULL,

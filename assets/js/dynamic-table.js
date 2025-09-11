@@ -84,10 +84,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const renderers = {
             statusBadge: (data) => {
-                if (parseInt(data, 10)) {
-                    return '<span class="badge bg-success">Abilitato</span>';
+                switch (data) {
+                    case 'active':
+                        return '<span class="badge bg-success">Attivo</span>';
+                    case 'pending':
+                        return '<span class="badge bg-warning">In attesa</span>';
+                    case 'disabled':
+                        return '<span class="badge bg-danger">Disabilitato</span>';
+                    default:
+                        return '<span class="badge bg-secondary">Sconosciuto</span>';
                 }
-                return '<span class="badge bg-secondary">Disabilitato</span>';
             }
         };
 
@@ -112,12 +118,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 columns.forEach(col => {
                     const td = document.createElement('td');
                     if (col === 'actions') {
-                        // Standard buttons
                         let buttons = `
-                            <a href="view.php?id=${row.id}" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
                             <a href="edit.php?id=${row.id}" class="btn btn-sm btn-warning"><i class="fas fa-pencil-alt"></i></a>
                             <a href="delete.php?id=${row.id}" class="btn btn-sm btn-danger" onclick="return confirm('Sei sicuro?');"><i class="fas fa-trash"></i></a>
                         `;
+
+                        if (tableName === 'users') {
+                             buttons += `
+                                <form action="update_status.php" method="POST" class="d-inline-flex ms-2">
+                                    <input type="hidden" name="id" value="${row.id}">
+                                    <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                        <option value="pending" ${row.status === 'pending' ? 'selected' : ''}>In attesa</option>
+                                        <option value="active" ${row.status === 'active' ? 'selected' : ''}>Attivo</option>
+                                        <option value="disabled" ${row.status === 'disabled' ? 'selected' : ''}>Disabilitato</option>
+                                    </select>
+                                </form>
+                            `;
+                        }
+
 
                         // Custom buttons
                         if (table.dataset.tableCustomActions) {
@@ -127,7 +145,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             });
                         }
                         td.innerHTML = buttons;
-                    } else {
+                    } else if (col === 'status' && tableName === 'users') {
+                        td.innerHTML = renderers.statusBadge(row[col]);
+                    }
+                    else {
                         const rendererName = customRenderers[col];
                         if (rendererName && renderers[rendererName]) {
                             td.innerHTML = renderers[rendererName](row[col]);
