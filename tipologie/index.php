@@ -16,11 +16,11 @@ $manager = new TipologiaCompetenza($db);
 
 $page_title = 'Gestione Tipologie di Competenze';
 $entity_name = 'Tipologia di Competenza';
+$table_name = 'tipologie_competenze';
 $columns = [
     'id' => 'ID',
     'nome' => 'Nome'
 ];
-$items = $manager->findAll();
 
 // Include the generic handler
 require_once '../handlers/index_handler.php';

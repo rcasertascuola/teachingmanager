@@ -16,12 +16,12 @@ $manager = new Abilita($db);
 
 $page_title = 'Gestione Abilità';
 $entity_name = 'Abilità';
+$table_name = 'abilita';
 $columns = [
     'id' => 'ID',
     'nome' => 'Nome',
     'tipo' => 'Tipo'
 ];
-$items = $manager->findAll();
 
 // Include the generic handler
 require_once '../handlers/index_handler.php';
