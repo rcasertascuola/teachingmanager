@@ -54,10 +54,31 @@ if (!empty($joins)) {
 $whereClauses = [];
 $bindings = [];
 
+// Build a map of aliases to real column names for use in WHERE clauses
+$columnMap = [];
+foreach ($selects as $select) {
+    $select = trim($select);
+    $alias = '';
+    $realName = '';
+
+    if (preg_match('/^(.*)\s+as\s+(\w+)$/i', $select, $matches)) {
+        $realName = trim($matches[1]);
+        $alias = trim($matches[2]);
+    } else {
+        $parts = explode('.', $select);
+        $alias = trim(end($parts));
+        $realName = $select;
+    }
+    $columnMap[$alias] = $realName;
+}
+
+
 if (!empty($filters)) {
     foreach ($filters as $key => $value) {
         if (!empty($value) && in_array($key, $columns)) {
-            $whereClauses[] = "$key LIKE :$key";
+            // Use the real column name for the WHERE clause, not the alias
+            $realColumn = $columnMap[$key] ?? $key;
+            $whereClauses[] = "$realColumn LIKE :$key";
             $bindings[":$key"] = "%$value%";
         }
     }
