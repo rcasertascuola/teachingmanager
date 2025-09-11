@@ -21,14 +21,14 @@ if (isset($_GET['id'])) {
     $lesson = $lesson_manager->findByTitle(urldecode($_GET['title']));
 }
 
-$module = null;
 $uda = null;
-if ($lesson && $lesson->module_id) {
-    $module_manager = new Module($db);
-    $module = $module_manager->findById($lesson->module_id);
-    if ($module && $module->uda_id) {
-        $uda_manager = new Uda($db);
-        $uda = $uda_manager->findById($module->uda_id);
+$module = null;
+if ($lesson && $lesson->uda_id) {
+    $uda_manager = new Uda($db);
+    $uda = $uda_manager->findById($lesson->uda_id);
+    if ($uda && $uda->module_id) {
+        $module_manager = new Module($db);
+        $module = $module_manager->findById($uda->module_id);
     }
 }
 
@@ -133,11 +133,11 @@ if ($lesson) {
         <?php if ($lesson): ?>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <?php if ($uda): ?>
-                        <li class="breadcrumb-item"><a href="../udas/view.php?id=<?php echo $uda->id; ?>"><?php echo htmlspecialchars($uda->name); ?></a></li>
-                    <?php endif; ?>
                     <?php if ($module): ?>
                         <li class="breadcrumb-item"><a href="../modules/view.php?id=<?php echo $module->id; ?>"><?php echo htmlspecialchars($module->name); ?></a></li>
+                    <?php endif; ?>
+                    <?php if ($uda): ?>
+                        <li class="breadcrumb-item"><a href="../udas/view.php?id=<?php echo $uda->id; ?>"><?php echo htmlspecialchars($uda->name); ?></a></li>
                     <?php endif; ?>
                     <li class="breadcrumb-item active" aria-current="page"><?php echo htmlspecialchars($lesson->title); ?></li>
                 </ol>
