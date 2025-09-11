@@ -16,8 +16,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // The generic handler needs an entity to populate.
     // If we are editing, we find the existing one. Otherwise, we create a new one.
+    $manager = new Abilita($db);
     if (isset($_POST['id']) && !empty($_POST['id'])) {
-        $manager = new Abilita($db);
         $entity = $manager->findById((int)$_POST['id']);
         if (!$entity) {
             die("Entity not found.");

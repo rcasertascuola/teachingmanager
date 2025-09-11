@@ -15,8 +15,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $db = Database::getInstance()->getConnection();
 
     // The generic handler needs an entity to populate.
+    $manager = new Conoscenza($db);
     if (isset($_POST['id']) && !empty($_POST['id'])) {
-        $manager = new Conoscenza($db);
         $entity = $manager->findById((int)$_POST['id']);
         if (!$entity) {
             die("Entity not found.");
