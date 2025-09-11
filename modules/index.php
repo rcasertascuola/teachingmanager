@@ -22,12 +22,13 @@ $joins = [
     'LEFT JOIN udas ON modules.uda_id = udas.id'
 ];
 $selects = [
-    'modules.id',
-    'modules.name',
-    'modules.description',
+    'modules.id as id',
+    'modules.name as name',
+    'modules.description as description',
     'udas.name as uda_name'
 ];
 $columns = [
+    'id' => 'ID',
     'name' => 'Nome',
     'description' => 'Descrizione',
     'uda_name' => 'UDA'

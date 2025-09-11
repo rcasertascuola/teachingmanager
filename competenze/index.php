@@ -22,8 +22,8 @@ $joins = [
     'LEFT JOIN tipologie_competenze ON competenze.tipologia_id = tipologie_competenze.id'
 ];
 $selects = [
-    'competenze.id',
-    'competenze.nome',
+    'competenze.id as id',
+    'competenze.nome as nome',
     'tipologie_competenze.nome as tipologia'
 ];
 $columns = [

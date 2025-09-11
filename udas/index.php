@@ -21,13 +21,14 @@ $joins = [
     'LEFT JOIN discipline ON udas.disciplina_id = discipline.id'
 ];
 $selects = [
-    'udas.id',
-    'udas.name',
-    'udas.description',
+    'udas.id as id',
+    'udas.name as name',
+    'udas.description as description',
     'discipline.nome as disciplina_name',
-    'udas.anno_corso'
+    'udas.anno_corso as anno_corso'
 ];
 $columns = [
+    'id' => 'ID',
     'name' => 'Nome',
     'description' => 'Descrizione',
     'disciplina_name' => 'Disciplina',

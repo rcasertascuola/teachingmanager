@@ -16,14 +16,15 @@ $joins = [
 ];
 
 $selects = [
-    'lessons.id',
-    'lessons.title',
+    'lessons.id as id',
+    'lessons.title as title',
     'udas.name as uda_name',
     'modules.name as module_name',
-    'lessons.tags'
+    'lessons.tags as tags'
 ];
 
 $columns = [
+    'id' => 'ID',
     'title' => 'Titolo',
     'uda_name' => 'UDA',
     'module_name' => 'Modulo',
