@@ -331,3 +331,19 @@ CREATE TABLE `lezione_abilita` (
   CONSTRAINT `lezione_abilita_ibfk_1` FOREIGN KEY (`lezione_id`) REFERENCES `lessons` (`id`) ON DELETE CASCADE,
   CONSTRAINT `lezione_abilita_ibfk_2` FOREIGN KEY (`abilita_id`) REFERENCES `abilita` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Relazione Conoscenze -> Anno Corso (N a N)
+CREATE TABLE `conoscenza_anni_corso` (
+  `conoscenza_id` INT(11) NOT NULL,
+  `anno_corso` TINYINT NOT NULL,
+  PRIMARY KEY (`conoscenza_id`, `anno_corso`),
+  FOREIGN KEY (`conoscenza_id`) REFERENCES `conoscenze`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Relazione Abilità -> Anno Corso (N a N)
+CREATE TABLE `abilita_anni_corso` (
+  `abilita_id` INT(11) NOT NULL,
+  `anno_corso` TINYINT NOT NULL,
+  PRIMARY KEY (`abilita_id`, `anno_corso`),
+  FOREIGN KEY (`abilita_id`) REFERENCES `abilita`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
