@@ -23,25 +23,32 @@ class Module
     }
 
     /**
-     * Find all Modules.
+     * Find all Modules, optionally filtering by year.
      *
+     * @param int|null $anno_corso
      * @return Module[]
      */
-    public function findAll()
+    public function findAll($anno_corso = null)
     {
+        $params = [];
         $query = '
             SELECT
-                u.*,
+                m.*,
                 d.nome AS disciplina_name
             FROM
-                modules u
+                modules m
             LEFT JOIN
-                discipline d ON u.disciplina_id = d.id
-            ORDER BY
-                u.name ASC';
+                discipline d ON m.disciplina_id = d.id';
+
+        if ($anno_corso) {
+            $query .= ' WHERE m.anno_corso = :anno_corso';
+            $params[':anno_corso'] = $anno_corso;
+        }
+
+        $query .= ' ORDER BY m.name ASC';
 
         $stmt = $this->conn->prepare($query);
-        $stmt->execute();
+        $stmt->execute($params);
 
         $moduleData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
