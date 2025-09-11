@@ -140,7 +140,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                         </tr>
                     </tfoot>
                 </table>
-                <button type="button" id="add-row" class="btn btn-success btn-sm">Aggiungi Descrittore</button>
+                <button type="button" id="add-row" class="btn btn-success btn-sm">+</button>
                 <div id="punteggio-error" class="text-danger mt-2" style="display: none;">Il punteggio totale deve essere 20.00</div>
 
 
