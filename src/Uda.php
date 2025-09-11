@@ -7,6 +7,9 @@ class Uda
     public $id;
     public $name;
     public $description;
+    public $disciplina_id;
+    public $anno_corso;
+    public $disciplina_name;
 
     public function __construct($db, $data = [])
     {
@@ -14,6 +17,9 @@ class Uda
         $this->id = $data['id'] ?? null;
         $this->name = $data['name'] ?? '';
         $this->description = $data['description'] ?? '';
+        $this->disciplina_id = $data['disciplina_id'] ?? null;
+        $this->anno_corso = $data['anno_corso'] ?? null;
+        $this->disciplina_name = $data['disciplina_name'] ?? null;
     }
 
     /**
@@ -23,7 +29,18 @@ class Uda
      */
     public function findAll()
     {
-        $stmt = $this->conn->prepare('SELECT * FROM udas ORDER BY name ASC');
+        $query = '
+            SELECT
+                u.*,
+                d.nome AS disciplina_name
+            FROM
+                udas u
+            LEFT JOIN
+                discipline d ON u.disciplina_id = d.id
+            ORDER BY
+                u.name ASC';
+
+        $stmt = $this->conn->prepare($query);
         $stmt->execute();
 
         $udaData = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -62,18 +79,22 @@ class Uda
     {
         if ($this->id) {
             // Update existing UDA
-            $sql = 'UPDATE udas SET name = :name, description = :description WHERE id = :id';
+            $sql = 'UPDATE udas SET name = :name, description = :description, disciplina_id = :disciplina_id, anno_corso = :anno_corso WHERE id = :id';
             $params = [
                 'id' => $this->id,
                 'name' => $this->name,
                 'description' => $this->description,
+                'disciplina_id' => $this->disciplina_id,
+                'anno_corso' => $this->anno_corso,
             ];
         } else {
             // Insert new UDA
-            $sql = 'INSERT INTO udas (name, description) VALUES (:name, :description)';
+            $sql = 'INSERT INTO udas (name, description, disciplina_id, anno_corso) VALUES (:name, :description, :disciplina_id, :anno_corso)';
             $params = [
                 'name' => $this->name,
                 'description' => $this->description,
+                'disciplina_id' => $this->disciplina_id,
+                'anno_corso' => $this->anno_corso,
             ];
         }
 

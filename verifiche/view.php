@@ -3,12 +3,12 @@ require_once '../src/Database.php';
 require_once '../src/Database.php';
 require_once '../src/Verifica.php';
 require_once '../src/Abilita.php';
-require_once '../src/Competenza.php';
+require_once '../src/Conoscenza.php';
 include '../header.php';
 
 $verifica = null;
 $abilita_map = [];
-$competenze_map = [];
+$conoscenze_map = [];
 
 // Get the database connection
 $db = Database::getInstance()->getConnection();
@@ -26,10 +26,10 @@ if ($verifica) {
         $abilita_map[$a->id] = $a->nome;
     }
 
-    $competenza_manager = new Competenza($db);
-    $all_competenze = $competenza_manager->findAll();
-    foreach ($all_competenze as $c) {
-        $competenze_map[$c->id] = $c->nome;
+    $conoscenza_manager = new Conoscenza($db);
+    $all_conoscenze = $conoscenza_manager->findAll();
+    foreach ($all_conoscenze as $c) {
+        $conoscenze_map[$c->id] = $c->nome;
     }
 }
 
@@ -55,7 +55,7 @@ $is_teacher = isset($_SESSION['role']) && $_SESSION['role'] === 'teacher';
 
         <div class="card mt-4">
             <div class="card-header">
-                <h3 class="h4 mb-0">Abilità e Competenze Verificate</h3>
+                <h3 class="h4 mb-0">Abilità e Conoscenze Verificate</h3>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -72,15 +72,15 @@ $is_teacher = isset($_SESSION['role']) && $_SESSION['role'] === 'teacher';
                         <?php endif; ?>
                     </div>
                     <div class="col-md-6">
-                        <h5>Competenze</h5>
-                        <?php if (!empty($verifica->competenza_ids)): ?>
+                        <h5>Conoscenze</h5>
+                        <?php if (!empty($verifica->conoscenza_ids)): ?>
                             <ul class="list-group">
-                                <?php foreach ($verifica->competenza_ids as $id): ?>
-                                    <li class="list-group-item"><?php echo htmlspecialchars($competenze_map[$id] ?? 'ID Sconosciuto'); ?></li>
+                                <?php foreach ($verifica->conoscenza_ids as $id): ?>
+                                    <li class="list-group-item"><?php echo htmlspecialchars($conoscenze_map[$id] ?? 'ID Sconosciuto'); ?></li>
                                 <?php endforeach; ?>
                             </ul>
                         <?php else: ?>
-                            <p>Nessuna competenza collegata.</p>
+                            <p>Nessuna conoscenza collegata.</p>
                         <?php endif; ?>
                     </div>
                 </div>

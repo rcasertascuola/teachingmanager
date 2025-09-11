@@ -112,6 +112,14 @@ CREATE TABLE `student_exercise_answers` (
   UNIQUE KEY `user_exercise_unique` (`user_id`,`exercise_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Tabella per le discipline
+CREATE TABLE `discipline` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nome_unique` (`nome`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 --
 -- Table structure for table `udas`
 --
@@ -120,7 +128,11 @@ CREATE TABLE `udas` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `description` text,
-  PRIMARY KEY (`id`)
+  `disciplina_id` int(11) DEFAULT NULL,
+  `anno_corso` tinyint(4) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `disciplina_id` (`disciplina_id`),
+  CONSTRAINT `udas_ibfk_1` FOREIGN KEY (`disciplina_id`) REFERENCES `discipline` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -155,14 +167,6 @@ CREATE TABLE `module_lessons` (
 
 -- Tabella per le tipologie di competenze
 CREATE TABLE `tipologie_competenze` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `nome` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `nome_unique` (`nome`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- Tabella per le discipline
-CREATE TABLE `discipline` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`),
@@ -327,12 +331,13 @@ CREATE TABLE `verifica_abilita` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Relazione Verifiche -> Competenze (N a N)
-CREATE TABLE `verifica_competenze` (
+-- Relazione Verifiche -> Conoscenze (N a N)
+CREATE TABLE `verifica_conoscenze` (
   `verifica_id` INT(11) NOT NULL,
-  `competenza_id` INT(11) NOT NULL,
-  PRIMARY KEY (`verifica_id`, `competenza_id`),
+  `conoscenza_id` INT(11) NOT NULL,
+  PRIMARY KEY (`verifica_id`, `conoscenza_id`),
   FOREIGN KEY (`verifica_id`) REFERENCES `verifiche`(`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`competenza_id`) REFERENCES `competenze`(`id`) ON DELETE CASCADE
+  FOREIGN KEY (`conoscenza_id`) REFERENCES `conoscenze`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Tabella per le griglie di valutazione
