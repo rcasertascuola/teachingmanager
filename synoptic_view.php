@@ -75,11 +75,11 @@ include 'header.php';
                     });
             }
 
-            function parseAndRenderHeadings(content, container) {
+            function parseAndRenderHeadings(content, container, lessonId) {
                 const headings = [];
                 const lines = content.split('\n');
                 lines.forEach(line => {
-                    const match = line.match(/^(={2,})\s*(.*?)\s*\1/);
+                    const match = line.match(/^(={1,})\s*(.*?)\s*\1/);
                     if (match) {
                         headings.push({
                             level: match[1].length,
@@ -91,11 +91,11 @@ include 'header.php';
 
                 if (headings.length === 0) return;
 
-                const root = { level: 1, children: [] };
+                const root = { level: 0, children: [] };
                 const stack = [root];
 
                 headings.forEach(heading => {
-                    while (stack.length > 1 && stack[stack.length - 1].level >= heading.level) {
+                    while (stack.length > 0 && stack[stack.length - 1].level >= heading.level) {
                         stack.pop();
                     }
                     stack[stack.length - 1].children.push(heading);
@@ -106,7 +106,9 @@ include 'header.php';
                     nodes.forEach(node => {
                         const li = document.createElement('li');
                         const hasChildren = node.children.length > 0;
-                        li.innerHTML = `${hasChildren ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<span>${node.title}</span>`;
+                        const slug = slugify(node.title);
+                        const link = `lessons/view.php?id=${lessonId}#${slug}`;
+                        li.innerHTML = `${hasChildren ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<a href="${link}">${node.title}</a>`;
                         if (hasChildren) {
                             const ul = document.createElement('ul');
                             ul.className = 'children';
@@ -120,6 +122,15 @@ include 'header.php';
                 render(root.children, container);
             }
 
+            function slugify(text) {
+                return text.toString().toLowerCase()
+                    .replace(/\s+/g, '-')           // Replace spaces with -
+                    .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+                    .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+                    .replace(/^-+/, '')             // Trim - from start of text
+                    .replace(/-+$/, '');            // Trim - from end of text
+            }
+
             function renderTree(data) {
                 synopticTreeContainer.innerHTML = '';
                 const rootUl = document.createElement('ul');
@@ -127,7 +138,7 @@ include 'header.php';
                 data.forEach(module => {
                     const moduleLi = document.createElement('li');
                     const hasUdas = module.udas.length > 0;
-                    moduleLi.innerHTML = `${hasUdas ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<h5><i class="fas fa-puzzle-piece"></i> ${module.name}</h5>`;
+                    moduleLi.innerHTML = `${hasUdas ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<h5><a href="modules/view.php?id=${module.id}"><i class="fas fa-puzzle-piece"></i> ${module.name}</a></h5>`;
 
                     if (hasUdas) {
                         const moduleUl = document.createElement('ul');
@@ -136,7 +147,7 @@ include 'header.php';
                         module.udas.forEach(uda => {
                             const udaLi = document.createElement('li');
                             const hasLessons = uda.lessons.length > 0;
-                            udaLi.innerHTML = `${hasLessons ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<h6><i class="fas fa-book"></i> ${uda.name}</h6>`;
+                            udaLi.innerHTML = `${hasLessons ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<h6><a href="udas/view.php?id=${uda.id}"><i class="fas fa-book"></i> ${uda.name}</a></h6>`;
 
                             if (hasLessons) {
                                 const udaUl = document.createElement('ul');
@@ -145,14 +156,14 @@ include 'header.php';
                                 uda.lessons.forEach(lesson => {
                                     const lessonLi = document.createElement('li');
                                     const hasContent = lesson.content || lesson.conoscenze.length > 0 || lesson.abilita.length > 0 || lesson.exercises.length > 0;
-                                    lessonLi.innerHTML = `${hasContent ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<strong><i class="fas fa-chalkboard-teacher"></i> ${lesson.title}</strong>`;
+                                    lessonLi.innerHTML = `${hasContent ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<strong><a href="lessons/view.php?id=${lesson.id}"><i class="fas fa-chalkboard-teacher"></i> ${lesson.title}</a></strong>`;
 
                                     if (hasContent) {
                                         const lessonUl = document.createElement('ul');
                                         lessonUl.className = 'children';
 
                                         if (lesson.content) {
-                                            parseAndRenderHeadings(lesson.content, lessonUl);
+                                            parseAndRenderHeadings(lesson.content, lessonUl, lesson.id);
                                         }
 
                                         if (lesson.conoscenze.length > 0) {
@@ -163,21 +174,21 @@ include 'header.php';
                                             lesson.conoscenze.forEach(conoscenza => {
                                                 const li = document.createElement('li');
                                                 const hasCompetenze = conoscenza.competenze && conoscenza.competenze.length > 0;
-                                                li.innerHTML = `${hasCompetenze ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<span>${conoscenza.nome}</span>`;
+                                                li.innerHTML = `${hasCompetenze ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<a href="conoscenze/view.php?id=${conoscenza.id}">${conoscenza.nome}</a>`;
                                                 if (hasCompetenze) {
                                                     const ul = document.createElement('ul');
                                                     ul.className = 'children';
                                                     conoscenza.competenze.forEach(competenza => {
                                                         const compLi = document.createElement('li');
                                                         const hasDiscipline = competenza.discipline && competenza.discipline.length > 0;
-                                                        compLi.innerHTML = `${hasDiscipline ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<span><i class="fas fa-graduation-cap"></i> ${competenza.nome}</span>`;
+                                                        compLi.innerHTML = `${hasDiscipline ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<a href="competenze/view.php?id=${competenza.id}"><i class="fas fa-graduation-cap"></i> ${competenza.nome}</a>`;
                                                         if (hasDiscipline) {
                                                             const discUl = document.createElement('ul');
                                                             discUl.className = 'children';
                                                             competenza.discipline.forEach(disciplina => {
                                                                 const discLi = document.createElement('li');
                                                                 discLi.className = 'leaf-node';
-                                                                discLi.innerHTML = `<span><i class="fas fa-atom"></i> ${disciplina.nome}</span>`;
+                                                                discLi.innerHTML = `<a href="discipline/view.php?id=${disciplina.id}"><i class="fas fa-atom"></i> ${disciplina.nome}</a>`;
                                                                 discUl.appendChild(discLi);
                                                             });
                                                             compLi.appendChild(discUl);
@@ -200,21 +211,21 @@ include 'header.php';
                                             lesson.abilita.forEach(skill => {
                                                 const li = document.createElement('li');
                                                 const hasCompetenze = skill.competenze && skill.competenze.length > 0;
-                                                li.innerHTML = `${hasCompetenze ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<span>${skill.nome}</span>`;
+                                                li.innerHTML = `${hasCompetenze ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<a href="abilita/view.php?id=${skill.id}">${skill.nome}</a>`;
                                                 if (hasCompetenze) {
                                                     const ul = document.createElement('ul');
                                                     ul.className = 'children';
                                                     skill.competenze.forEach(competenza => {
                                                         const compLi = document.createElement('li');
                                                         const hasDiscipline = competenza.discipline && competenza.discipline.length > 0;
-                                                        compLi.innerHTML = `${hasDiscipline ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<span><i class="fas fa-graduation-cap"></i> ${competenza.nome}</span>`;
+                                                        compLi.innerHTML = `${hasDiscipline ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<a href="competenze/view.php?id=${competenza.id}"><i class="fas fa-graduation-cap"></i> ${competenza.nome}</a>`;
                                                         if (hasDiscipline) {
                                                             const discUl = document.createElement('ul');
                                                             discUl.className = 'children';
                                                             competenza.discipline.forEach(disciplina => {
                                                                 const discLi = document.createElement('li');
                                                                 discLi.className = 'leaf-node';
-                                                                discLi.innerHTML = `<span><i class="fas fa-atom"></i> ${disciplina.nome}</span>`;
+                                                                discLi.innerHTML = `<a href="discipline/view.php?id=${disciplina.id}"><i class="fas fa-atom"></i> ${disciplina.nome}</a>`;
                                                                 discUl.appendChild(discLi);
                                                             });
                                                             compLi.appendChild(discUl);
@@ -237,7 +248,7 @@ include 'header.php';
                                             lesson.exercises.forEach(exercise => {
                                                 const li = document.createElement('li');
                                                 li.className = 'leaf-node';
-                                                li.textContent = exercise.title;
+                                                li.innerHTML = `<a href="exercises/view.php?id=${exercise.id}">${exercise.title}</a>`;
                                                 exercisesUl.appendChild(li);
                                             });
                                             exercisesLi.appendChild(exercisesUl);
