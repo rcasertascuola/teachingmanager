@@ -15,25 +15,25 @@ if ($_SESSION['role'] !== 'teacher') {
 $db = Database::getInstance()->getConnection();
 $manager = new Competenza($db);
 
-// Fetch extra data needed for custom column rendering
-$tipologia_manager = new TipologiaCompetenza($db);
-$tipologie = $tipologia_manager->findAll();
-$tipologia_map = [];
-foreach ($tipologie as $t) {
-    $tipologia_map[$t->id] = $t->nome;
-}
-
 $page_title = 'Gestione Competenze';
 $entity_name = 'Competenza';
+$table_name = 'competenze';
+$joins = [
+    'LEFT JOIN tipologie_competenze ON competenze.tipologia_id = tipologie_competenze.id'
+];
+$selects = [
+    'competenze.id',
+    'competenze.nome',
+    'tipologie_competenze.nome as tipologia'
+];
 $columns = [
     'id' => 'ID',
     'nome' => 'Nome',
-    'tipologia_id' => function($item) use ($tipologia_map) {
-        return htmlspecialchars($tipologia_map[$item->tipologia_id] ?? 'N/A');
-    }
+    'tipologia' => 'Tipologia'
 ];
-$items = $manager->findAll();
 
 // Include the generic handler
 require_once '../handlers/index_handler.php';
 ?>
+
+<?php include '../footer.php'; ?>
