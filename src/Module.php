@@ -5,27 +5,42 @@ class Module
     private $conn;
 
     public $id;
-    public $uda_id;
     public $name;
     public $description;
+    public $disciplina_id;
+    public $anno_corso;
+    public $disciplina_name;
 
     public function __construct($db, $data = [])
     {
         $this->conn = $db;
         $this->id = $data['id'] ?? null;
-        $this->uda_id = $data['uda_id'] ?? null;
         $this->name = $data['name'] ?? '';
         $this->description = $data['description'] ?? '';
+        $this->disciplina_id = $data['disciplina_id'] ?? null;
+        $this->anno_corso = $data['anno_corso'] ?? null;
+        $this->disciplina_name = $data['disciplina_name'] ?? null;
     }
 
     /**
-     * Find all modules.
+     * Find all Modules.
      *
      * @return Module[]
      */
     public function findAll()
     {
-        $stmt = $this->conn->prepare('SELECT * FROM modules ORDER BY name ASC');
+        $query = '
+            SELECT
+                u.*,
+                d.nome AS disciplina_name
+            FROM
+                modules u
+            LEFT JOIN
+                discipline d ON u.disciplina_id = d.id
+            ORDER BY
+                u.name ASC';
+
+        $stmt = $this->conn->prepare($query);
         $stmt->execute();
 
         $moduleData = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -38,7 +53,7 @@ class Module
     }
 
     /**
-     * Find a single module by its ID.
+     * Find a single Module by its ID.
      *
      * @param int $id
      * @return Module|null
@@ -56,48 +71,38 @@ class Module
     }
 
     /**
-     * Find all modules for a given UDA.
-     *
-     * @param int $udaId
-     * @return Module[]
-     */
-    public function findByUdaId($udaId)
-    {
-        $stmt = $this->conn->prepare('SELECT * FROM modules WHERE uda_id = :uda_id ORDER BY name ASC');
-        $stmt->execute(['uda_id' => $udaId]);
-
-        $moduleData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $modules = [];
-        foreach ($moduleData as $data) {
-            $modules[] = new self($this->conn, $data);
-        }
-        return $modules;
-    }
-
-    /**
-     * Save the module (insert or update).
+     * Save the Module (insert or update).
      *
      * @return bool|string True on success, error message string on failure.
      */
     public function save()
     {
+        // Handle empty strings for nullable integer columns
+        if ($this->anno_corso === '') {
+            $this->anno_corso = null;
+        }
+        if ($this->disciplina_id === '') {
+            $this->disciplina_id = null;
+        }
+
         if ($this->id) {
-            // Update existing module
-            $sql = 'UPDATE modules SET uda_id = :uda_id, name = :name, description = :description WHERE id = :id';
+            // Update existing Module
+            $sql = 'UPDATE modules SET name = :name, description = :description, disciplina_id = :disciplina_id, anno_corso = :anno_corso WHERE id = :id';
             $params = [
                 'id' => $this->id,
-                'uda_id' => $this->uda_id,
                 'name' => $this->name,
                 'description' => $this->description,
+                'disciplina_id' => $this->disciplina_id,
+                'anno_corso' => $this->anno_corso,
             ];
         } else {
-            // Insert new module
-            $sql = 'INSERT INTO modules (uda_id, name, description) VALUES (:uda_id, :name, :description)';
+            // Insert new Module
+            $sql = 'INSERT INTO modules (name, description, disciplina_id, anno_corso) VALUES (:name, :description, :disciplina_id, :anno_corso)';
             $params = [
-                'uda_id' => $this->uda_id,
                 'name' => $this->name,
                 'description' => $this->description,
+                'disciplina_id' => $this->disciplina_id,
+                'anno_corso' => $this->anno_corso,
             ];
         }
 
@@ -116,7 +121,7 @@ class Module
     }
 
     /**
-     * Delete a module by its ID.
+     * Delete a Module by its ID.
      *
      * @param int $id
      * @return bool
