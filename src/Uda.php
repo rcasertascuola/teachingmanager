@@ -5,21 +5,17 @@ class Uda
     private $conn;
 
     public $id;
+    public $module_id;
     public $name;
     public $description;
-    public $disciplina_id;
-    public $anno_corso;
-    public $disciplina_name;
 
     public function __construct($db, $data = [])
     {
         $this->conn = $db;
         $this->id = $data['id'] ?? null;
+        $this->module_id = $data['module_id'] ?? null;
         $this->name = $data['name'] ?? '';
         $this->description = $data['description'] ?? '';
-        $this->disciplina_id = $data['disciplina_id'] ?? null;
-        $this->anno_corso = $data['anno_corso'] ?? null;
-        $this->disciplina_name = $data['disciplina_name'] ?? null;
     }
 
     /**
@@ -29,18 +25,7 @@ class Uda
      */
     public function findAll()
     {
-        $query = '
-            SELECT
-                u.*,
-                d.nome AS disciplina_name
-            FROM
-                udas u
-            LEFT JOIN
-                discipline d ON u.disciplina_id = d.id
-            ORDER BY
-                u.name ASC';
-
-        $stmt = $this->conn->prepare($query);
+        $stmt = $this->conn->prepare('SELECT * FROM udas ORDER BY name ASC');
         $stmt->execute();
 
         $udaData = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -71,6 +56,26 @@ class Uda
     }
 
     /**
+     * Find all UDAs for a given Module.
+     *
+     * @param int $moduleId
+     * @return Uda[]
+     */
+    public function findByModuleId($moduleId)
+    {
+        $stmt = $this->conn->prepare('SELECT * FROM udas WHERE module_id = :module_id ORDER BY name ASC');
+        $stmt->execute(['module_id' => $moduleId]);
+
+        $udaData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $udas = [];
+        foreach ($udaData as $data) {
+            $udas[] = new self($this->conn, $data);
+        }
+        return $udas;
+    }
+
+    /**
      * Save the UDA (insert or update).
      *
      * @return bool|string True on success, error message string on failure.
@@ -79,22 +84,20 @@ class Uda
     {
         if ($this->id) {
             // Update existing UDA
-            $sql = 'UPDATE udas SET name = :name, description = :description, disciplina_id = :disciplina_id, anno_corso = :anno_corso WHERE id = :id';
+            $sql = 'UPDATE udas SET module_id = :module_id, name = :name, description = :description WHERE id = :id';
             $params = [
                 'id' => $this->id,
+                'module_id' => $this->module_id,
                 'name' => $this->name,
                 'description' => $this->description,
-                'disciplina_id' => $this->disciplina_id,
-                'anno_corso' => $this->anno_corso,
             ];
         } else {
             // Insert new UDA
-            $sql = 'INSERT INTO udas (name, description, disciplina_id, anno_corso) VALUES (:name, :description, :disciplina_id, :anno_corso)';
+            $sql = 'INSERT INTO udas (module_id, name, description) VALUES (:module_id, :name, :description)';
             $params = [
+                'module_id' => $this->module_id,
                 'name' => $this->name,
                 'description' => $this->description,
-                'disciplina_id' => $this->disciplina_id,
-                'anno_corso' => $this->anno_corso,
             ];
         }
 

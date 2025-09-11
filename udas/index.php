@@ -18,21 +18,19 @@ $page_title = 'Gestione UDA';
 $entity_name = 'UDA';
 $table_name = 'udas';
 $joins = [
-    'LEFT JOIN discipline ON udas.disciplina_id = discipline.id'
+    'LEFT JOIN modules ON udas.module_id = modules.id'
 ];
 $selects = [
     'udas.id as id',
     'udas.name as name',
     'udas.description as description',
-    'discipline.nome as disciplina_name',
-    'udas.anno_corso as anno_corso'
+    'modules.name as module_name'
 ];
 $columns = [
     'id' => 'ID',
     'name' => 'Nome',
     'description' => 'Descrizione',
-    'disciplina_name' => 'Disciplina',
-    'anno_corso' => 'Anno Corso'
+    'module_name' => 'Modulo'
 ];
 
 // Include the generic handler
