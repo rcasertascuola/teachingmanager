@@ -54,21 +54,31 @@ class TipologiaCompetenza
      */
     public function save()
     {
-        if ($this->id) {
-            $stmt = $this->conn->prepare('UPDATE tipologie_competenze SET nome = :nome WHERE id = :id');
-            $params = ['nome' => $this->nome, 'id' => $this->id];
-        } else {
-            $stmt = $this->conn->prepare('INSERT INTO tipologie_competenze (nome) VALUES (:nome)');
-            $params = ['nome' => $this->nome];
+        try {
+            if ($this->id) {
+                $stmt = $this->conn->prepare('UPDATE tipologie_competenze SET nome = :nome WHERE id = :id');
+                $params = ['nome' => $this->nome, 'id' => $this->id];
+            } else {
+                $stmt = $this->conn->prepare('INSERT INTO tipologie_competenze (nome) VALUES (:nome)');
+                $params = ['nome' => $this->nome];
+            }
+
+            $result = $stmt->execute($params);
+
+            if ($result && !$this->id) {
+                $this->id = $this->conn->lastInsertId();
+            }
+
+            return $result;
+        } catch (PDOException $e) {
+            // Check for unique constraint violation
+            if ($e->getCode() == 23000) { // 23000 is the SQLSTATE for integrity constraint violation
+                return "Esiste già una tipologia con questo nome.";
+            }
+            // In a real app, you would log the error
+            // error_log($e->getMessage());
+            return false;
         }
-
-        $result = $stmt->execute($params);
-
-        if ($result && !$this->id) {
-            $this->id = $this->conn->lastInsertId();
-        }
-
-        return $result;
     }
 
     /**
