@@ -17,8 +17,14 @@ $records = []; // Placeholder for existing records
 
 if (isset($_GET['id'])) {
     $verifica_id = (int)$_GET['id'];
-    $verifica = Verifica::findById($verifica_id);
-    $students = User::findAllStudents();
+    // Get database connection
+    $db = Database::getInstance()->getConnection();
+    $verifica_manager = new Verifica($db);
+    $verifica = $verifica_manager->findById($verifica_id);
+
+    // Get all students
+    $user = new User($db);
+    $students = $user->findAllStudents();
 
     if ($verifica) {
         $records = $verifica->getRegistroRecords();

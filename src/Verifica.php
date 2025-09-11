@@ -18,9 +18,15 @@ class Verifica
     public $competenza_ids = [];
     public $griglia = null; // This will hold the Griglia object
 
-    public function __construct($db)
+    public function __construct($db, $data = [])
     {
         $this->conn = $db;
+        $this->id = $data['id'] ?? null;
+        $this->titolo = $data['titolo'] ?? '';
+        $this->descrizione = $data['descrizione'] ?? '';
+        $this->tipo = $data['tipo'] ?? 'scritto';
+        $this->created_at = $data['created_at'] ?? null;
+        $this->updated_at = $data['updated_at'] ?? null;
     }
 
     /**
@@ -28,25 +34,16 @@ class Verifica
      * For now, no pagination.
      * @return Verifica[]
      */
-    public static function findAll()
+    public function findAll()
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM verifiche ORDER BY created_at DESC');
+        $stmt = $this->conn->prepare('SELECT * FROM verifiche ORDER BY created_at DESC');
         $stmt->execute();
 
         $verifiche_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $verifiche = [];
 
         foreach ($verifiche_data as $data) {
-            $verifica = new self($pdo);
-            $verifica->id = $data['id'];
-            $verifica->titolo = $data['titolo'];
-            $verifica->descrizione = $data['descrizione'];
-            $verifica->tipo = $data['tipo'];
-            $verifica->created_at = $data['created_at'];
-            $verifica->updated_at = $data['updated_at'];
-            $verifiche[] = $verifica;
+            $verifiche[] = new self($this->conn, $data);
         }
 
         return $verifiche;
@@ -58,25 +55,15 @@ class Verifica
      * @param int $id
      * @return Verifica|null
      */
-    public static function findById($id)
+    public function findById($id)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM verifiche WHERE id = :id');
+        $stmt = $this->conn->prepare('SELECT * FROM verifiche WHERE id = :id');
         $stmt->execute(['id' => $id]);
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($data) {
-            $verifica = new self($pdo);
-            $verifica->id = $data['id'];
-            $verifica->titolo = $data['titolo'];
-            $verifica->descrizione = $data['descrizione'];
-            $verifica->tipo = $data['tipo'];
-            $verifica->created_at = $data['created_at'];
-            $verifica->updated_at = $data['updated_at'];
-
-            // Load related data
-            $verifica->loadRelatedData($pdo);
+            $verifica = new self($this->conn, $data);
+            $verifica->loadRelatedData();
             return $verifica;
         }
         return null;
@@ -85,32 +72,30 @@ class Verifica
     /**
      * Helper function to load all data related to a verifica.
      */
-    private function loadRelatedData($pdo)
+    private function loadRelatedData()
     {
         // Load Abilita IDs
-        $stmt_abilita = $pdo->prepare('SELECT abilita_id FROM verifica_abilita WHERE verifica_id = :id');
+        $stmt_abilita = $this->conn->prepare('SELECT abilita_id FROM verifica_abilita WHERE verifica_id = :id');
         $stmt_abilita->execute(['id' => $this->id]);
         $this->abilita_ids = $stmt_abilita->fetchAll(PDO::FETCH_COLUMN, 0);
 
         // Load Competenza IDs
-        $stmt_competenze = $pdo->prepare('SELECT competenza_id FROM verifica_competenze WHERE verifica_id = :id');
+        $stmt_competenze = $this->conn->prepare('SELECT competenza_id FROM verifica_competenze WHERE verifica_id = :id');
         $stmt_competenze->execute(['id' => $this->id]);
         $this->competenza_ids = $stmt_competenze->fetchAll(PDO::FETCH_COLUMN, 0);
 
         // Load Griglia and Descrittori
-        $stmt_griglia = $pdo->prepare('SELECT * FROM griglie_valutazione WHERE verifica_id = :id LIMIT 1');
+        $stmt_griglia = $this->conn->prepare('SELECT * FROM griglie_valutazione WHERE verifica_id = :id LIMIT 1');
         $stmt_griglia->execute(['id' => $this->id]);
         $griglia_data = $stmt_griglia->fetch(PDO::FETCH_ASSOC);
 
         if ($griglia_data) {
             $this->griglia = (object) $griglia_data; // Simple object for now
-            $stmt_descrittori = $pdo->prepare('SELECT * FROM griglia_descrittori WHERE griglia_id = :griglia_id ORDER BY id ASC');
+            $stmt_descrittori = $this->conn->prepare('SELECT * FROM griglia_descrittori WHERE griglia_id = :griglia_id ORDER BY id ASC');
             $stmt_descrittori->execute(['griglia_id' => $this->griglia->id]);
             $this->griglia->descrittori = $stmt_descrittori->fetchAll(PDO::FETCH_OBJ);
         }
     }
-
-    // save and delete methods will be added here later.
 
     /**
      * Save or update the verifica and all its related data.
@@ -161,10 +146,8 @@ class Verifica
      * @param int $id
      * @return bool
      */
-    public static function delete($id) {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('DELETE FROM verifiche WHERE id = :id');
+    public function delete($id) {
+        $stmt = $this->conn->prepare('DELETE FROM verifiche WHERE id = :id');
         return $stmt->execute(['id' => $id]);
     }
 

@@ -1,71 +1,71 @@
 <?php
+require_once '../src/Database.php';
+require_once '../src/Exercise.php';
+
 session_start();
+
 // Auth check
-if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION["role"] !== 'teacher') {
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION['role'] !== 'teacher') {
     header("location: ../login.php");
     exit;
 }
 
-require_once '../src/Database.php';
-require_once '../src/Exercise.php';
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Configuration for the generic save handler
+    $db = Database::getInstance()->getConnection();
 
-    // Basic validation
-    if (empty(trim($_POST['title']))) {
-        $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Il titolo è obbligatorio.'];
-        header("location: index.php");
-        exit;
-    }
-    if (empty(trim($_POST['content']))) {
-        $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Il contenuto è obbligatorio.'];
-        header("location: index.php");
-        exit;
+    // The generic handler needs an entity to populate.
+    $manager = new Exercise($db);
+    if (isset($_POST['id']) && !empty($_POST['id'])) {
+        $entity = $manager->findById((int)$_POST['id']);
+        if (!$entity) {
+            die("Entity not found.");
+        }
+    } else {
+        $entity = new Exercise($db);
     }
 
-    // Validate options JSON
-    $options = trim($_POST['options']);
-    if (!empty($options)) {
-        json_decode($options);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Il formato JSON delle opzioni non è valido.'];
-            // In a real app, you'd redirect back to the edit form with the user's input
-            header("location: index.php");
-            exit;
+    // Specific logic for this entity
+    $_POST['enabled'] = isset($_POST['enabled']) ? 1 : 0;
+
+    $redirect_url = 'index.php';
+    $post_data = $_POST;
+
+    // We need to handle the lesson links after saving
+    $lessonIds = $_POST['lessons'] ?? [];
+    unset($post_data['lessons']); // Don't try to save this to the exercise table
+
+    // Save the main entity first
+    foreach ($post_data as $key => $value) {
+        if (property_exists($entity, $key)) {
+            $entity->$key = $value;
         }
     }
-
-
-    $data = [
-        'id' => isset($_POST['id']) && !empty($_POST['id']) ? (int)$_POST['id'] : null,
-        'title' => trim($_POST['title']),
-        'type' => $_POST['type'],
-        'content' => trim($_POST['content']),
-        'options' => $options,
-        'enabled' => isset($_POST['enabled']) ? 1 : 0
-    ];
-
-    $exercise = new Exercise($data);
-    $result = $exercise->save();
+    $result = $entity->save();
 
     if ($result === true) {
-        $lessonIds = $_POST['lessons'] ?? [];
-        if ($exercise->id) {
-            $linkResult = $exercise->updateLinkedLessons($lessonIds);
+        // Now handle the linked lessons
+        if ($entity->id) {
+            $linkResult = $entity->updateLinkedLessons($lessonIds);
             if ($linkResult) {
                 $_SESSION['feedback'] = ['type' => 'success', 'message' => 'Esercizio salvato con successo.'];
             } else {
                  $_SESSION['feedback'] = ['type' => 'warning', 'message' => 'Esercizio salvato, ma si è verificato un errore nel collegamento con le lezioni.'];
             }
         }
+        $action = isset($post_data['id']) && !empty($post_data['id']) ? 'update' : 'create';
+        header("Location: " . $redirect_url . "?success=" . $action);
     } else {
-        $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Errore nel salvataggio dell\'esercizio: ' . htmlspecialchars($result)];
+        $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Errore nel salvataggio: ' . htmlspecialchars($result)];
+        // Redirect back to the edit form to show the error
+        $id_param = isset($post_data['id']) ? '?id=' . $post_data['id'] : '';
+        header("Location: edit.php" . $id_param);
     }
+    exit;
 
 } else {
-    $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Metodo di richiesta non valido.'];
+    // Redirect if not a POST request
+    header("location: index.php");
+    exit;
 }
-
-header("location: index.php");
-exit;
 ?>

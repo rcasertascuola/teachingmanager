@@ -1,32 +1,38 @@
 <?php
+require_once '../src/Database.php';
+require_once '../src/Module.php';
+
 session_start();
+
 // Auth check
-if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION["role"] !== 'teacher') {
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION['role'] !== 'teacher') {
     header("location: ../login.php");
     exit;
 }
 
-require_once '../src/Database.php';
-require_once '../src/Module.php';
-
-// Check if the form was submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Basic validation
-    if (isset($_POST['name']) && isset($_POST['uda_id'])) {
+    // Configuration for the generic save handler
+    $db = Database::getInstance()->getConnection();
 
-        $data = [
-            'id' => isset($_POST['id']) && !empty($_POST['id']) ? (int)$_POST['id'] : null,
-            'name' => trim($_POST['name']),
-            'description' => isset($_POST['description']) ? trim($_POST['description']) : '',
-            'uda_id' => (int)$_POST['uda_id']
-        ];
-
-        $module = new Module($data);
-        $module->save();
+    // The generic handler needs an entity to populate.
+    $manager = new Module($db);
+    if (isset($_POST['id']) && !empty($_POST['id'])) {
+        $entity = $manager->findById((int)$_POST['id']);
+        if (!$entity) {
+            die("Entity not found.");
+        }
+    } else {
+        $entity = new Module($db);
     }
-}
 
-// Redirect back to the module list
-header("location: index.php");
-exit;
+    $redirect_url = 'index.php';
+    $post_data = $_POST;
+
+    // Include the generic handler
+    require_once '../handlers/save_handler.php';
+} else {
+    // Redirect if not a POST request
+    header("location: index.php");
+    exit;
+}
 ?>

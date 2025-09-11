@@ -2,6 +2,8 @@
 
 class Exercise
 {
+    private $conn;
+
     public $id;
     public $title;
     public $type;
@@ -9,11 +11,11 @@ class Exercise
     public $options; // JSON format
     public $enabled;
     public $created_at;
-    public
-    $updated_at;
+    public $updated_at;
 
-    public function __construct($data)
+    public function __construct($db, $data = [])
     {
+        $this->conn = $db;
         $this->id = $data['id'] ?? null;
         $this->title = $data['title'] ?? '';
         $this->type = $data['type'] ?? 'open_answer';
@@ -30,16 +32,14 @@ class Exercise
      * @param int $id
      * @return Exercise|null
      */
-    public static function findById($id)
+    public function findById($id)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM exercises WHERE id = :id');
+        $stmt = $this->conn->prepare('SELECT * FROM exercises WHERE id = :id');
         $stmt->execute(['id' => $id]);
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($data) {
-            return new self($data);
+            return new self($this->conn, $data);
         }
         return null;
     }
@@ -51,11 +51,9 @@ class Exercise
      * @param int $offset
      * @return Exercise[]
      */
-    public static function findAll($limit, $offset)
+    public function findAll($limit, $offset)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM exercises ORDER BY updated_at DESC LIMIT :limit OFFSET :offset');
+        $stmt = $this->conn->prepare('SELECT * FROM exercises ORDER BY updated_at DESC LIMIT :limit OFFSET :offset');
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
@@ -64,7 +62,7 @@ class Exercise
 
         $exercises = [];
         foreach ($exercisesData as $data) {
-            $exercises[] = new self($data);
+            $exercises[] = new self($this->conn, $data);
         }
         return $exercises;
     }
@@ -73,11 +71,9 @@ class Exercise
      * Count all exercises.
      * @return int
      */
-    public static function countAll()
+    public function countAll()
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        return (int) $pdo->query('SELECT COUNT(id) FROM exercises')->fetchColumn();
+        return (int) $this->conn->query('SELECT COUNT(id) FROM exercises')->fetchColumn();
     }
 
     /**
@@ -87,13 +83,6 @@ class Exercise
      */
     public function save()
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-
-        if (!$pdo) {
-            return "Failed to connect to the database.";
-        }
-
         if ($this->id) {
             // Update existing exercise
             $sql = 'UPDATE exercises SET title = :title, type = :type, content = :content, options = :options, enabled = :enabled WHERE id = :id';
@@ -117,12 +106,12 @@ class Exercise
             ];
         }
 
-        $stmt = $pdo->prepare($sql);
+        $stmt = $this->conn->prepare($sql);
         $result = $stmt->execute($params);
 
         if ($result) {
             if (!$this->id) {
-                $this->id = $pdo->lastInsertId();
+                $this->id = $this->conn->lastInsertId();
             }
             return true;
         } else {
@@ -137,12 +126,10 @@ class Exercise
      * @param int $id
      * @return bool
      */
-    public static function delete($id)
+    public function delete($id)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
         // The foreign key constraint with ON DELETE CASCADE will handle deleting from `exercise_lesson` and `student_exercise_answers`.
-        $stmt = $pdo->prepare('DELETE FROM exercises WHERE id = :id');
+        $stmt = $this->conn->prepare('DELETE FROM exercises WHERE id = :id');
         return $stmt->execute(['id' => $id]);
     }
 
@@ -157,9 +144,7 @@ class Exercise
             return [];
         }
 
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('
+        $stmt = $this->conn->prepare('
             SELECT l.id, l.title
             FROM lessons l
             JOIN exercise_lesson el ON l.id = el.lesson_id
@@ -181,21 +166,18 @@ class Exercise
             return false;
         }
 
-        $database = new Database();
-        $pdo = $database->getConnection();
-
         // Start transaction
-        $pdo->beginTransaction();
+        $this->conn->beginTransaction();
 
         try {
             // Delete existing links
-            $deleteStmt = $pdo->prepare('DELETE FROM exercise_lesson WHERE exercise_id = :exercise_id');
+            $deleteStmt = $this->conn->prepare('DELETE FROM exercise_lesson WHERE exercise_id = :exercise_id');
             $deleteStmt->execute(['exercise_id' => $this->id]);
 
             // Insert new links
             if (!empty($lessonIds)) {
                 $insertSql = 'INSERT INTO exercise_lesson (exercise_id, lesson_id) VALUES (:exercise_id, :lesson_id)';
-                $insertStmt = $pdo->prepare($insertSql);
+                $insertStmt = $this->conn->prepare($insertSql);
 
                 foreach ($lessonIds as $lessonId) {
                     $insertStmt->execute([
@@ -206,11 +188,11 @@ class Exercise
             }
 
             // Commit transaction
-            $pdo->commit();
+            $this->conn->commit();
             return true;
         } catch (Exception $e) {
             // Rollback transaction on error
-            $pdo->rollBack();
+            $this->conn->rollBack();
             // In a real app, you'd log this error
             return false;
         }
@@ -224,11 +206,8 @@ class Exercise
      * @param mixed $answerData
      * @return bool|string True on success, error message on failure.
      */
-    public static function saveStudentAnswer($userId, $exerciseId, $answerData)
+    public function saveStudentAnswer($userId, $exerciseId, $answerData)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-
         // For simplicity, we are overwriting any previous answer.
         // A more complex implementation might version the answers.
         $sql = '
@@ -250,7 +229,7 @@ class Exercise
 
 
         try {
-            $stmt = $pdo->prepare($sql);
+            $stmt = $this->conn->prepare($sql);
             $result = $stmt->execute([
                 'user_id' => $userId,
                 'exercise_id' => $exerciseId,
@@ -274,11 +253,9 @@ class Exercise
      * @param int $exerciseId
      * @return array
      */
-    public static function getStudentAnswers($exerciseId)
+    public function getStudentAnswers($exerciseId)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('
+        $stmt = $this->conn->prepare('
             SELECT sa.*, u.username
             FROM student_exercise_answers sa
             JOIN users u ON sa.user_id = u.id
@@ -305,17 +282,15 @@ class Exercise
      * @param int $teacherId
      * @return bool
      */
-    public static function saveCorrection($answerId, $score, $teacherId)
+    public function saveCorrection($answerId, $score, $teacherId)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
         $sql = '
             UPDATE student_exercise_answers
             SET score = :score, corrected_by = :corrected_by, updated_at = CURRENT_TIMESTAMP
             WHERE id = :id
         ';
 
-        $stmt = $pdo->prepare($sql);
+        $stmt = $this->conn->prepare($sql);
         return $stmt->execute([
             'id' => $answerId,
             'score' => $score,
@@ -329,11 +304,9 @@ class Exercise
      * @param int $lessonId
      * @return Exercise[]
      */
-    public static function findForLesson($lessonId)
+    public function findForLesson($lessonId)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('
+        $stmt = $this->conn->prepare('
             SELECT e.* FROM exercises e
             JOIN exercise_lesson el ON e.id = el.exercise_id
             WHERE el.lesson_id = :lesson_id AND e.enabled = 1
@@ -345,7 +318,7 @@ class Exercise
 
         $exercises = [];
         foreach ($exercisesData as $data) {
-            $exercises[] = new self($data);
+            $exercises[] = new self($this->conn, $data);
         }
         return $exercises;
     }

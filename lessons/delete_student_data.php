@@ -25,7 +25,10 @@ if (!$dataId) {
     exit;
 }
 
-$result = Lesson::deleteStudentData($userId, $dataId);
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+$lesson_manager = new Lesson($db);
+$result = $lesson_manager->deleteStudentData($userId, $dataId);
 
 if ($result === true) {
     echo json_encode(['success' => true]);

@@ -18,7 +18,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['exercise_id'])) {
     $answerData = $_POST;
     unset($answerData['exercise_id']);
 
-    $result = Exercise::saveStudentAnswer($userId, $exerciseId, $answerData);
+    // Get the database connection
+    $db = Database::getInstance()->getConnection();
+    $exercise_manager = new Exercise($db);
+    $result = $exercise_manager->saveStudentAnswer($userId, $exerciseId, $answerData);
 
     if ($result === true) {
         $_SESSION['feedback'] = ['type' => 'success', 'message' => 'La tua risposta è stata salvata con successo.'];

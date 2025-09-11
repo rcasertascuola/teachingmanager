@@ -11,8 +11,13 @@ require_once 'src/Competenza.php';
 require_once 'src/Disciplina.php';
 require_once 'src/Exercise.php';
 
-$database = new Database();
-$pdo = $database->getConnection();
+$db = Database::getInstance()->getConnection();
+$pdo = $db; // for compatibility with existing functions
+
+$lesson_manager = new Lesson($db);
+$module_manager = new Module($db);
+$uda_manager = new Uda($db);
+$exercise_manager = new Exercise($db);
 
 $anno_corso = isset($_GET['anno_corso']) && !empty($_GET['anno_corso']) ? (int)$_GET['anno_corso'] : null;
 
@@ -46,11 +51,11 @@ function getDisciplineByCompetenza($pdo, $competenzaId) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-$udas = Uda::findAll();
+$udas = $uda_manager->findAll();
 $result = [];
 
 foreach ($udas as $uda) {
-    $modules = Module::findByUdaId($uda->id);
+    $modules = $module_manager->findByUdaId($uda->id);
     $moduleData = [];
 
     foreach ($modules as $module) {
@@ -61,7 +66,7 @@ foreach ($udas as $uda) {
 
         if (!empty($lessonIds)) {
             foreach ($lessonIds as $lessonId) {
-                $lesson = Lesson::findById($lessonId);
+                $lesson = $lesson_manager->findById($lessonId);
                 if ($lesson) {
                     // Fetch conoscenze
                     $sqlConoscenze = '
@@ -113,7 +118,7 @@ foreach ($udas as $uda) {
                     }
 
                     // Fetch exercises
-                    $exercises = Exercise::findForLesson($lesson->id);
+                    $exercises = $exercise_manager->findForLesson($lesson->id);
 
                     $lessonData[] = [
                         'id' => $lesson->id,

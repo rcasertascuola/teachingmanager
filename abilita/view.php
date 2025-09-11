@@ -11,7 +11,12 @@ if (!isset($_GET['id'])) {
     exit;
 }
 
-$abilita = Abilita::findById($_GET['id']);
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+// Create an instance of Abilita to use its methods
+$abilita_manager = new Abilita($db);
+// Fetch the abilita item
+$abilita = $abilita_manager->findById($_GET['id']);
 
 if (!$abilita) {
     header('Location: index.php');
@@ -19,13 +24,15 @@ if (!$abilita) {
 }
 
 // Fetch related data for display
-$all_conoscenze = Conoscenza::findAll();
+$conoscenza_manager = new Conoscenza($db);
+$all_conoscenze = $conoscenza_manager->findAll();
 $conoscenze_map = [];
 foreach ($all_conoscenze as $c) {
     $conoscenze_map[$c->id] = $c->nome;
 }
 
-$all_discipline = Disciplina::findAll();
+$disciplina_manager = new Disciplina($db);
+$all_discipline = $disciplina_manager->findAll();
 $discipline_map = [];
 foreach ($all_discipline as $d) {
     $discipline_map[$d->id] = $d->nome;
@@ -35,7 +42,7 @@ foreach ($all_discipline as $d) {
 $derived_discipline_ids = [];
 if (!empty($abilita->conoscenze)) {
     foreach ($abilita->conoscenze as $conoscenza_id) {
-        $conoscenza = Conoscenza::findById($conoscenza_id);
+        $conoscenza = $conoscenza_manager->findById($conoscenza_id);
         if ($conoscenza && !empty($conoscenza->discipline)) {
             $derived_discipline_ids = array_merge($derived_discipline_ids, $conoscenza->discipline);
         }

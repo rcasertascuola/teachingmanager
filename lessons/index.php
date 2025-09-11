@@ -6,7 +6,11 @@ require_once '../src/Uda.php';
 include '../header.php';
 
 
-$modules = Module::findAll();
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+
+$module_manager = new Module($db);
+$modules = $module_manager->findAll();
 $moduleNameMap = [];
 $moduleUdaMap = [];
 foreach ($modules as $module) {
@@ -14,11 +18,13 @@ foreach ($modules as $module) {
     $moduleUdaMap[$module->id] = $module->uda_id;
 }
 
-$udas = Uda::findAll();
+$uda_manager = new Uda($db);
+$udas = $uda_manager->findAll();
 $udaNameMap = [];
 foreach ($udas as $uda) {
     $udaNameMap[$uda->id] = $uda->name;
 }
+$lesson_manager = new Lesson($db);
 
 // Pagination settings
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -34,15 +40,15 @@ $module_id_filter = isset($_GET['module_id']) ? (int)$_GET['module_id'] : null;
 
 if ($module_id_filter) {
     // For now, no pagination on this view
-    $lessons = Lesson::findByModuleId($module_id_filter);
+    $lessons = $lesson_manager->findByModuleId($module_id_filter);
     $total_lessons = count($lessons);
     $limit = $total_lessons; //
 } elseif ($is_search) {
-    $total_lessons = Lesson::countSearch($search_content, $search_tags);
-    $lessons = Lesson::search($search_content, $search_tags, $limit, $offset);
+    $total_lessons = $lesson_manager->countSearch($search_content, $search_tags);
+    $lessons = $lesson_manager->search($search_content, $search_tags, $limit, $offset);
 } else {
-    $total_lessons = Lesson::countAll();
-    $lessons = Lesson::findAll($limit, $offset);
+    $total_lessons = $lesson_manager->countAll();
+    $lessons = $lesson_manager->findAll($limit, $offset);
 }
 
 $total_pages = ceil($total_lessons / $limit);

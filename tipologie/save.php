@@ -4,29 +4,36 @@ require_once '../src/TipologiaCompetenza.php';
 
 session_start();
 
+// Auth check
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION['role'] !== 'teacher') {
-    header('Location: ../login.php');
+    header("location: ../login.php");
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = [
-        'id' => $_POST['id'] ?? null,
-        'nome' => $_POST['nome']
-    ];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Configuration for the generic save handler
+    $db = Database::getInstance()->getConnection();
 
-    $tipologia = new TipologiaCompetenza($data);
-
-    if ($tipologia->save()) {
-        $message = $data['id'] ? 'update' : 'create';
-        header('Location: index.php?success=' . $message);
-        exit;
+    // The generic handler needs an entity to populate.
+    // If we are editing, we find the existing one. Otherwise, we create a new one.
+    $manager = new TipologiaCompetenza($db);
+    if (isset($_POST['id']) && !empty($_POST['id'])) {
+        $entity = $manager->findById((int)$_POST['id']);
+        if (!$entity) {
+            die("Entity not found.");
+        }
     } else {
-        // In a real app, you might want to show a more specific error message
-        header('Location: edit.php?id=' . ($data['id'] ?? '') . '&error=1');
-        exit;
+        $entity = new TipologiaCompetenza($db);
     }
+
+    $redirect_url = 'index.php';
+    $post_data = $_POST;
+
+    // Include the generic handler
+    require_once '../handlers/save_handler.php';
 } else {
-    header('Location: index.php');
+    // Redirect if not a POST request
+    header("location: index.php");
     exit;
 }
+?>
