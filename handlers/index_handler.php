@@ -2,11 +2,12 @@
 // Generic Index Page Handler
 
 // Ensure required variables are set
-if (!isset($page_title) || !isset($entity_name) || !isset($columns) || !isset($items)) {
-    die("Configuration error in index handler.");
+if (!isset($page_title) || !isset($entity_name) || !isset($columns) || !isset($table_name)) {
+    die("Configuration error: required variables are not set for the index handler.");
 }
 
 $is_teacher = isset($_SESSION['role']) && $_SESSION['role'] === 'teacher';
+$json_columns = json_encode(array_merge(array_keys($columns), ['actions']));
 ?>
 
 <div class="container mt-4">
@@ -18,6 +19,7 @@ $is_teacher = isset($_SESSION['role']) && $_SESSION['role'] === 'teacher';
     </div>
 
     <?php
+    // Feedback message display
     if (isset($_SESSION['feedback'])) {
         $feedback = $_SESSION['feedback'];
         echo '<div class="alert alert-' . htmlspecialchars($feedback['type']) . ' alert-dismissible fade show" role="alert">';
@@ -34,48 +36,25 @@ $is_teacher = isset($_SESSION['role']) && $_SESSION['role'] === 'teacher';
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-striped">
+                <table class="table table-striped"
+                       data-dynamic-table
+                       data-table-name="<?php echo htmlspecialchars($table_name); ?>"
+                       data-columns='<?php echo $json_columns; ?>'
+                       <?php if (isset($selects)): ?>data-table-selects='<?php echo json_encode($selects); ?>'<?php endif; ?>
+                       <?php if (isset($joins)): ?>data-table-joins='<?php echo json_encode($joins); ?>'<?php endif; ?>
+                       <?php if (isset($custom_actions)): ?>data-table-custom-actions='<?php echo json_encode($custom_actions); ?>'<?php endif; ?>
+                       <?php if (isset($renderers)): ?>data-table-renderers='<?php echo json_encode($renderers); ?>'<?php endif; ?>
+                       >
                     <thead>
                         <tr>
-                            <?php foreach ($columns as $column): ?>
-                                <th scope="col"><?php echo htmlspecialchars($column); ?></th>
+                            <?php foreach ($columns as $column_label): ?>
+                                <th scope="col"><?php echo htmlspecialchars($column_label); ?></th>
                             <?php endforeach; ?>
                             <th scope="col">Azioni</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (empty($items)): ?>
-                            <tr>
-                                <td colspan="<?php echo count($columns) + 1; ?>" class="text-center">Nessun elemento trovato.</td>
-                            </tr>
-                        <?php else: ?>
-                            <?php foreach ($items as $item): ?>
-                                <tr>
-                                    <?php foreach ($columns as $key => $column): ?>
-                                        <td>
-                                            <?php
-                                            if (is_callable($column)) {
-                                                echo $column($item);
-                                            } else {
-                                                echo htmlspecialchars($item->$key ?? '');
-                                            }
-                                            ?>
-                                        </td>
-                                    <?php endforeach; ?>
-                                    <td>
-                                        <?php if (isset($actions) && is_callable($actions)): ?>
-                                            <?php echo $actions($item); ?>
-                                        <?php else: ?>
-                                            <a href="view.php?id=<?php echo $item->id; ?>" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
-                                            <?php if ($is_teacher): ?>
-                                            <a href="edit.php?id=<?php echo $item->id; ?>" class="btn btn-sm btn-warning"><i class="fas fa-pencil-alt"></i></a>
-                                            <a href="delete.php?id=<?php echo $item->id; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Sei sicuro di voler cancellare questo elemento?');"><i class="fas fa-trash"></i></a>
-                                            <?php endif; ?>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+                        <!-- Content will be loaded dynamically by assets/js/dynamic-table.js -->
                     </tbody>
                 </table>
             </div>

@@ -16,11 +16,11 @@ $manager = new Conoscenza($db);
 
 $page_title = 'Gestione Conoscenze';
 $entity_name = 'Conoscenza';
+$table_name = 'conoscenze';
 $columns = [
     'id' => 'ID',
     'nome' => 'Nome'
 ];
-$items = $manager->findAll();
 
 // Include the generic handler
 require_once '../handlers/index_handler.php';
