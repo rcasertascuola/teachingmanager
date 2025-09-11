@@ -4,8 +4,7 @@ header('Content-Type: application/json');
 try {
     require_once '../src/Database.php';
 
-    $database = new Database();
-    $db = $database->getConnection();
+    $db = Database::getInstance()->getConnection();
 
     // --- Get request parameters ---
     $params = json_decode(file_get_contents('php://input'), true);
