@@ -7,12 +7,16 @@ include '../header.php';
 $is_teacher = $_SESSION["role"] === 'teacher';
 $lessons = [];
 
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+$lesson_manager = new Lesson($db);
+
 if ($is_teacher) {
     // For teachers, fetch all lessons for the dropdown
-    $lessons = Lesson::findAll(9999, 0);
+    $lessons = $lesson_manager->findAll(9999, 0);
 } else {
     // For students, fetch only the lessons they have interacted with
-    $lessons = Lesson::findForStudent($_SESSION['id']);
+    $lessons = $lesson_manager->findForStudent($_SESSION['id']);
 }
 
 ?>

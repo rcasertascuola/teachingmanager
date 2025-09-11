@@ -3,62 +3,40 @@ require_once '../src/Database.php';
 require_once '../src/Verifica.php';
 include '../header.php';
 
-// Fetch all verifiche from the database
-$verifiche = Verifica::findAll();
+// Auth check
+if ($_SESSION['role'] !== 'teacher') {
+    echo "<div class='alert alert-danger'>Accesso negato.</div>";
+    include '../footer.php';
+    exit;
+}
 
-$is_teacher = isset($_SESSION['role']) && $_SESSION['role'] === 'teacher';
+// Configuration for the generic index handler
+$db = Database::getInstance()->getConnection();
+$manager = new Verifica($db);
+
+$page_title = 'Gestione Verifiche';
+$entity_name = 'Verifica';
+$columns = [
+    'titolo' => 'Titolo',
+    'tipo' => 'Tipo',
+    'created_at' => 'Data Creazione'
+];
+$items = $manager->findAll();
+
+$actions = function($item) {
+    $is_teacher = isset($_SESSION['role']) && $_SESSION['role'] === 'teacher';
+    $view_btn = '<a href="view.php?id='.$item->id.'" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>';
+    $teacher_btns = '';
+    if ($is_teacher) {
+        $teacher_btns = '
+            <a href="registro.php?id='.$item->id.'" class="btn btn-sm btn-success"><i class="fas fa-book"></i></a>
+            <a href="edit.php?id='.$item->id.'" class="btn btn-sm btn-warning"><i class="fas fa-pencil-alt"></i></a>
+            <a href="delete.php?id='.$item->id.'" class="btn btn-sm btn-danger" onclick="return confirm(\'Sei sicuro di voler cancellare questo elemento?\');"><i class="fas fa-trash"></i></a>
+        ';
+    }
+    return $view_btn . $teacher_btns;
+};
+
+// Include the generic handler
+require_once '../handlers/index_handler.php';
 ?>
-
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h2">Gestione Verifiche</h1>
-        <?php if ($is_teacher): ?>
-            <a href="edit.php" class="btn btn-primary"><i class="fas fa-plus"></i> Aggiungi Nuova Verifica</a>
-        <?php endif; ?>
-    </div>
-
-    <div class="card">
-        <div class="card-header">
-            Elenco Verifiche
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th scope="col">Titolo</th>
-                            <th scope="col">Tipo</th>
-                            <th scope="col">Data Creazione</th>
-                            <th scope="col">Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (empty($verifiche)): ?>
-                            <tr>
-                                <td colspan="4" class="text-center">Nessuna verifica trovata. <br><small>Nota: la funzionalità è in costruzione. Il modello dati non è ancora stato implementato.</small></td>
-                            </tr>
-                        <?php else: ?>
-                            <?php foreach ($verifiche as $verifica): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($verifica->titolo); ?></td>
-                                    <td><?php echo htmlspecialchars(ucfirst($verifica->tipo)); ?></td>
-                                    <td><?php echo htmlspecialchars($verifica->created_at); ?></td>
-                                    <td>
-                                        <a href="view.php?id=<?php echo $verifica->id; ?>" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
-                                        <?php if ($is_teacher): ?>
-                                        <a href="registro.php?id=<?php echo $verifica->id; ?>" class="btn btn-sm btn-success"><i class="fas fa-book"></i></a>
-                                        <a href="edit.php?id=<?php echo $verifica->id; ?>" class="btn btn-sm btn-warning"><i class="fas fa-pencil-alt"></i></a>
-                                        <a href="delete.php?id=<?php echo $verifica->id; ?>" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<?php include '../footer.php'; ?>

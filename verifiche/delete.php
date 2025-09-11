@@ -5,30 +5,20 @@ require_once '../src/Verifica.php';
 session_start();
 
 // Auth check
-if (!isset($_SESSION["role"]) || $_SESSION["role"] !== 'teacher') {
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION['role'] !== 'teacher') {
     header('Location: ../login.php');
     exit;
 }
 
 if (isset($_GET['id'])) {
+    // Configuration for the generic delete handler
+    $db = Database::getInstance()->getConnection();
+    $manager = new Verifica($db);
     $id = (int)$_GET['id'];
+    $redirect_url = 'index.php';
 
-    $success = Verifica::delete($id);
-
-    if ($success) {
-        $message = "Verifica cancellata con successo.";
-    } else {
-        $message = "Errore durante la cancellazione della verifica.";
-    }
-
-    $_SESSION['feedback'] = [
-        'type' => $success ? 'success' : 'danger',
-        'message' => $message
-    ];
-
-    header('Location: index.php');
-    exit;
-
+    // Include the generic handler
+    require_once '../handlers/delete_handler.php';
 } else {
     // No ID provided
     $_SESSION['feedback'] = [

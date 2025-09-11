@@ -20,17 +20,50 @@ class User
 
     function register()
     {
-        // Check if username already exists
-        $query = "SELECT id FROM " . $this->table_name . " WHERE username = :username";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':username', $this->username);
-        $stmt->execute();
+        $query = "INSERT INTO " . $this->table_name . "
+            SET
+                username = :username,
+                password = :password,
+                role = :role,
+                classe = :classe,
+                corso = :corso,
+                anno_scolastico = :anno_scolastico";
 
-        if ($stmt->rowCount() > 0) {
-            return false; // Username already exists
+        $stmt = $this->conn->prepare($query);
+
+        // Sanitize
+        $this->username = htmlspecialchars(strip_tags($this->username));
+        $this->role = htmlspecialchars(strip_tags($this->role));
+        $this->classe = htmlspecialchars(strip_tags($this->classe));
+        $this->corso = htmlspecialchars(strip_tags($this->corso));
+        $this->anno_scolastico = htmlspecialchars(strip_tags($this->anno_scolastico));
+
+        // Hash the password
+        $password_hash = password_hash($this->password, PASSWORD_BCRYPT);
+
+        // Bind the values
+        $stmt->bindParam(':username', $this->username);
+        $stmt->bindParam(':password', $password_hash);
+        $stmt->bindParam(':role', $this->role);
+        $stmt->bindParam(':classe', $this->classe);
+        $stmt->bindParam(':corso', $this->corso);
+        $stmt->bindParam(':anno_scolastico', $this->anno_scolastico);
+
+        try {
+            if ($stmt->execute()) {
+                return true;
+            }
+        } catch (PDOException $e) {
+            // Check if it's a duplicate entry error
+            if ($e->getCode() == 23000) {
+                return false; // Username already exists
+            }
+            // You might want to log other errors
+            // error_log($e->getMessage());
+            return false;
         }
 
-        return $this->create();
+        return false;
     }
 
     function login()
@@ -75,43 +108,6 @@ class User
         $stmt->bindParam(':id', $id);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    public function create() {
-        $query = "INSERT INTO " . $this->table_name . "
-            SET
-                username = :username,
-                password = :password,
-                role = :role,
-                classe = :classe,
-                corso = :corso,
-                anno_scolastico = :anno_scolastico";
-
-        $stmt = $this->conn->prepare($query);
-
-        // Sanitize
-        $this->username = htmlspecialchars(strip_tags($this->username));
-        $this->role = htmlspecialchars(strip_tags($this->role));
-        $this->classe = htmlspecialchars(strip_tags($this->classe));
-        $this->corso = htmlspecialchars(strip_tags($this->corso));
-        $this->anno_scolastico = htmlspecialchars(strip_tags($this->anno_scolastico));
-
-        // Hash the password
-        $password_hash = password_hash($this->password, PASSWORD_BCRYPT);
-
-        // Bind the values
-        $stmt->bindParam(':username', $this->username);
-        $stmt->bindParam(':password', $password_hash);
-        $stmt->bindParam(':role', $this->role);
-        $stmt->bindParam(':classe', $this->classe);
-        $stmt->bindParam(':corso', $this->corso);
-        $stmt->bindParam(':anno_scolastico', $this->anno_scolastico);
-
-        if ($stmt->execute()) {
-            return true;
-        }
-
-        return false;
     }
 
     public function update()
@@ -186,12 +182,9 @@ class User
      *
      * @return array An array of student data (id, username).
      */
-    public static function findAllStudents()
+    public function findAllStudents()
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-
-        $stmt = $pdo->prepare("SELECT id, username, classe, corso, anno_scolastico FROM users WHERE role = 'student' ORDER BY username ASC");
+        $stmt = $this->conn->prepare("SELECT id, username, classe, corso, anno_scolastico FROM users WHERE role = 'student' ORDER BY username ASC");
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

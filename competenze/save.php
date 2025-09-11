@@ -4,41 +4,38 @@ require_once '../src/Competenza.php';
 
 session_start();
 
+// Auth check
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION['role'] !== 'teacher') {
-    header('Location: ../login.php');
+    header("location: ../login.php");
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Server-side validation for mandatory fields
-    if (empty($_POST['nome']) || empty($_POST['tipologia_id'])) {
-        // In a real app, you'd use a more sophisticated error handling/messaging system
-        header('Location: edit.php?id=' . ($_POST['id'] ?? '') . '&error=missing_fields');
-        exit;
-    }
-    $data = [
-        'id' => $_POST['id'] ?? null,
-        'nome' => $_POST['nome'],
-        'descrizione' => $_POST['descrizione'],
-        'tipologia_id' => $_POST['tipologia_id'] ?: null, // Store NULL if empty
-        'conoscenze' => $_POST['conoscenze'] ?? [],
-        'abilita' => $_POST['abilita'] ?? [],
-        'discipline' => $_POST['discipline'] ?? [],
-        'anni_corso' => ($_POST['anno_type'] === 'specifici') ? ($_POST['anni_corso'] ?? []) : []
-    ];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Configuration for the generic save handler
+    $db = Database::getInstance()->getConnection();
 
-    $competenza = new Competenza($data);
-
-    if ($competenza->save()) {
-        $message = $data['id'] ? 'update' : 'create';
-        header('Location: index.php?success=' . $message);
-        exit;
+    // The generic handler needs an entity to populate.
+    if (isset($_POST['id']) && !empty($_POST['id'])) {
+        $manager = new Competenza($db);
+        $entity = $manager->findById((int)$_POST['id']);
+        if (!$entity) {
+            die("Entity not found.");
+        }
     } else {
-        // Error handling
-        header('Location: edit.php?id=' . ($data['id'] ?? '') . '&error=1');
-        exit;
+        $entity = new Competenza($db);
     }
+
+    // Specific logic for this entity
+    $_POST['anni_corso'] = ($_POST['anno_type'] === 'specifici') ? ($_POST['anni_corso'] ?? []) : [];
+
+    $redirect_url = 'index.php';
+    $post_data = $_POST;
+
+    // Include the generic handler
+    require_once '../handlers/save_handler.php';
 } else {
-    header('Location: index.php');
+    // Redirect if not a POST request
+    header("location: index.php");
     exit;
 }
+?>

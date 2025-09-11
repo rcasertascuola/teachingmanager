@@ -10,25 +10,31 @@ require_once '../src/Abilita.php';
 include '../header.php';
 
 
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+$lesson_manager = new Lesson($db);
+
 $lesson = null;
 if (isset($_GET['id'])) {
-    $lesson = Lesson::findById((int)$_GET['id']);
+    $lesson = $lesson_manager->findById((int)$_GET['id']);
 } elseif (isset($_GET['title'])) {
-    $lesson = Lesson::findByTitle(urldecode($_GET['title']));
+    $lesson = $lesson_manager->findByTitle(urldecode($_GET['title']));
 }
 
 $module = null;
 $uda = null;
 if ($lesson && $lesson->module_id) {
-    $module = Module::findById($lesson->module_id);
+    $module_manager = new Module($db);
+    $module = $module_manager->findById($lesson->module_id);
     if ($module && $module->uda_id) {
-        $uda = Uda::findById($module->uda_id);
+        $uda_manager = new Uda($db);
+        $uda = $uda_manager->findById($module->uda_id);
     }
 }
 
 $student_data = [];
 if ($lesson && isset($_SESSION['id']) && $_SESSION['role'] === 'student') {
-    $student_data = Lesson::getStudentData($_SESSION['id'], $lesson->id);
+    $student_data = $lesson_manager->getStudentData($_SESSION['id'], $lesson->id);
 }
 
 $linked_exercises = [];
@@ -36,15 +42,18 @@ $conoscenze_map = [];
 $abilita_map = [];
 
 if ($lesson) {
-    $linked_exercises = Exercise::findForLesson($lesson->id);
+    $exercise_manager = new Exercise($db);
+    $linked_exercises = $exercise_manager->findForLesson($lesson->id);
 
     // Fetch maps for displaying names
-    $all_conoscenze = Conoscenza::findAll();
+    $conoscenza_manager = new Conoscenza($db);
+    $all_conoscenze = $conoscenza_manager->findAll();
     foreach ($all_conoscenze as $c) {
         $conoscenze_map[$c->id] = $c->nome;
     }
 
-    $all_abilita = Abilita::findAll();
+    $abilita_manager = new Abilita($db);
+    $all_abilita = $abilita_manager->findAll();
     foreach ($all_abilita as $a) {
         $abilita_map[$a->id] = $a->nome;
     }

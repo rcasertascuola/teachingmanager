@@ -17,10 +17,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['exercise_id'], $_POST[
     $success_count = 0;
     $error_count = 0;
 
+    // Get the database connection
+    $db = Database::getInstance()->getConnection();
+    $exercise_manager = new Exercise($db);
+
     foreach ($scores as $answerId => $score) {
         // Only update if a score is actually entered
         if ($score !== '') {
-            if (Exercise::saveCorrection((int)$answerId, (float)$score, $teacherId)) {
+            if ($exercise_manager->saveCorrection((int)$answerId, (float)$score, $teacherId)) {
                 $success_count++;
             } else {
                 $error_count++;

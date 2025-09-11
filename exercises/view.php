@@ -5,9 +5,13 @@ require_once '../src/exercise_parser.php';
 include '../header.php';
 
 
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+$exercise_manager = new Exercise($db);
+
 $exercise = null;
 if (isset($_GET['id'])) {
-    $exercise = Exercise::findById((int)$_GET['id']);
+    $exercise = $exercise_manager->findById((int)$_GET['id']);
 }
 
 // Students can only view enabled exercises
@@ -20,7 +24,7 @@ $previous_answer = null;
 if ($exercise && $_SESSION['role'] === 'student') {
     // Need a new method to get a single answer for a specific user and exercise
     // Let's add getStudentAnswer($userId, $exerciseId) to Exercise class
-    $answers = Exercise::getStudentAnswers($exercise->id);
+    $answers = $exercise_manager->getStudentAnswers($exercise->id);
     foreach ($answers as $answer) {
         if ($answer['user_id'] == $_SESSION['id']) {
             $previous_answer = $answer;

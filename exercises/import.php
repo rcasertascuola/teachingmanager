@@ -34,6 +34,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["jsonFile"])) {
         $success_count = 0;
         $failures = [];
 
+        // Get the database connection
+        $db = Database::getInstance()->getConnection();
+        $lesson_manager = new Lesson($db);
+
         foreach ($exercisesData as $exData) {
             if (empty($exData['title']) || empty($exData['type']) || !isset($exData['content'])) {
                 $failures[] = "Un esercizio è stato saltato per mancanza di 'title', 'type', or 'content'. Dati: " . json_encode($exData);
@@ -48,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["jsonFile"])) {
                 'enabled' => $exData['enabled'] ?? 0
             ]);
 
-            $result = $exercise->save();
+            $result = $exercise->save(); // TODO: Refactor Exercise class
 
             if ($result === true) {
                 $success_count++;
@@ -56,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["jsonFile"])) {
                 if (!empty($exData['lesson_links']) && is_array($exData['lesson_links'])) {
                     $lessonIds = [];
                     foreach ($exData['lesson_links'] as $lessonTitle) {
-                        $lesson = Lesson::findByTitle($lessonTitle);
+                        $lesson = $lesson_manager->findByTitle($lessonTitle);
                         if ($lesson) {
                             $lessonIds[] = $lesson->id;
                         } else {
@@ -64,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["jsonFile"])) {
                         }
                     }
                     if (!empty($lessonIds)) {
-                        $exercise->updateLinkedLessons($lessonIds);
+                        $exercise->updateLinkedLessons($lessonIds); // TODO: Refactor Exercise class
                     }
                 }
             } else {

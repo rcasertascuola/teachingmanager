@@ -11,14 +11,17 @@ if (!isset($_GET['uda_id']) || empty($_GET['uda_id'])) {
 }
 
 $uda_id = (int)$_GET['uda_id'];
-$uda = Uda::findById($uda_id);
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+$uda_manager = new Uda($db);
+$uda = $uda_manager->findById($uda_id);
 
 if (!$uda) {
     header("location: ../udas/view.php");
     exit;
 }
-
-$modules = Module::findByUdaId($uda_id);
+$module_manager = new Module($db);
+$modules = $module_manager->findByUdaId($uda_id);
 ?>
 
     <div class="container mt-4">

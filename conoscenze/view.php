@@ -10,7 +10,10 @@ if (!isset($_GET['id'])) {
     exit;
 }
 
-$conoscenza = Conoscenza::findById($_GET['id']);
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+$conoscenza_manager = new Conoscenza($db);
+$conoscenza = $conoscenza_manager->findById($_GET['id']);
 
 if (!$conoscenza) {
     header('Location: index.php');
@@ -18,7 +21,8 @@ if (!$conoscenza) {
 }
 
 // For displaying names instead of just IDs
-$all_discipline = Disciplina::findAll();
+$disciplina_manager = new Disciplina($db);
+$all_discipline = $disciplina_manager->findAll();
 $discipline_map = [];
 foreach ($all_discipline as $d) {
     $discipline_map[$d->id] = $d->nome;

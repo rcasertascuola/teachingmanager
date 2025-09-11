@@ -4,21 +4,28 @@ require_once '../src/Conoscenza.php';
 
 session_start();
 
+// Auth check
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION['role'] !== 'teacher') {
     header('Location: ../login.php');
     exit;
 }
 
 if (isset($_GET['id'])) {
-    $id = $_GET['id'];
-    if (Conoscenza::delete($id)) {
-        header('Location: index.php?success=delete');
-        exit;
-    } else {
-        header('Location: index.php?error=delete');
-        exit;
-    }
+    // Configuration for the generic delete handler
+    $db = Database::getInstance()->getConnection();
+    $manager = new Conoscenza($db);
+    $id = (int)$_GET['id'];
+    $redirect_url = 'index.php';
+
+    // Include the generic handler
+    require_once '../handlers/delete_handler.php';
 } else {
+    // No ID provided
+    $_SESSION['feedback'] = [
+        'type' => 'warning',
+        'message' => 'Nessun ID specificato per la cancellazione.'
+    ];
     header('Location: index.php');
     exit;
 }
+?>

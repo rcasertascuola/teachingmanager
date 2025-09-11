@@ -27,7 +27,10 @@ if (!$lessonId || !$type || !$data) {
     exit;
 }
 
-$result = Lesson::saveStudentData($userId, $lessonId, $type, $data);
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+$lesson_manager = new Lesson($db);
+$result = $lesson_manager->saveStudentData($userId, $lessonId, $type, $data);
 
 if ($result === true) {
     echo json_encode(['success' => true]);

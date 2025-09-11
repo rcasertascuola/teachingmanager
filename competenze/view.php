@@ -13,7 +13,10 @@ if (!isset($_GET['id'])) {
     exit;
 }
 
-$competenza = Competenza::findById($_GET['id']);
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+$competenza_manager = new Competenza($db);
+$competenza = $competenza_manager->findById($_GET['id']);
 
 if (!$competenza) {
     header('Location: index.php');
@@ -21,21 +24,25 @@ if (!$competenza) {
 }
 
 // Fetch all related data for display
-$tipologia = $competenza->tipologia_id ? TipologiaCompetenza::findById($competenza->tipologia_id) : null;
+$tipologia_manager = new TipologiaCompetenza($db);
+$tipologia = $competenza->tipologia_id ? $tipologia_manager->findById($competenza->tipologia_id) : null;
 
-$all_conoscenze = Conoscenza::findAll();
+$conoscenza_manager = new Conoscenza($db);
+$all_conoscenze = $conoscenza_manager->findAll();
 $conoscenze_map = [];
 foreach ($all_conoscenze as $c) {
     $conoscenze_map[$c->id] = $c->nome;
 }
 
-$all_abilita = Abilita::findAll();
+$abilita_manager = new Abilita($db);
+$all_abilita = $abilita_manager->findAll();
 $abilita_map = [];
 foreach ($all_abilita as $a) {
     $abilita_map[$a->id] = $a->nome;
 }
 
-$all_discipline = Disciplina::findAll();
+$disciplina_manager = new Disciplina($db);
+$all_discipline = $disciplina_manager->findAll();
 $discipline_map = [];
 foreach ($all_discipline as $d) {
     $discipline_map[$d->id] = $d->nome;

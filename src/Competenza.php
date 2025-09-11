@@ -2,6 +2,8 @@
 
 class Competenza
 {
+    private $conn;
+
     public $id;
     public $nome;
     public $descrizione;
@@ -13,14 +15,15 @@ class Competenza
     public $discipline;
     public $anni_corso;
 
-    public function __construct($data)
+    public function __construct($db, $data = [])
     {
+        $this->conn = $db;
         $this->id = $data['id'] ?? null;
         $this->nome = $data['nome'] ?? '';
         $this->descrizione = $data['descrizione'] ?? '';
         $this->tipologia_id = $data['tipologia_id'] ?? null;
 
-        // These will be loaded separately
+        // These will be loaded separately if not provided
         $this->conoscenze = $data['conoscenze'] ?? [];
         $this->abilita = $data['abilita'] ?? [];
         $this->discipline = $data['discipline'] ?? [];
@@ -32,17 +35,15 @@ class Competenza
      *
      * @return Competenza[]
      */
-    public static function findAll()
+    public function findAll()
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM competenze ORDER BY nome ASC');
+        $stmt = $this->conn->prepare('SELECT * FROM competenze ORDER BY nome ASC');
         $stmt->execute();
 
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $competenze = [];
         foreach ($results as $data) {
-            $competenze[] = new self($data);
+            $competenze[] = new self($this->conn, $data);
         }
         return $competenze;
     }
@@ -53,17 +54,15 @@ class Competenza
      * @param int $id
      * @return Competenza|null
      */
-    public static function findById($id)
+    public function findById($id)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM competenze WHERE id = :id');
+        $stmt = $this->conn->prepare('SELECT * FROM competenze WHERE id = :id');
         $stmt->execute(['id' => $id]);
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($data) {
-            $competenza = new self($data);
-            $competenza->loadRelatedData($pdo);
+            $competenza = new self($this->conn, $data);
+            $competenza->loadRelatedData();
             return $competenza;
         }
         return null;
@@ -76,14 +75,11 @@ class Competenza
      */
     public function save()
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-
         try {
-            $pdo->beginTransaction();
+            $this->conn->beginTransaction();
 
             if ($this->id) {
-                $stmt = $pdo->prepare('UPDATE competenze SET nome = :nome, descrizione = :descrizione, tipologia_id = :tipologia_id WHERE id = :id');
+                $stmt = $this->conn->prepare('UPDATE competenze SET nome = :nome, descrizione = :descrizione, tipologia_id = :tipologia_id WHERE id = :id');
                 $params = [
                     'nome' => $this->nome,
                     'descrizione' => $this->descrizione,
@@ -91,7 +87,7 @@ class Competenza
                     'id' => $this->id
                 ];
             } else {
-                $stmt = $pdo->prepare('INSERT INTO competenze (nome, descrizione, tipologia_id) VALUES (:nome, :descrizione, :tipologia_id)');
+                $stmt = $this->conn->prepare('INSERT INTO competenze (nome, descrizione, tipologia_id) VALUES (:nome, :descrizione, :tipologia_id)');
                 $params = [
                     'nome' => $this->nome,
                     'descrizione' => $this->descrizione,
@@ -102,19 +98,21 @@ class Competenza
             $stmt->execute($params);
 
             if (!$this->id) {
-                $this->id = $pdo->lastInsertId();
+                $this->id = $this->conn->lastInsertId();
             }
 
             // Sync relationships
-            $this->syncRelatedData($pdo, 'competenza_conoscenze', 'competenza_id', 'conoscenza_id', $this->conoscenze);
-            $this->syncRelatedData($pdo, 'competenza_abilita', 'competenza_id', 'abilita_id', $this->abilita);
-            $this->syncRelatedData($pdo, 'competenza_discipline', 'competenza_id', 'disciplina_id', $this->discipline);
-            $this->syncRelatedData($pdo, 'competenza_anni_corso', 'competenza_id', 'anno_corso', $this->anni_corso);
+            $this->syncRelatedData('competenza_conoscenze', 'conoscenza_id', $this->conoscenze);
+            $this->syncRelatedData('competenza_abilita', 'abilita_id', $this->abilita);
+            $this->syncRelatedData('competenza_discipline', 'disciplina_id', $this->discipline);
+            $this->syncRelatedData('competenza_anni_corso', 'anno_corso', $this->anni_corso);
 
-            $pdo->commit();
+            $this->conn->commit();
             return true;
         } catch (Exception $e) {
-            $pdo->rollBack();
+            $this->conn->rollBack();
+            // In a real app, log the error
+            error_log($e->getMessage());
             return false;
         }
     }
@@ -125,31 +123,30 @@ class Competenza
      * @param int $id
      * @return bool
      */
-    public static function delete($id)
+    public function delete($id)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('DELETE FROM competenze WHERE id = :id');
+        $stmt = $this->conn->prepare('DELETE FROM competenze WHERE id = :id');
         return $stmt->execute(['id' => $id]);
     }
 
     /**
      * Loads related data.
      */
-    private function loadRelatedData($pdo)
+    private function loadRelatedData()
     {
-        $this->conoscenze = $this->getRelatedIds($pdo, 'competenza_conoscenze', 'competenza_id', 'conoscenza_id');
-        $this->abilita = $this->getRelatedIds($pdo, 'competenza_abilita', 'competenza_id', 'abilita_id');
-        $this->discipline = $this->getRelatedIds($pdo, 'competenza_discipline', 'competenza_id', 'disciplina_id');
-        $this->anni_corso = $this->getRelatedIds($pdo, 'competenza_anni_corso', 'competenza_id', 'anno_corso');
+        $this->conoscenze = $this->getRelatedIds('competenza_conoscenze', 'conoscenza_id');
+        $this->abilita = $this->getRelatedIds('competenza_abilita', 'abilita_id');
+        $this->discipline = $this->getRelatedIds('competenza_discipline', 'disciplina_id');
+        $this->anni_corso = $this->getRelatedIds('competenza_anni_corso', 'anno_corso');
     }
 
     /**
      * Fetches related IDs from a join table.
      */
-    private function getRelatedIds($pdo, $tableName, $thisIdColumn, $relatedIdColumn)
+    private function getRelatedIds($tableName, $relatedIdColumn)
     {
-        $stmt = $pdo->prepare("SELECT {$relatedIdColumn} FROM {$tableName} WHERE {$thisIdColumn} = :id");
+        $thisIdColumn = 'competenza_id';
+        $stmt = $this->conn->prepare("SELECT {$relatedIdColumn} FROM {$tableName} WHERE {$thisIdColumn} = :id");
         $stmt->execute(['id' => $this->id]);
         return $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
     }
@@ -157,9 +154,10 @@ class Competenza
     /**
      * A generic helper to sync many-to-many relationships.
      */
-    private function syncRelatedData($pdo, $tableName, $thisIdColumn, $relatedIdColumn, $relatedIds)
+    private function syncRelatedData($tableName, $relatedIdColumn, $relatedIds)
     {
-        $stmt = $pdo->prepare("DELETE FROM {$tableName} WHERE {$thisIdColumn} = :id");
+        $thisIdColumn = 'competenza_id';
+        $stmt = $this->conn->prepare("DELETE FROM {$tableName} WHERE {$thisIdColumn} = :id");
         $stmt->execute(['id' => $this->id]);
 
         if (!empty($relatedIds)) {
@@ -172,7 +170,7 @@ class Competenza
                 $values[] = $relatedId;
             }
             $sql .= implode(', ', $placeholders);
-            $stmt = $pdo->prepare($sql);
+            $stmt = $this->conn->prepare($sql);
             $stmt->execute($values);
         }
     }

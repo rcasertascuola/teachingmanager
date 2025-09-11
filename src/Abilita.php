@@ -2,6 +2,8 @@
 
 class Abilita
 {
+    private $conn;
+
     public $id;
     public $nome;
     public $descrizione;
@@ -11,8 +13,9 @@ class Abilita
     public $conoscenze;
     public $anni_corso;
 
-    public function __construct($data)
+    public function __construct($db, $data = [])
     {
+        $this->conn = $db;
         $this->id = $data['id'] ?? null;
         $this->nome = $data['nome'] ?? '';
         $this->descrizione = $data['descrizione'] ?? '';
@@ -28,19 +31,17 @@ class Abilita
      *
      * @return Abilita[]
      */
-    public static function findAll()
+    public function findAll()
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM abilita ORDER BY nome ASC');
+        $stmt = $this->conn->prepare('SELECT * FROM abilita ORDER BY nome ASC');
         $stmt->execute();
 
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $abilita = [];
+        $abilita_list = [];
         foreach ($results as $data) {
-            $abilita[] = new self($data);
+            $abilita_list[] = new self($this->conn, $data);
         }
-        return $abilita;
+        return $abilita_list;
     }
 
     /**
@@ -49,17 +50,15 @@ class Abilita
      * @param int $id
      * @return Abilita|null
      */
-    public static function findById($id)
+    public function findById($id)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM abilita WHERE id = :id');
+        $stmt = $this->conn->prepare('SELECT * FROM abilita WHERE id = :id');
         $stmt->execute(['id' => $id]);
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($data) {
-            $abilita = new self($data);
-            $abilita->loadRelatedData($pdo);
+            $abilita = new self($this->conn, $data);
+            $abilita->loadRelatedData();
             return $abilita;
         }
         return null;
@@ -72,14 +71,11 @@ class Abilita
      */
     public function save()
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-
         try {
-            $pdo->beginTransaction();
+            $this->conn->beginTransaction();
 
             if ($this->id) {
-                $stmt = $pdo->prepare('UPDATE abilita SET nome = :nome, descrizione = :descrizione, tipo = :tipo WHERE id = :id');
+                $stmt = $this->conn->prepare('UPDATE abilita SET nome = :nome, descrizione = :descrizione, tipo = :tipo WHERE id = :id');
                 $params = [
                     'nome' => $this->nome,
                     'descrizione' => $this->descrizione,
@@ -87,7 +83,7 @@ class Abilita
                     'id' => $this->id
                 ];
             } else {
-                $stmt = $pdo->prepare('INSERT INTO abilita (nome, descrizione, tipo) VALUES (:nome, :descrizione, :tipo)');
+                $stmt = $this->conn->prepare('INSERT INTO abilita (nome, descrizione, tipo) VALUES (:nome, :descrizione, :tipo)');
                 $params = [
                     'nome' => $this->nome,
                     'descrizione' => $this->descrizione,
@@ -98,17 +94,18 @@ class Abilita
             $stmt->execute($params);
 
             if (!$this->id) {
-                $this->id = $pdo->lastInsertId();
+                $this->id = $this->conn->lastInsertId();
             }
 
             // Sync relationships
-            $this->syncRelatedData($pdo, 'abilita_conoscenze', 'abilita_id', 'conoscenza_id', $this->conoscenze);
-            $this->syncRelatedData($pdo, 'abilita_anni_corso', 'abilita_id', 'anno_corso', $this->anni_corso);
+            $this->syncRelatedData('abilita_conoscenze', 'conoscenza_id', $this->conoscenze);
+            $this->syncRelatedData('abilita_anni_corso', 'anno_corso', $this->anni_corso);
 
-            $pdo->commit();
+            $this->conn->commit();
             return true;
         } catch (Exception $e) {
-            $pdo->rollBack();
+            $this->conn->rollBack();
+            // In a real app, log the error: error_log($e->getMessage());
             return false;
         }
     }
@@ -119,26 +116,24 @@ class Abilita
      * @param int $id
      * @return bool
      */
-    public static function delete($id)
+    public function delete($id)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('DELETE FROM abilita WHERE id = :id');
+        $stmt = $this->conn->prepare('DELETE FROM abilita WHERE id = :id');
         return $stmt->execute(['id' => $id]);
     }
 
     /**
      * Loads related data.
      */
-    private function loadRelatedData($pdo)
+    private function loadRelatedData()
     {
         // Load conoscenze
-        $stmt = $pdo->prepare('SELECT conoscenza_id FROM abilita_conoscenze WHERE abilita_id = :id');
+        $stmt = $this->conn->prepare('SELECT conoscenza_id FROM abilita_conoscenze WHERE abilita_id = :id');
         $stmt->execute(['id' => $this->id]);
         $this->conoscenze = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
 
         // Load school years
-        $stmt = $pdo->prepare('SELECT anno_corso FROM abilita_anni_corso WHERE abilita_id = :id');
+        $stmt = $this->conn->prepare('SELECT anno_corso FROM abilita_anni_corso WHERE abilita_id = :id');
         $stmt->execute(['id' => $this->id]);
         $this->anni_corso = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
     }
@@ -146,9 +141,11 @@ class Abilita
     /**
      * A generic helper to sync many-to-many relationships.
      */
-    private function syncRelatedData($pdo, $tableName, $thisIdColumn, $relatedIdColumn, $relatedIds)
+    private function syncRelatedData($tableName, $relatedIdColumn, $relatedIds)
     {
-        $stmt = $pdo->prepare("DELETE FROM {$tableName} WHERE {$thisIdColumn} = :id");
+        $thisIdColumn = 'abilita_id'; // Assuming the column name is based on the class name
+
+        $stmt = $this->conn->prepare("DELETE FROM {$tableName} WHERE {$thisIdColumn} = :id");
         $stmt->execute(['id' => $this->id]);
 
         if (!empty($relatedIds)) {
@@ -156,12 +153,14 @@ class Abilita
             $placeholders = [];
             $values = [];
             foreach ($relatedIds as $relatedId) {
+                // Ensure related IDs are of the correct type, e.g., int
+                $relatedId = (int)$relatedId;
                 $placeholders[] = '(?, ?)';
                 $values[] = $this->id;
                 $values[] = $relatedId;
             }
             $sql .= implode(', ', $placeholders);
-            $stmt = $pdo->prepare($sql);
+            $stmt = $this->conn->prepare($sql);
             $stmt->execute($values);
         }
     }

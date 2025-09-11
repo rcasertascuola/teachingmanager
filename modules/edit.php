@@ -12,15 +12,20 @@ if ($_SESSION["role"] !== 'teacher') {
 }
 
 
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+$module_manager = new Module($db);
+
 $module = null;
 $pageTitle = 'Aggiungi Nuovo Modulo';
 $formAction = 'save.php';
 
-$udas = Uda::findAll();
+$uda_manager = new Uda($db);
+$udas = $uda_manager->findAll();
 
 // Check if we are editing an existing module
 if (isset($_GET['id']) && !empty($_GET['id'])) {
-    $module = Module::findById((int)$_GET['id']);
+    $module = $module_manager->findById((int)$_GET['id']);
     if ($module) {
         $pageTitle = 'Modifica Modulo';
     } else {
@@ -28,6 +33,8 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         header("location: index.php");
         exit;
     }
+} else {
+    $module = new Module($db);
 }
 
 ?>

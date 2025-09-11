@@ -12,7 +12,11 @@ if (!$lessonId) {
     exit;
 }
 
-$lesson = Lesson::findById($lessonId);
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+$lesson_manager = new Lesson($db);
+
+$lesson = $lesson_manager->findById($lessonId);
 if (!$lesson) {
     echo "Lezione non trovata.";
     exit;
@@ -22,8 +26,8 @@ $is_teacher = $_SESSION['role'] === 'teacher';
 
 if ($is_teacher) {
     // Teacher-specific data fetching
-    $allStudentData = Lesson::getAllStudentDataForLesson($lessonId);
-    $studentsOnLesson = Lesson::getStudentsForLesson($lessonId);
+    $allStudentData = $lesson_manager->getAllStudentDataForLesson($lessonId);
+    $studentsOnLesson = $lesson_manager->getStudentsForLesson($lessonId);
 
     $aggregatedData = ['highlight' => [], 'annotation' => [], 'question' => [], 'summary' => []];
     $individualData = [];
@@ -46,7 +50,7 @@ if ($is_teacher) {
 } else {
     // Student-specific data fetching
     $student_id = $_SESSION['id'];
-    $studentData = Lesson::getStudentData($student_id, $lessonId);
+    $studentData = $lesson_manager->getStudentData($student_id, $lessonId);
 
     // Also, ensure student has access to this lesson's feedback
     // This is implicitly handled by findForStudent on the previous page,

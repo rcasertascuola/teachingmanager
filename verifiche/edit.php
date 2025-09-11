@@ -17,16 +17,23 @@ $verifica = null;
 $pageTitle = 'Aggiungi Nuova Verifica';
 $formAction = 'save.php';
 
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+
 // Fetch all available abilities and competencies for the form
-$all_abilita = Abilita::findAll();
-$all_competenze = Competenza::findAll();
+$abilita_manager = new Abilita($db);
+$all_abilita = $abilita_manager->findAll();
+$competenza_manager = new Competenza($db);
+$all_competenze = $competenza_manager->findAll();
 
 $griglia_nome = "Griglia di Valutazione";
 $descrittori = [];
 
+$verifica_manager = new Verifica($db);
+
 if (isset($_GET['id']) && !empty($_GET['id'])) {
     $id = (int)$_GET['id'];
-    $verifica = Verifica::findById($id);
+    $verifica = $verifica_manager->findById($id);
 
     if ($verifica) {
         $pageTitle = 'Modifica Verifica';

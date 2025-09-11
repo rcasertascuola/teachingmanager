@@ -10,9 +10,15 @@ if ($_SESSION['role'] !== 'teacher') {
     exit;
 }
 
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+$disciplina_manager = new Disciplina($db);
+
 $disciplina = null;
 if (isset($_GET['id'])) {
-    $disciplina = Disciplina::findById($_GET['id']);
+    $disciplina = $disciplina_manager->findById($_GET['id']);
+} else {
+    $disciplina = new Disciplina($db);
 }
 
 $pageTitle = $disciplina ? 'Modifica Disciplina' : 'Crea Nuova Disciplina';

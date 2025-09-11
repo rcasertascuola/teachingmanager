@@ -10,18 +10,24 @@ $verifica = null;
 $abilita_map = [];
 $competenze_map = [];
 
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+$verifica_manager = new Verifica($db);
+
 if (isset($_GET['id'])) {
-    $verifica = Verifica::findById((int)$_GET['id']);
+    $verifica = $verifica_manager->findById((int)$_GET['id']);
 }
 
 if ($verifica) {
     // Fetch all abilita and competenze to create a name map
-    $all_abilita = Abilita::findAll();
+    $abilita_manager = new Abilita($db);
+    $all_abilita = $abilita_manager->findAll();
     foreach ($all_abilita as $a) {
         $abilita_map[$a->id] = $a->nome;
     }
 
-    $all_competenze = Competenza::findAll();
+    $competenza_manager = new Competenza($db);
+    $all_competenze = $competenza_manager->findAll();
     foreach ($all_competenze as $c) {
         $competenze_map[$c->id] = $c->nome;
     }

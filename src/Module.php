@@ -2,13 +2,16 @@
 
 class Module
 {
+    private $conn;
+
     public $id;
     public $uda_id;
     public $name;
     public $description;
 
-    public function __construct($data)
+    public function __construct($db, $data = [])
     {
+        $this->conn = $db;
         $this->id = $data['id'] ?? null;
         $this->uda_id = $data['uda_id'] ?? null;
         $this->name = $data['name'] ?? '';
@@ -20,18 +23,16 @@ class Module
      *
      * @return Module[]
      */
-    public static function findAll()
+    public function findAll()
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM modules ORDER BY name ASC');
+        $stmt = $this->conn->prepare('SELECT * FROM modules ORDER BY name ASC');
         $stmt->execute();
 
         $moduleData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $modules = [];
         foreach ($moduleData as $data) {
-            $modules[] = new self($data);
+            $modules[] = new self($this->conn, $data);
         }
         return $modules;
     }
@@ -42,16 +43,14 @@ class Module
      * @param int $id
      * @return Module|null
      */
-    public static function findById($id)
+    public function findById($id)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM modules WHERE id = :id');
+        $stmt = $this->conn->prepare('SELECT * FROM modules WHERE id = :id');
         $stmt->execute(['id' => $id]);
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($data) {
-            return new self($data);
+            return new self($this->conn, $data);
         }
         return null;
     }
@@ -62,18 +61,16 @@ class Module
      * @param int $udaId
      * @return Module[]
      */
-    public static function findByUdaId($udaId)
+    public function findByUdaId($udaId)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM modules WHERE uda_id = :uda_id ORDER BY name ASC');
+        $stmt = $this->conn->prepare('SELECT * FROM modules WHERE uda_id = :uda_id ORDER BY name ASC');
         $stmt->execute(['uda_id' => $udaId]);
 
         $moduleData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $modules = [];
         foreach ($moduleData as $data) {
-            $modules[] = new self($data);
+            $modules[] = new self($this->conn, $data);
         }
         return $modules;
     }
@@ -85,13 +82,6 @@ class Module
      */
     public function save()
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-
-        if (!$pdo) {
-            return "Failed to connect to the database.";
-        }
-
         if ($this->id) {
             // Update existing module
             $sql = 'UPDATE modules SET uda_id = :uda_id, name = :name, description = :description WHERE id = :id';
@@ -111,12 +101,12 @@ class Module
             ];
         }
 
-        $stmt = $pdo->prepare($sql);
+        $stmt = $this->conn->prepare($sql);
         $result = $stmt->execute($params);
 
         if ($result) {
             if (!$this->id) {
-                $this->id = $pdo->lastInsertId();
+                $this->id = $this->conn->lastInsertId();
             }
             return true;
         } else {
@@ -131,11 +121,9 @@ class Module
      * @param int $id
      * @return bool
      */
-    public static function delete($id)
+    public function delete($id)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('DELETE FROM modules WHERE id = :id');
+        $stmt = $this->conn->prepare('DELETE FROM modules WHERE id = :id');
         return $stmt->execute(['id' => $id]);
     }
 }

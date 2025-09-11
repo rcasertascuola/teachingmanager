@@ -4,8 +4,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     include_once 'src/Database.php';
     include_once 'src/User.php';
 
-    $database = new Database();
-    $db = $database->getConnection();
+    $db = Database::getInstance()->getConnection();
 
     $user = new User($db);
 

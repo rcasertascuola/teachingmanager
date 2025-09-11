@@ -11,13 +11,20 @@ if ($_SESSION['role'] !== 'teacher') {
     exit;
 }
 
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+
 // Fetch all disciplines for the multi-select
-$all_discipline = Disciplina::findAll();
+$disciplina_manager = new Disciplina($db);
+$all_discipline = $disciplina_manager->findAll();
 $anni_corso_options = range(1, 5);
 
+$conoscenza_manager = new Conoscenza($db);
 $conoscenza = null;
 if (isset($_GET['id'])) {
-    $conoscenza = Conoscenza::findById($_GET['id']);
+    $conoscenza = $conoscenza_manager->findById($_GET['id']);
+} else {
+    $conoscenza = new Conoscenza($db);
 }
 
 $pageTitle = $conoscenza ? 'Modifica Conoscenza' : 'Crea Nuova Conoscenza';

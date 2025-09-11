@@ -2,11 +2,14 @@
 
 class TipologiaCompetenza
 {
+    private $conn;
+
     public $id;
     public $nome;
 
-    public function __construct($data)
+    public function __construct($db, $data = [])
     {
+        $this->conn = $db;
         $this->id = $data['id'] ?? null;
         $this->nome = $data['nome'] ?? '';
     }
@@ -16,17 +19,15 @@ class TipologiaCompetenza
      *
      * @return TipologiaCompetenza[]
      */
-    public static function findAll()
+    public function findAll()
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM tipologie_competenze ORDER BY nome ASC');
+        $stmt = $this->conn->prepare('SELECT * FROM tipologie_competenze ORDER BY nome ASC');
         $stmt->execute();
 
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $tipologie = [];
         foreach ($results as $data) {
-            $tipologie[] = new self($data);
+            $tipologie[] = new self($this->conn, $data);
         }
         return $tipologie;
     }
@@ -37,15 +38,13 @@ class TipologiaCompetenza
      * @param int $id
      * @return TipologiaCompetenza|null
      */
-    public static function findById($id)
+    public function findById($id)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM tipologie_competenze WHERE id = :id');
+        $stmt = $this->conn->prepare('SELECT * FROM tipologie_competenze WHERE id = :id');
         $stmt->execute(['id' => $id]);
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $data ? new self($data) : null;
+        return $data ? new self($this->conn, $data) : null;
     }
 
     /**
@@ -55,21 +54,18 @@ class TipologiaCompetenza
      */
     public function save()
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-
         if ($this->id) {
-            $stmt = $pdo->prepare('UPDATE tipologie_competenze SET nome = :nome WHERE id = :id');
+            $stmt = $this->conn->prepare('UPDATE tipologie_competenze SET nome = :nome WHERE id = :id');
             $params = ['nome' => $this->nome, 'id' => $this->id];
         } else {
-            $stmt = $pdo->prepare('INSERT INTO tipologie_competenze (nome) VALUES (:nome)');
+            $stmt = $this->conn->prepare('INSERT INTO tipologie_competenze (nome) VALUES (:nome)');
             $params = ['nome' => $this->nome];
         }
 
         $result = $stmt->execute($params);
 
         if ($result && !$this->id) {
-            $this->id = $pdo->lastInsertId();
+            $this->id = $this->conn->lastInsertId();
         }
 
         return $result;
@@ -81,11 +77,9 @@ class TipologiaCompetenza
      * @param int $id
      * @return bool
      */
-    public static function delete($id)
+    public function delete($id)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('DELETE FROM tipologie_competenze WHERE id = :id');
+        $stmt = $this->conn->prepare('DELETE FROM tipologie_competenze WHERE id = :id');
         return $stmt->execute(['id' => $id]);
     }
 }
