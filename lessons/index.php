@@ -11,24 +11,24 @@ $entity_name = 'Lezione';
 $table_name = 'lessons';
 
 $joins = [
-    'LEFT JOIN module_lessons ON lessons.id = module_lessons.lesson_id',
-    'LEFT JOIN modules ON module_lessons.module_id = modules.id',
-    'LEFT JOIN udas ON modules.uda_id = udas.id'
+    'LEFT JOIN uda_lessons ON lessons.id = uda_lessons.lesson_id',
+    'LEFT JOIN udas ON uda_lessons.uda_id = udas.id',
+    'LEFT JOIN modules ON udas.module_id = modules.id'
 ];
 
 $selects = [
     'lessons.id as id',
     'lessons.title as title',
-    'udas.name as uda_name',
     'modules.name as module_name',
+    'udas.name as uda_name',
     'lessons.tags as tags'
 ];
 
 $columns = [
     'id' => 'ID',
     'title' => 'Titolo',
-    'uda_name' => 'UDA',
     'module_name' => 'Modulo',
+    'uda_name' => 'UDA',
     'tags' => 'Tags'
 ];
 

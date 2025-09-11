@@ -124,25 +124,25 @@ include 'header.php';
                 synopticTreeContainer.innerHTML = '';
                 const rootUl = document.createElement('ul');
 
-                data.forEach(uda => {
-                    const udaLi = document.createElement('li');
-                    const hasModules = uda.modules.length > 0;
-                    udaLi.innerHTML = `${hasModules ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<h5><i class="fas fa-book"></i> ${uda.name}</h5>`;
+                data.forEach(module => {
+                    const moduleLi = document.createElement('li');
+                    const hasUdas = module.udas.length > 0;
+                    moduleLi.innerHTML = `${hasUdas ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<h5><i class="fas fa-puzzle-piece"></i> ${module.name}</h5>`;
 
-                    if (hasModules) {
-                        const udaUl = document.createElement('ul');
-                        udaUl.className = 'children';
+                    if (hasUdas) {
+                        const moduleUl = document.createElement('ul');
+                        moduleUl.className = 'children';
 
-                        uda.modules.forEach(module => {
-                            const moduleLi = document.createElement('li');
-                            const hasLessons = module.lessons.length > 0;
-                            moduleLi.innerHTML = `${hasLessons ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<h6><i class="fas fa-puzzle-piece"></i> ${module.name}</h6>`;
+                        module.udas.forEach(uda => {
+                            const udaLi = document.createElement('li');
+                            const hasLessons = uda.lessons.length > 0;
+                            udaLi.innerHTML = `${hasLessons ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<h6><i class="fas fa-book"></i> ${uda.name}</h6>`;
 
                             if (hasLessons) {
-                                const moduleUl = document.createElement('ul');
-                                moduleUl.className = 'children';
+                                const udaUl = document.createElement('ul');
+                                udaUl.className = 'children';
 
-                                module.lessons.forEach(lesson => {
+                                uda.lessons.forEach(lesson => {
                                     const lessonLi = document.createElement('li');
                                     const hasContent = lesson.content || lesson.conoscenze.length > 0 || lesson.abilita.length > 0 || lesson.exercises.length > 0;
                                     lessonLi.innerHTML = `${hasContent ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<strong><i class="fas fa-chalkboard-teacher"></i> ${lesson.title}</strong>`;
@@ -246,15 +246,15 @@ include 'header.php';
 
                                         lessonLi.appendChild(lessonUl);
                                     }
-                                    moduleUl.appendChild(lessonLi);
+                                    udaUl.appendChild(lessonLi);
                                 });
-                                moduleLi.appendChild(moduleUl);
+                                udaLi.appendChild(udaUl);
                             }
-                            udaUl.appendChild(moduleLi);
+                            moduleUl.appendChild(udaLi);
                         });
-                        udaLi.appendChild(udaUl);
+                        moduleLi.appendChild(moduleUl);
                     }
-                    rootUl.appendChild(udaLi);
+                    rootUl.appendChild(moduleLi);
                 });
 
                 synopticTreeContainer.appendChild(rootUl);

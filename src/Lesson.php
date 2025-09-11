@@ -8,7 +8,7 @@ class Lesson
     public $title;
     public $content;
     public $tags;
-    public $module_id;
+    public $uda_id;
     public $previous_lesson_id;
     public $created_at;
     public $updated_at;
@@ -24,7 +24,7 @@ class Lesson
         $this->title = $data['title'] ?? '';
         $this->content = $data['content'] ?? '';
         $this->tags = $data['tags'] ?? '';
-        $this->module_id = $data['module_id'] ?? null;
+        $this->uda_id = $data['uda_id'] ?? null;
         $this->previous_lesson_id = $data['previous_lesson_id'] ?? null;
         $this->created_at = $data['created_at'] ?? null;
         $this->updated_at = $data['updated_at'] ?? null;
@@ -149,22 +149,22 @@ class Lesson
             $this->conn->beginTransaction();
 
             if ($this->id) {
-                $stmt = $this->conn->prepare('UPDATE lessons SET title = :title, content = :content, tags = :tags, module_id = :module_id, previous_lesson_id = :previous_lesson_id WHERE id = :id');
+                $stmt = $this->conn->prepare('UPDATE lessons SET title = :title, content = :content, tags = :tags, uda_id = :uda_id, previous_lesson_id = :previous_lesson_id WHERE id = :id');
                 $params = [
                     'id' => $this->id,
                     'title' => $this->title,
                     'content' => $this->content,
                     'tags' => $this->tags,
-                    'module_id' => $this->module_id,
+                    'uda_id' => $this->uda_id,
                     'previous_lesson_id' => $this->previous_lesson_id,
                 ];
             } else {
-                $stmt = $this->conn->prepare('INSERT INTO lessons (title, content, tags, module_id, previous_lesson_id) VALUES (:title, :content, :tags, :module_id, :previous_lesson_id)');
+                $stmt = $this->conn->prepare('INSERT INTO lessons (title, content, tags, uda_id, previous_lesson_id) VALUES (:title, :content, :tags, :uda_id, :previous_lesson_id)');
                 $params = [
                     'title' => $this->title,
                     'content' => $this->content,
                     'tags' => $this->tags,
-                    'module_id' => $this->module_id,
+                    'uda_id' => $this->uda_id,
                     'previous_lesson_id' => $this->previous_lesson_id,
                 ];
             }
@@ -179,11 +179,11 @@ class Lesson
             $this->syncRelatedData('lezione_conoscenze', 'conoscenza_id', $this->conoscenze);
             $this->syncRelatedData('lezione_abilita', 'abilita_id', $this->abilita);
 
-            // Sync module relationship to pivot table for synoptic view
-            if ($this->module_id) {
-                $this->syncRelatedData('module_lessons', 'module_id', [$this->module_id], 'lesson_id');
+            // Sync UDA relationship to pivot table for synoptic view
+            if ($this->uda_id) {
+                $this->syncRelatedData('uda_lessons', 'uda_id', [$this->uda_id], 'lesson_id');
             } else {
-                $this->syncRelatedData('module_lessons', 'module_id', [], 'lesson_id');
+                $this->syncRelatedData('uda_lessons', 'uda_id', [], 'lesson_id');
             }
 
             $this->conn->commit();
@@ -246,15 +246,15 @@ class Lesson
     }
 
     /**
-     * Find all lessons for a given module.
+     * Find all lessons for a given UDA.
      *
-     * @param int $moduleId
+     * @param int $udaId
      * @return Lesson[]
      */
-    public function findByModuleId($moduleId)
+    public function findByUdaId($udaId)
     {
-        $stmt = $this->conn->prepare('SELECT * FROM lessons WHERE module_id = :module_id ORDER BY updated_at DESC');
-        $stmt->execute(['module_id' => $moduleId]);
+        $stmt = $this->conn->prepare('SELECT * FROM lessons WHERE uda_id = :uda_id ORDER BY updated_at DESC');
+        $stmt->execute(['uda_id' => $udaId]);
 
         $lessonsData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

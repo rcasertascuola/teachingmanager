@@ -17,8 +17,8 @@ if ($_SESSION["role"] !== 'teacher') {
 // Get the database connection
 $db = Database::getInstance()->getConnection();
 
-$module_manager = new Module($db);
-$modules = $module_manager->findAll();
+$uda_manager = new Uda($db);
+$udas = $uda_manager->findAll();
 $conoscenza_manager = new Conoscenza($db);
 $all_conoscenze = $conoscenza_manager->findAll();
 $abilita_manager = new Abilita($db);
@@ -64,12 +64,12 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                     </div>
 
                     <div class="mb-3">
-                        <label for="module_id" class="form-label">Modulo di appartenenza</label>
-                        <select class="form-select" id="module_id" name="module_id">
-                            <option value="">Nessun modulo</option>
-                            <?php foreach ($modules as $module): ?>
-                                <option value="<?php echo $module->id; ?>" <?php echo (isset($lesson) && $lesson->module_id == $module->id) ? 'selected' : ''; ?>>
-                                    <?php echo htmlspecialchars($module->name); ?>
+                        <label for="uda_id" class="form-label">UDA di appartenenza</label>
+                        <select class="form-select" id="uda_id" name="uda_id">
+                            <option value="">Nessuna UDA</option>
+                            <?php foreach ($udas as $uda): ?>
+                                <option value="<?php echo $uda->id; ?>" <?php echo (isset($lesson) && $lesson->uda_id == $uda->id) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($uda->name); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>

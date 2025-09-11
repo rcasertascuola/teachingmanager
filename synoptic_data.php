@@ -51,16 +51,16 @@ function getDisciplineByCompetenza($pdo, $competenzaId) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-$udas = $uda_manager->findAll();
+$modules = $module_manager->findAll();
 $result = [];
 
-foreach ($udas as $uda) {
-    $modules = $module_manager->findByUdaId($uda->id);
-    $moduleData = [];
+foreach ($modules as $module) {
+    $udas = $uda_manager->findByModuleId($module->id);
+    $udaData = [];
 
-    foreach ($modules as $module) {
-        $stmt = $pdo->prepare('SELECT lesson_id FROM module_lessons WHERE module_id = :module_id');
-        $stmt->execute(['module_id' => $module->id]);
+    foreach ($udas as $uda) {
+        $stmt = $pdo->prepare('SELECT lesson_id FROM uda_lessons WHERE uda_id = :uda_id');
+        $stmt->execute(['uda_id' => $uda->id]);
         $lessonIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
         $lessonData = [];
 
@@ -132,19 +132,19 @@ foreach ($udas as $uda) {
             }
         }
 
-        $moduleData[] = [
-            'id' => $module->id,
-            'name' => $module->name,
-            'description' => $module->description,
+        $udaData[] = [
+            'id' => $uda->id,
+            'name' => $uda->name,
+            'description' => $uda->description,
             'lessons' => $lessonData,
         ];
     }
 
     $result[] = [
-        'id' => $uda->id,
-        'name' => $uda->name,
-        'description' => $uda->description,
-        'modules' => $moduleData,
+        'id' => $module->id,
+        'name' => $module->name,
+        'description' => $module->description,
+        'udas' => $udaData,
     ];
 }
 
