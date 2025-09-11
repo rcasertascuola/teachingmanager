@@ -11,7 +11,8 @@ $entity_name = 'Lezione';
 $table_name = 'lessons';
 
 $joins = [
-    'LEFT JOIN modules ON lessons.module_id = modules.id',
+    'LEFT JOIN module_lessons ON lessons.id = module_lessons.lesson_id',
+    'LEFT JOIN modules ON module_lessons.module_id = modules.id',
     'LEFT JOIN udas ON modules.uda_id = udas.id'
 ];
 
