@@ -9,12 +9,6 @@ if ($_SESSION['role'] !== 'teacher') {
     include '../footer.php';
     exit;
 }
-
-$database = new Database();
-$db = $database->getConnection();
-$user = new User($db);
-
-$users = $user->findAll();
 ?>
 
 <div class="container mt-4">
@@ -29,7 +23,10 @@ $users = $user->findAll();
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-striped">
+                <table class="table table-striped"
+                       data-dynamic-table
+                       data-table-name="users"
+                       data-columns='["username", "role", "classe", "corso", "anno_scolastico", "actions"]'>
                     <thead>
                         <tr>
                             <th scope="col">Username</th>
@@ -41,25 +38,7 @@ $users = $user->findAll();
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if ($users->rowCount() === 0): ?>
-                            <tr>
-                                <td colspan="6" class="text-center">Nessun utente trovato.</td>
-                            </tr>
-                        <?php else: ?>
-                            <?php while ($row = $users->fetch(PDO::FETCH_ASSOC)): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($row['username']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['role']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['classe'] ?? 'N/A'); ?></td>
-                                    <td><?php echo htmlspecialchars($row['corso'] ?? 'N/A'); ?></td>
-                                    <td><?php echo htmlspecialchars($row['anno_scolastico'] ?? 'N/A'); ?></td>
-                                    <td>
-                                        <a href="edit.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-warning"><i class="fas fa-pencil-alt"></i></a>
-                                        <a href="delete.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Sei sicuro di voler eliminare questo utente?');"><i class="fas fa-trash"></i></a>
-                                    </td>
-                                </tr>
-                            <?php endwhile; ?>
-                        <?php endif; ?>
+                        <!-- Dynamic content will be loaded here -->
                     </tbody>
                 </table>
             </div>
