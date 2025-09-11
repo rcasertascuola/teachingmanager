@@ -145,6 +145,14 @@ class Lesson
      */
     public function save()
     {
+        // Handle empty strings for nullable integer columns
+        if ($this->uda_id === '') {
+            $this->uda_id = null;
+        }
+        if ($this->previous_lesson_id === '') {
+            $this->previous_lesson_id = null;
+        }
+
         try {
             $this->conn->beginTransaction();
 

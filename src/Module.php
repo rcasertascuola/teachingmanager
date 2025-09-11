@@ -77,6 +77,14 @@ class Module
      */
     public function save()
     {
+        // Handle empty strings for nullable integer columns
+        if ($this->anno_corso === '') {
+            $this->anno_corso = null;
+        }
+        if ($this->disciplina_id === '') {
+            $this->disciplina_id = null;
+        }
+
         if ($this->id) {
             // Update existing Module
             $sql = 'UPDATE modules SET name = :name, description = :description, disciplina_id = :disciplina_id, anno_corso = :anno_corso WHERE id = :id';
