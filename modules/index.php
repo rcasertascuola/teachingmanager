@@ -1,7 +1,6 @@
 <?php
 require_once '../src/Database.php';
 require_once '../src/Module.php';
-require_once '../src/Uda.php';
 include '../header.php';
 
 // Auth check
@@ -19,19 +18,21 @@ $page_title = 'Gestione Moduli';
 $entity_name = 'Modulo';
 $table_name = 'modules';
 $joins = [
-    'LEFT JOIN udas ON modules.uda_id = udas.id'
+    'LEFT JOIN discipline ON modules.disciplina_id = discipline.id'
 ];
 $selects = [
     'modules.id as id',
     'modules.name as name',
     'modules.description as description',
-    'udas.name as uda_name'
+    'discipline.nome as disciplina_name',
+    'modules.anno_corso as anno_corso'
 ];
 $columns = [
     'id' => 'ID',
     'name' => 'Nome',
     'description' => 'Descrizione',
-    'uda_name' => 'UDA'
+    'disciplina_name' => 'Disciplina',
+    'anno_corso' => 'Anno Corso'
 ];
 
 // Include the generic handler
