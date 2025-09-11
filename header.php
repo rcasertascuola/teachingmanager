@@ -56,6 +56,7 @@ function is_active($path) {
                     <li class="nav-item"><a class="nav-link <?php echo is_active('/feedback/'); ?>" href="/feedback/index.php"><i class="fas fa-comments"></i> Riscontri</a></li>
                     <li class="nav-item"><a class="nav-link <?php echo is_active('/conoscenze/'); ?>" href="/conoscenze/index.php"><i class="fas fa-lightbulb"></i> Conoscenze</a></li>
                     <li class="nav-item"><a class="nav-link <?php echo is_active('/abilita/'); ?>" href="/abilita/index.php"><i class="fas fa-tools"></i> Abilità</a></li>
+                    <li class="nav-item"><a class="nav-link <?php echo is_active('/tipologie/'); ?>" href="/tipologie/index.php"><i class="fas fa-tags"></i> Tipologie</a></li>
                     <li class="nav-item"><a class="nav-link <?php echo is_active('/competenze/'); ?>" href="/competenze/index.php"><i class="fas fa-graduation-cap"></i> Competenze</a></li>
                     <li class="nav-item"><a class="nav-link <?php echo is_active('/discipline/'); ?>" href="/discipline/index.php"><i class="fas fa-atom"></i> Discipline</a></li>
                     <li class="nav-item"><a class="nav-link <?php echo is_active('/synoptic_view.php'); ?>" href="/synoptic_view.php"><i class="fas fa-sitemap"></i> Vista Sinottica</a></li>
