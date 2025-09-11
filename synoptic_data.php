@@ -51,7 +51,7 @@ function getDisciplineByCompetenza($pdo, $competenzaId) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-$modules = $module_manager->findAll();
+$modules = $module_manager->findAll($anno_corso);
 $result = [];
 
 foreach ($modules as $module) {
