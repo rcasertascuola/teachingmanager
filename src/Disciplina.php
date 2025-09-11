@@ -2,11 +2,14 @@
 
 class Disciplina
 {
+    private $conn;
+
     public $id;
     public $nome;
 
-    public function __construct($data)
+    public function __construct($db, $data = [])
     {
+        $this->conn = $db;
         $this->id = $data['id'] ?? null;
         $this->nome = $data['nome'] ?? '';
     }
@@ -16,17 +19,15 @@ class Disciplina
      *
      * @return Disciplina[]
      */
-    public static function findAll()
+    public function findAll()
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM discipline ORDER BY nome ASC');
+        $stmt = $this->conn->prepare('SELECT * FROM discipline ORDER BY nome ASC');
         $stmt->execute();
 
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $discipline = [];
         foreach ($results as $data) {
-            $discipline[] = new self($data);
+            $discipline[] = new self($this->conn, $data);
         }
         return $discipline;
     }
@@ -37,15 +38,13 @@ class Disciplina
      * @param int $id
      * @return Disciplina|null
      */
-    public static function findById($id)
+    public function findById($id)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM discipline WHERE id = :id');
+        $stmt = $this->conn->prepare('SELECT * FROM discipline WHERE id = :id');
         $stmt->execute(['id' => $id]);
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $data ? new self($data) : null;
+        return $data ? new self($this->conn, $data) : null;
     }
 
     /**
@@ -55,21 +54,18 @@ class Disciplina
      */
     public function save()
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-
         if ($this->id) {
-            $stmt = $pdo->prepare('UPDATE discipline SET nome = :nome WHERE id = :id');
+            $stmt = $this->conn->prepare('UPDATE discipline SET nome = :nome WHERE id = :id');
             $params = ['nome' => $this->nome, 'id' => $this->id];
         } else {
-            $stmt = $pdo->prepare('INSERT INTO discipline (nome) VALUES (:nome)');
+            $stmt = $this->conn->prepare('INSERT INTO discipline (nome) VALUES (:nome)');
             $params = ['nome' => $this->nome];
         }
 
         $result = $stmt->execute($params);
 
         if ($result && !$this->id) {
-            $this->id = $pdo->lastInsertId();
+            $this->id = $this->conn->lastInsertId();
         }
 
         return $result;
@@ -81,11 +77,9 @@ class Disciplina
      * @param int $id
      * @return bool
      */
-    public static function delete($id)
+    public function delete($id)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('DELETE FROM discipline WHERE id = :id');
+        $stmt = $this->conn->prepare('DELETE FROM discipline WHERE id = :id');
         return $stmt->execute(['id' => $id]);
     }
 }

@@ -4,7 +4,10 @@ require_once '../src/Uda.php';
 include '../header.php';
 
 
-$udas = Uda::findAll();
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+$uda_manager = new Uda($db);
+$udas = $uda_manager->findAll();
 ?>
 
     <div class="container mt-4">

@@ -2,6 +2,8 @@
 
 class Lesson
 {
+    private $conn;
+
     public $id;
     public $title;
     public $content;
@@ -15,8 +17,9 @@ class Lesson
     public $conoscenze;
     public $abilita;
 
-    public function __construct($data)
+    public function __construct($db, $data = [])
     {
+        $this->conn = $db;
         $this->id = $data['id'] ?? null;
         $this->title = $data['title'] ?? '';
         $this->content = $data['content'] ?? '';
@@ -38,17 +41,14 @@ class Lesson
      * @param int $offset
      * @return Lesson[]
      */
-    public static function findAll($limit = 10, $offset = 0)
+    public function findAll($limit = 10, $offset = 0)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-
         $sql = 'SELECT * FROM lessons ORDER BY updated_at DESC';
         if ($limit !== null) {
             $sql .= ' LIMIT :limit OFFSET :offset';
         }
 
-        $stmt = $pdo->prepare($sql);
+        $stmt = $this->conn->prepare($sql);
 
         if ($limit !== null) {
             $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
@@ -61,7 +61,7 @@ class Lesson
 
         $lessons = [];
         foreach ($lessonsData as $data) {
-            $lessons[] = new self($data);
+            $lessons[] = new self($this->conn, $data);
         }
         return $lessons;
     }
@@ -72,11 +72,9 @@ class Lesson
      * @param int $studentId
      * @return Lesson[]
      */
-    public static function findForStudent($studentId)
+    public function findForStudent($studentId)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('
+        $stmt = $this->conn->prepare('
             SELECT l.* FROM lessons l
             JOIN (SELECT DISTINCT lesson_id FROM student_lesson_data WHERE user_id = :user_id) sld
             ON l.id = sld.lesson_id
@@ -88,7 +86,7 @@ class Lesson
 
         $lessons = [];
         foreach ($lessonsData as $data) {
-            $lessons[] = new self($data);
+            $lessons[] = new self($this->conn, $data);
         }
         return $lessons;
     }
@@ -97,11 +95,9 @@ class Lesson
      * Count all lessons.
      * @return int
      */
-    public static function countAll()
+    public function countAll()
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        return (int) $pdo->query('SELECT COUNT(id) FROM lessons')->fetchColumn();
+        return (int) $this->conn->query('SELECT COUNT(id) FROM lessons')->fetchColumn();
     }
 
     /**
@@ -110,17 +106,15 @@ class Lesson
      * @param int $id
      * @return Lesson|null
      */
-    public static function findById($id)
+    public function findById($id)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM lessons WHERE id = :id');
+        $stmt = $this->conn->prepare('SELECT * FROM lessons WHERE id = :id');
         $stmt->execute(['id' => $id]);
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($data) {
-            $lesson = new self($data);
-            $lesson->loadRelatedData($pdo);
+            $lesson = new self($this->conn, $data);
+            $lesson->loadRelatedData();
             return $lesson;
         }
         return null;
@@ -132,16 +126,14 @@ class Lesson
      * @param string $title
      * @return Lesson|null
      */
-    public static function findByTitle($title)
+    public function findByTitle($title)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM lessons WHERE title = :title');
+        $stmt = $this->conn->prepare('SELECT * FROM lessons WHERE title = :title');
         $stmt->execute(['title' => $title]);
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($data) {
-            return new self($data);
+            return new self($this->conn, $data);
         }
         return null;
     }
@@ -153,14 +145,11 @@ class Lesson
      */
     public function save()
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-
         try {
-            $pdo->beginTransaction();
+            $this->conn->beginTransaction();
 
             if ($this->id) {
-                $stmt = $pdo->prepare('UPDATE lessons SET title = :title, content = :content, tags = :tags, module_id = :module_id, previous_lesson_id = :previous_lesson_id WHERE id = :id');
+                $stmt = $this->conn->prepare('UPDATE lessons SET title = :title, content = :content, tags = :tags, module_id = :module_id, previous_lesson_id = :previous_lesson_id WHERE id = :id');
                 $params = [
                     'id' => $this->id,
                     'title' => $this->title,
@@ -170,7 +159,7 @@ class Lesson
                     'previous_lesson_id' => $this->previous_lesson_id,
                 ];
             } else {
-                $stmt = $pdo->prepare('INSERT INTO lessons (title, content, tags, module_id, previous_lesson_id) VALUES (:title, :content, :tags, :module_id, :previous_lesson_id)');
+                $stmt = $this->conn->prepare('INSERT INTO lessons (title, content, tags, module_id, previous_lesson_id) VALUES (:title, :content, :tags, :module_id, :previous_lesson_id)');
                 $params = [
                     'title' => $this->title,
                     'content' => $this->content,
@@ -183,24 +172,24 @@ class Lesson
             $stmt->execute($params);
 
             if (!$this->id) {
-                $this->id = $pdo->lastInsertId();
+                $this->id = $this->conn->lastInsertId();
             }
 
             // Sync relationships
-            $this->syncRelatedData($pdo, 'lezione_conoscenze', 'lezione_id', 'conoscenza_id', $this->conoscenze);
-            $this->syncRelatedData($pdo, 'lezione_abilita', 'lezione_id', 'abilita_id', $this->abilita);
+            $this->syncRelatedData('lezione_conoscenze', 'conoscenza_id', $this->conoscenze);
+            $this->syncRelatedData('lezione_abilita', 'abilita_id', $this->abilita);
 
             // Sync module relationship to pivot table for synoptic view
             if ($this->module_id) {
-                $this->syncRelatedData($pdo, 'module_lessons', 'lesson_id', 'module_id', [$this->module_id]);
+                $this->syncRelatedData('module_lessons', 'module_id', [$this->module_id], 'lesson_id');
             } else {
-                $this->syncRelatedData($pdo, 'module_lessons', 'lesson_id', 'module_id', []);
+                $this->syncRelatedData('module_lessons', 'module_id', [], 'lesson_id');
             }
 
-            $pdo->commit();
+            $this->conn->commit();
             return true;
         } catch (Exception $e) {
-            $pdo->rollBack();
+            $this->conn->rollBack();
             return "DB Error: " . $e->getMessage();
         }
     }
@@ -208,15 +197,15 @@ class Lesson
     /**
      * Loads related data.
      */
-    private function loadRelatedData($pdo)
+    private function loadRelatedData()
     {
         // Load conoscenze
-        $stmt = $pdo->prepare('SELECT conoscenza_id FROM lezione_conoscenze WHERE lezione_id = :id');
+        $stmt = $this->conn->prepare('SELECT conoscenza_id FROM lezione_conoscenze WHERE lezione_id = :id');
         $stmt->execute(['id' => $this->id]);
         $this->conoscenze = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
 
         // Load abilita
-        $stmt = $pdo->prepare('SELECT abilita_id FROM lezione_abilita WHERE lezione_id = :id');
+        $stmt = $this->conn->prepare('SELECT abilita_id FROM lezione_abilita WHERE lezione_id = :id');
         $stmt->execute(['id' => $this->id]);
         $this->abilita = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
     }
@@ -224,9 +213,9 @@ class Lesson
     /**
      * A generic helper to sync many-to-many relationships.
      */
-    private function syncRelatedData($pdo, $tableName, $thisIdColumn, $relatedIdColumn, $relatedIds)
+    private function syncRelatedData($tableName, $relatedIdColumn, $relatedIds, $thisIdColumn = 'lezione_id')
     {
-        $stmt = $pdo->prepare("DELETE FROM {$tableName} WHERE {$thisIdColumn} = :id");
+        $stmt = $this->conn->prepare("DELETE FROM {$tableName} WHERE {$thisIdColumn} = :id");
         $stmt->execute(['id' => $this->id]);
 
         if (!empty($relatedIds)) {
@@ -239,7 +228,7 @@ class Lesson
                 $values[] = $relatedId;
             }
             $sql .= implode(', ', $placeholders);
-            $stmt = $pdo->prepare($sql);
+            $stmt = $this->conn->prepare($sql);
             $stmt->execute($values);
         }
     }
@@ -250,11 +239,9 @@ class Lesson
      * @param int $id
      * @return bool
      */
-    public static function delete($id)
+    public function delete($id)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('DELETE FROM lessons WHERE id = :id');
+        $stmt = $this->conn->prepare('DELETE FROM lessons WHERE id = :id');
         return $stmt->execute(['id' => $id]);
     }
 
@@ -264,18 +251,16 @@ class Lesson
      * @param int $moduleId
      * @return Lesson[]
      */
-    public static function findByModuleId($moduleId)
+    public function findByModuleId($moduleId)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM lessons WHERE module_id = :module_id ORDER BY updated_at DESC');
+        $stmt = $this->conn->prepare('SELECT * FROM lessons WHERE module_id = :module_id ORDER BY updated_at DESC');
         $stmt->execute(['module_id' => $moduleId]);
 
         $lessonsData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $lessons = [];
         foreach ($lessonsData as $data) {
-            $lessons[] = new self($data);
+            $lessons[] = new self($this->conn, $data);
         }
         return $lessons;
     }
@@ -289,17 +274,15 @@ class Lesson
      * @param int $offset
      * @return Lesson[]
      */
-    public static function search($contentTerm, $tagsTerm, $limit, $offset)
+    public function search($contentTerm, $tagsTerm, $limit, $offset)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        list($sql, $params) = self::buildSearchQuery('SELECT *', $contentTerm, $tagsTerm);
+        list($sql, $params) = $this->buildSearchQuery('SELECT *', $contentTerm, $tagsTerm);
 
         $sql .= ' ORDER BY updated_at DESC LIMIT :limit OFFSET :offset';
         $params[':limit'] = $limit;
         $params[':offset'] = $offset;
 
-        $stmt = $pdo->prepare($sql);
+        $stmt = $this->conn->prepare($sql);
 
         // Bind parameters dynamically
         foreach ($params as $key => &$val) {
@@ -313,7 +296,7 @@ class Lesson
 
         $lessons = [];
         foreach ($lessonsData as $data) {
-            $lessons[] = new self($data);
+            $lessons[] = new self($this->conn, $data);
         }
         return $lessons;
     }
@@ -325,13 +308,11 @@ class Lesson
      * @param string $tagsTerm
      * @return int
      */
-    public static function countSearch($contentTerm, $tagsTerm)
+    public function countSearch($contentTerm, $tagsTerm)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        list($sql, $params) = self::buildSearchQuery('SELECT COUNT(id)', $contentTerm, $tagsTerm);
+        list($sql, $params) = $this->buildSearchQuery('SELECT COUNT(id)', $contentTerm, $tagsTerm);
 
-        $stmt = $pdo->prepare($sql);
+        $stmt = $this->conn->prepare($sql);
         $stmt->execute($params);
         return (int) $stmt->fetchColumn();
     }
@@ -339,7 +320,7 @@ class Lesson
     /**
      * Helper to build the search query.
      */
-    private static function buildSearchQuery($select, $contentTerm, $tagsTerm)
+    private function buildSearchQuery($select, $contentTerm, $tagsTerm)
     {
         $sql = $select . ' FROM lessons';
         $where = [];
@@ -371,15 +352,12 @@ class Lesson
      * @param mixed $data
      * @return bool|string True on success, error message on failure.
      */
-    public static function saveStudentData($userId, $lessonId, $type, $data)
+    public function saveStudentData($userId, $lessonId, $type, $data)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-
         $sql = 'INSERT INTO student_lesson_data (user_id, lesson_id, type, data) VALUES (:user_id, :lesson_id, :type, :data)';
 
         try {
-            $stmt = $pdo->prepare($sql);
+            $stmt = $this->conn->prepare($sql);
             $result = $stmt->execute([
                 'user_id' => $userId,
                 'lesson_id' => $lessonId,
@@ -405,11 +383,9 @@ class Lesson
      * @param int $lessonId
      * @return array
      */
-    public static function getStudentData($userId, $lessonId)
+    public function getStudentData($userId, $lessonId)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('SELECT * FROM student_lesson_data WHERE user_id = :user_id AND lesson_id = :lesson_id ORDER BY created_at ASC');
+        $stmt = $this->conn->prepare('SELECT * FROM student_lesson_data WHERE user_id = :user_id AND lesson_id = :lesson_id ORDER BY created_at ASC');
         $stmt->execute(['user_id' => $userId, 'lesson_id' => $lessonId]);
 
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -429,16 +405,13 @@ class Lesson
      * @param int $dataId
      * @return bool|string True on success, error message on failure.
      */
-    public static function deleteStudentData($userId, $dataId)
+    public function deleteStudentData($userId, $dataId)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-
         // We include user_id in the WHERE clause to ensure a user can only delete their own data.
         $sql = 'DELETE FROM student_lesson_data WHERE id = :id AND user_id = :user_id';
 
         try {
-            $stmt = $pdo->prepare($sql);
+            $stmt = $this->conn->prepare($sql);
             $stmt->execute([
                 'id' => $dataId,
                 'user_id' => $userId
@@ -461,11 +434,9 @@ class Lesson
      * @param int $lessonId
      * @return array
      */
-    public static function getStudentsForLesson($lessonId)
+    public function getStudentsForLesson($lessonId)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('
+        $stmt = $this->conn->prepare('
             SELECT DISTINCT u.id, u.username, u.classe, u.corso, u.anno_scolastico
             FROM student_lesson_data sld
             JOIN users u ON sld.user_id = u.id
@@ -482,11 +453,9 @@ class Lesson
      * @param int $lessonId
      * @return array
      */
-    public static function getAllStudentDataForLesson($lessonId)
+    public function getAllStudentDataForLesson($lessonId)
     {
-        $database = new Database();
-        $pdo = $database->getConnection();
-        $stmt = $pdo->prepare('
+        $stmt = $this->conn->prepare('
             SELECT sld.id, sld.user_id, u.username, sld.type, sld.data, sld.created_at
             FROM student_lesson_data sld
             JOIN users u ON sld.user_id = u.id

@@ -15,11 +15,15 @@ if ( $_SESSION["role"] !== 'teacher') {
 $exercise = null;
 $answers = [];
 
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+$exercise_manager = new Exercise($db);
+
 if (isset($_GET['id'])) {
     $exercise_id = (int)$_GET['id'];
-    $exercise = Exercise::findById($exercise_id);
+    $exercise = $exercise_manager->findById($exercise_id);
     if ($exercise) {
-        $answers = Exercise::getStudentAnswers($exercise_id);
+        $answers = $exercise_manager->getStudentAnswers($exercise_id);
     }
 }
 

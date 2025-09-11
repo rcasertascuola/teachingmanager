@@ -14,17 +14,26 @@ if ($_SESSION["role"] !== 'teacher') {
 }
 
 
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+
+$module_manager = new Module($db);
+$modules = $module_manager->findAll();
+$conoscenza_manager = new Conoscenza($db);
+$all_conoscenze = $conoscenza_manager->findAll();
+$abilita_manager = new Abilita($db);
+$all_abilita = $abilita_manager->findAll();
+
+$lesson_manager = new Lesson($db);
+$all_lessons = $lesson_manager->findAll(null); // Get all lessons for the dropdown
+
 $lesson = null;
-$modules = Module::findAll();
-$all_lessons = Lesson::findAll(null);
-$all_conoscenze = Conoscenza::findAll();
-$all_abilita = Abilita::findAll();
 $pageTitle = 'Aggiungi Nuova Lezione';
 $formAction = 'save.php';
 
 // Check if we are editing an existing lesson
 if (isset($_GET['id']) && !empty($_GET['id'])) {
-    $lesson = Lesson::findById((int)$_GET['id']);
+    $lesson = $lesson_manager->findById((int)$_GET['id']);
     if ($lesson) {
         $pageTitle = 'Modifica Lezione';
     } else {
@@ -32,6 +41,9 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         header("location: index.php");
         exit;
     }
+} else {
+    // Create a new empty lesson object for the form
+    $lesson = new Lesson($db);
 }
 
 ?>

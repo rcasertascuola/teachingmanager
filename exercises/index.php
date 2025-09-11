@@ -17,9 +17,13 @@ $page = max(1, $page);
 $limit = 10; // 10 exercises per page
 $offset = ($page - 1) * $limit;
 
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+$exercise_manager = new Exercise($db);
+
 // For now, we don't have search.
-$total_exercises = Exercise::countAll();
-$exercises = Exercise::findAll($limit, $offset);
+$total_exercises = $exercise_manager->countAll();
+$exercises = $exercise_manager->findAll($limit, $offset);
 
 $total_pages = ceil($total_exercises / $limit);
 

@@ -4,33 +4,36 @@ require_once '../src/Abilita.php';
 
 session_start();
 
+// Auth check
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION['role'] !== 'teacher') {
-    header('Location: ../login.php');
+    header("location: ../login.php");
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = [
-        'id' => $_POST['id'] ?? null,
-        'nome' => $_POST['nome'],
-        'descrizione' => $_POST['descrizione'],
-        'tipo' => $_POST['tipo'],
-        'conoscenze' => $_POST['conoscenze'] ?? [],
-        'anni_corso' => $_POST['anni_corso'] ?? []
-    ];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Configuration for the generic save handler
+    $db = Database::getInstance()->getConnection();
 
-    $abilita = new Abilita($data);
-
-    if ($abilita->save()) {
-        $message = $data['id'] ? 'update' : 'create';
-        header('Location: index.php?success=' . $message);
-        exit;
+    // The generic handler needs an entity to populate.
+    // If we are editing, we find the existing one. Otherwise, we create a new one.
+    if (isset($_POST['id']) && !empty($_POST['id'])) {
+        $manager = new Abilita($db);
+        $entity = $manager->findById((int)$_POST['id']);
+        if (!$entity) {
+            die("Entity not found.");
+        }
     } else {
-        // Error handling
-        header('Location: edit.php?id=' . ($data['id'] ?? '') . '&error=1');
-        exit;
+        $entity = new Abilita($db);
     }
+
+    $redirect_url = 'index.php';
+    $post_data = $_POST;
+
+    // Include the generic handler
+    require_once '../handlers/save_handler.php';
 } else {
-    header('Location: index.php');
+    // Redirect if not a POST request
+    header("location: index.php");
     exit;
 }
+?>

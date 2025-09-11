@@ -5,51 +5,42 @@ require_once '../src/Verifica.php';
 session_start();
 
 // Auth check
-if (!isset($_SESSION["role"]) || $_SESSION["role"] !== 'teacher') {
-    header('Location: ../login.php');
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION['role'] !== 'teacher') {
+    header("location: ../login.php");
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $db = new Database();
-    $conn = $db->getConnection();
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Configuration for the generic save handler
+    $db = Database::getInstance()->getConnection();
 
-    $verifica = new Verifica($conn);
+    // The generic handler needs an entity to populate.
+    if (isset($_POST['id']) && !empty($_POST['id'])) {
+        $manager = new Verifica($db);
+        $entity = $manager->findById((int)$_POST['id']);
+        if (!$entity) {
+            die("Entity not found.");
+        }
+    } else {
+        $entity = new Verifica($db);
+    }
 
-    // Assign data from form to Verifica object
-    $verifica->id = isset($_POST['id']) ? (int)$_POST['id'] : null;
-    $verifica->titolo = trim($_POST['titolo']);
-    $verifica->descrizione = trim($_POST['descrizione']);
-    $verifica->tipo = $_POST['tipo'];
-    $verifica->abilita_ids = isset($_POST['abilita']) ? $_POST['abilita'] : [];
-    $verifica->competenza_ids = isset($_POST['competenze']) ? $_POST['competenze'] : [];
-
-    // Assign griglia data
-    $verifica->griglia = [
+    // Specific logic for this entity
+    $_POST['abilita_ids'] = $_POST['abilita'] ?? [];
+    $_POST['competenza_ids'] = $_POST['competenze'] ?? [];
+    $_POST['griglia'] = [
         'nome' => trim($_POST['griglia_nome']),
         'descrittori' => isset($_POST['descrittori']) ? $_POST['descrittori'] : []
     ];
 
-    $success = $verifica->save();
+    $redirect_url = 'index.php';
+    $post_data = $_POST;
 
-    if ($success) {
-        $message = "Verifica salvata con successo.";
-    } else {
-        $message = "Errore durante il salvataggio della verifica.";
-    }
-
-    // Set feedback message and redirect
-    $_SESSION['feedback'] = [
-        'type' => $success ? 'success' : 'danger',
-        'message' => $message
-    ];
-
-    header('Location: index.php');
-    exit;
-
+    // Include the generic handler
+    require_once '../handlers/save_handler.php';
 } else {
-    // Not a POST request
-    header('Location: index.php');
+    // Redirect if not a POST request
+    header("location: index.php");
     exit;
 }
 ?>

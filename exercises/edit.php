@@ -17,9 +17,13 @@ $pageTitle = 'Aggiungi Nuovo Esercizio';
 $formAction = 'save.php';
 $linked_lesson_ids = [];
 
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+$exercise_manager = new Exercise($db);
+
 // Check if we are editing an existing exercise
 if (isset($_GET['id']) && !empty($_GET['id'])) {
-    $exercise = Exercise::findById((int)$_GET['id']);
+    $exercise = $exercise_manager->findById((int)$_GET['id']);
     if ($exercise) {
         $pageTitle = 'Modifica Esercizio';
         $linked_lessons = $exercise->getLinkedLessons();
@@ -29,10 +33,13 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         header("location: index.php");
         exit;
     }
+} else {
+    $exercise = new Exercise($db);
 }
 
 // Fetch all lessons for the multi-select field
-$all_lessons = Lesson::findAll(1000, 0); // Assuming there are less than 1000 lessons
+$lesson_manager = new Lesson($db);
+$all_lessons = $lesson_manager->findAll(1000, 0); // Assuming there are less than 1000 lessons
 
 $exercise_types = ['multiple_choice' => 'Risposta Multipla', 'open_answer' => 'Risposta Aperta', 'fill_in_the_blanks' => 'Completa gli Spazi'];
 

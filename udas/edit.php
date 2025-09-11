@@ -11,13 +11,17 @@ if ($_SESSION["role"] !== 'teacher') {
 }
 
 
+// Get the database connection
+$db = Database::getInstance()->getConnection();
+$uda_manager = new Uda($db);
+
 $uda = null;
 $pageTitle = 'Aggiungi Nuova UDA';
 $formAction = 'save.php';
 
 // Check if we are editing an existing UDA
 if (isset($_GET['id']) && !empty($_GET['id'])) {
-    $uda = Uda::findById((int)$_GET['id']);
+    $uda = $uda_manager->findById((int)$_GET['id']);
     if ($uda) {
         $pageTitle = 'Modifica UDA';
     } else {
@@ -25,6 +29,8 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         header("location: index.php");
         exit;
     }
+} else {
+    $uda = new Uda($db);
 }
 
 ?>

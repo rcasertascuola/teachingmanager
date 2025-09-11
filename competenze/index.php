@@ -4,54 +4,36 @@ require_once '../src/Competenza.php';
 require_once '../src/TipologiaCompetenza.php';
 include '../header.php';
 
-// Additional check for teacher role
+// Auth check
 if ($_SESSION['role'] !== 'teacher') {
     echo "<div class='alert alert-danger'>Accesso negato.</div>";
     include '../footer.php';
     exit;
 }
 
-$competenze = Competenza::findAll();
-$tipologie = TipologiaCompetenza::findAll();
+// Configuration for the generic index handler
+$db = Database::getInstance()->getConnection();
+$manager = new Competenza($db);
+
+// Fetch extra data needed for custom column rendering
+$tipologia_manager = new TipologiaCompetenza($db);
+$tipologie = $tipologia_manager->findAll();
 $tipologia_map = [];
 foreach ($tipologie as $t) {
     $tipologia_map[$t->id] = $t->nome;
 }
 
+$page_title = 'Gestione Competenze';
+$entity_name = 'Competenza';
+$columns = [
+    'id' => 'ID',
+    'nome' => 'Nome',
+    'tipologia_id' => function($item) use ($tipologia_map) {
+        return htmlspecialchars($tipologia_map[$item->tipologia_id] ?? 'N/A');
+    }
+];
+$items = $manager->findAll();
+
+// Include the generic handler
+require_once '../handlers/index_handler.php';
 ?>
-    <div class="container mt-5">
-        <h2>Competenze</h2>
-        <a href="edit.php" class="btn btn-success mb-3"><i class="fas fa-plus"></i> Crea Nuova Competenza</a>
-        <?php if (isset($_GET['success'])): ?>
-            <div class="alert alert-success">
-                <?php if ($_GET['success'] == 'create'): echo "Competenza creata con successo!"; endif; ?>
-                <?php if ($_GET['success'] == 'update'): echo "Competenza aggiornata con successo!"; endif; ?>
-                <?php if ($_GET['success'] == 'delete'): echo "Competenza eliminata con successo!"; endif; ?>
-            </div>
-        <?php endif; ?>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>Tipologia</th>
-                    <th>Azioni</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($competenze as $competenza): ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($competenza->id); ?></td>
-                    <td><?php echo htmlspecialchars($competenza->nome); ?></td>
-                    <td><?php echo htmlspecialchars($tipologia_map[$competenza->tipologia_id] ?? 'N/A'); ?></td>
-                    <td>
-                        <a href="view.php?id=<?php echo $competenza->id; ?>" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>
-                        <a href="edit.php?id=<?php echo $competenza->id; ?>" class="btn btn-primary btn-sm"><i class="fas fa-pencil-alt"></i></a>
-                        <a href="delete.php?id=<?php echo $competenza->id; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Sei sicuro di voler eliminare questa competenza?');"><i class="fas fa-trash"></i></a>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-<?php include '../footer.php'; ?>
