@@ -18,7 +18,6 @@ $page_title = 'Gestione Conoscenze';
 $entity_name = 'Conoscenza';
 $table_name = 'conoscenze';
 $columns = [
-    'id' => 'ID',
     'nome' => 'Nome'
 ];
 

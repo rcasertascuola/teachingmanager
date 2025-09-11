@@ -25,7 +25,6 @@ $selects = [
 ];
 
 $columns = [
-    'id' => 'ID',
     'title' => 'Titolo',
     'module_name' => 'Modulo',
     'uda_name' => 'UDA',

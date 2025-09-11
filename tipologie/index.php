@@ -18,7 +18,6 @@ $page_title = 'Gestione Tipologie di Competenze';
 $entity_name = 'Tipologia di Competenza';
 $table_name = 'tipologie_competenze';
 $columns = [
-    'id' => 'ID',
     'nome' => 'Nome'
 ];
 

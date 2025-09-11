@@ -18,7 +18,6 @@ $page_title = 'Gestione Abilità';
 $entity_name = 'Abilità';
 $table_name = 'abilita';
 $columns = [
-    'id' => 'ID',
     'nome' => 'Nome',
     'tipo' => 'Tipo'
 ];

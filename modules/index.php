@@ -28,7 +28,6 @@ $selects = [
     'modules.anno_corso as anno_corso'
 ];
 $columns = [
-    'id' => 'ID',
     'name' => 'Nome',
     'description' => 'Descrizione',
     'disciplina_name' => 'Disciplina',
