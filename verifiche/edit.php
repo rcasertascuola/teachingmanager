@@ -3,7 +3,7 @@ require_once '../src/Database.php';
 require_once '../src/Database.php';
 require_once '../src/Verifica.php';
 require_once '../src/Abilita.php';
-require_once '../src/Competenza.php';
+require_once '../src/Conoscenza.php';
 include '../header.php';
 
 // Auth check
@@ -23,8 +23,8 @@ $db = Database::getInstance()->getConnection();
 // Fetch all available abilities and competencies for the form
 $abilita_manager = new Abilita($db);
 $all_abilita = $abilita_manager->findAll();
-$competenza_manager = new Competenza($db);
-$all_competenze = $competenza_manager->findAll();
+$conoscenza_manager = new Conoscenza($db);
+$all_conoscenze = $conoscenza_manager->findAll();
 
 $griglia_nome = "Griglia di Valutazione";
 $descrittori = [];
@@ -93,12 +93,12 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                     </div>
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label class="form-label">Competenze Collegate</label>
+                            <label class="form-label">Conoscenze Collegate</label>
                             <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
-                                <?php foreach ($all_competenze as $item): ?>
+                                <?php foreach ($all_conoscenze as $item): ?>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="competenze[]" value="<?php echo $item->id; ?>" id="competenza_<?php echo $item->id; ?>" <?php echo ($verifica && in_array($item->id, $verifica->competenza_ids)) ? 'checked' : ''; ?>>
-                                        <label class="form-check-label" for="competenza_<?php echo $item->id; ?>"><?php echo htmlspecialchars($item->nome); ?></label>
+                                        <input class="form-check-input" type="checkbox" name="conoscenze[]" value="<?php echo $item->id; ?>" id="conoscenza_<?php echo $item->id; ?>" <?php echo ($verifica && in_array($item->id, $verifica->conoscenza_ids)) ? 'checked' : ''; ?>>
+                                        <label class="form-check-label" for="conoscenza_<?php echo $item->id; ?>"><?php echo htmlspecialchars($item->nome); ?></label>
                                     </div>
                                 <?php endforeach; ?>
                             </div>
@@ -140,7 +140,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                         </tr>
                     </tfoot>
                 </table>
-                <button type="button" id="add-row" class="btn btn-success btn-sm">Aggiungi Descrittore</button>
+                <button type="button" id="add-row" class="btn btn-success btn-sm">+</button>
                 <div id="punteggio-error" class="text-danger mt-2" style="display: none;">Il punteggio totale deve essere 20.00</div>
 
 

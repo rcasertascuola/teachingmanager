@@ -12,8 +12,6 @@ class Competenza
     // Related data
     public $conoscenze;
     public $abilita;
-    public $discipline;
-    public $anni_corso;
 
     public function __construct($db, $data = [])
     {
@@ -26,8 +24,6 @@ class Competenza
         // These will be loaded separately if not provided
         $this->conoscenze = $data['conoscenze'] ?? [];
         $this->abilita = $data['abilita'] ?? [];
-        $this->discipline = $data['discipline'] ?? [];
-        $this->anni_corso = $data['anni_corso'] ?? [];
     }
 
     /**
@@ -104,8 +100,6 @@ class Competenza
             // Sync relationships
             $this->syncRelatedData('competenza_conoscenze', 'conoscenza_id', $this->conoscenze);
             $this->syncRelatedData('competenza_abilita', 'abilita_id', $this->abilita);
-            $this->syncRelatedData('competenza_discipline', 'disciplina_id', $this->discipline);
-            $this->syncRelatedData('competenza_anni_corso', 'anno_corso', $this->anni_corso);
 
             $this->conn->commit();
             return true;
@@ -136,8 +130,6 @@ class Competenza
     {
         $this->conoscenze = $this->getRelatedIds('competenza_conoscenze', 'conoscenza_id');
         $this->abilita = $this->getRelatedIds('competenza_abilita', 'abilita_id');
-        $this->discipline = $this->getRelatedIds('competenza_discipline', 'disciplina_id');
-        $this->anni_corso = $this->getRelatedIds('competenza_anni_corso', 'anno_corso');
     }
 
     /**

@@ -21,8 +21,10 @@ $udas = $uda_manager->findAll();
                     <a href="../modules/view.php?uda_id=<?php echo $uda->id; ?>" class="list-group-item list-group-item-action">
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1"><?php echo htmlspecialchars($uda->name); ?></h5>
+                            <small>Anno: <?php echo htmlspecialchars($uda->anno_corso); ?></small>
                         </div>
                         <p class="mb-1"><?php echo htmlspecialchars($uda->description); ?></p>
+                        <small>Disciplina: <?php echo htmlspecialchars($uda->disciplina_name ?? 'Non specificata'); ?></small>
                     </a>
                 <?php endforeach; ?>
             <?php endif; ?>

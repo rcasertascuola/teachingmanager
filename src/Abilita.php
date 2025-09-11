@@ -11,7 +11,6 @@ class Abilita
 
     // Related data
     public $conoscenze;
-    public $anni_corso;
 
     public function __construct($db, $data = [])
     {
@@ -23,7 +22,6 @@ class Abilita
 
         // These will be loaded separately
         $this->conoscenze = $data['conoscenze'] ?? [];
-        $this->anni_corso = $data['anni_corso'] ?? [];
     }
 
     /**
@@ -99,7 +97,6 @@ class Abilita
 
             // Sync relationships
             $this->syncRelatedData('abilita_conoscenze', 'conoscenza_id', $this->conoscenze);
-            $this->syncRelatedData('abilita_anni_corso', 'anno_corso', $this->anni_corso);
 
             $this->conn->commit();
             return true;
@@ -131,11 +128,6 @@ class Abilita
         $stmt = $this->conn->prepare('SELECT conoscenza_id FROM abilita_conoscenze WHERE abilita_id = :id');
         $stmt->execute(['id' => $this->id]);
         $this->conoscenze = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
-
-        // Load school years
-        $stmt = $this->conn->prepare('SELECT anno_corso FROM abilita_anni_corso WHERE abilita_id = :id');
-        $stmt->execute(['id' => $this->id]);
-        $this->anni_corso = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
     }
 
     /**

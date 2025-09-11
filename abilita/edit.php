@@ -23,8 +23,6 @@ foreach ($all_conoscenze as $c) {
     $conoscenze_options[$c->id] = $c->nome;
 }
 
-$anni_corso_options = array_combine(range(1, 5), array_map(function($y) { return "$y° anno"; }, range(1, 5)));
-
 $entity = null;
 if (isset($_GET['id'])) {
     $entity = $manager->findById((int)$_GET['id']);
@@ -58,11 +56,6 @@ $form_fields = [
         'type' => 'checkbox_group',
         'options' => $conoscenze_options,
         'help_text' => 'Seleziona una o più conoscenze.'
-    ],
-    'anni_corso' => [
-        'label' => 'Anni di Corso',
-        'type' => 'checkbox_group',
-        'options' => $anni_corso_options
     ]
 ];
 

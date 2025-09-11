@@ -18,7 +18,9 @@ $page_title = 'Gestione UDA';
 $entity_name = 'UDA';
 $columns = [
     'name' => 'Nome',
-    'description' => 'Descrizione'
+    'description' => 'Descrizione',
+    'disciplina_name' => 'Disciplina',
+    'anno_corso' => 'Anno Corso'
 ];
 $items = $manager->findAll();
 

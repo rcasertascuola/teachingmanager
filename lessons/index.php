@@ -71,7 +71,7 @@ $is_teacher = $_SESSION['role'] === 'teacher';
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h2"><?php echo $is_teacher ? 'Gestione Lezioni' : 'Lezioni Disponibili'; ?></h1>
             <?php if ($is_teacher): ?>
-                <a href="edit.php" class="btn btn-primary"><i class="fas fa-plus"></i> Aggiungi Nuova Lezione</a>
+                <a href="edit.php" class="btn btn-primary"><i class="fas fa-plus"></i></a>
             <?php endif; ?>
         </div>
 
