@@ -25,9 +25,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $entity = new Competenza($db);
     }
 
-    // Specific logic for this entity
-    $_POST['anni_corso'] = ($_POST['anno_type'] === 'specifici') ? ($_POST['anni_corso'] ?? []) : [];
-
     $redirect_url = 'index.php';
     $post_data = $_POST;
 

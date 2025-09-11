@@ -8,20 +8,12 @@ class Conoscenza
     public $nome;
     public $descrizione;
 
-    // Related data
-    public $discipline;
-    public $anni_corso;
-
     public function __construct($db, $data = [])
     {
         $this->conn = $db;
         $this->id = $data['id'] ?? null;
         $this->nome = $data['nome'] ?? '';
         $this->descrizione = $data['descrizione'] ?? '';
-
-        // These will be loaded separately
-        $this->discipline = $data['discipline'] ?? [];
-        $this->anni_corso = $data['anni_corso'] ?? [];
     }
 
     /**
@@ -56,7 +48,6 @@ class Conoscenza
 
         if ($data) {
             $conoscenza = new self($this->conn, $data);
-            $conoscenza->loadRelatedData();
             return $conoscenza;
         }
         return null;
@@ -86,12 +77,6 @@ class Conoscenza
                 $this->id = $this->conn->lastInsertId();
             }
 
-            // Sync disciplines
-            $this->syncRelatedData('conoscenza_discipline', 'disciplina_id', $this->discipline);
-
-            // Sync school years
-            $this->syncRelatedData('conoscenza_anni_corso', 'anno_corso', $this->anni_corso);
-
             $this->conn->commit();
             return true;
         } catch (Exception $e) {
@@ -114,45 +99,4 @@ class Conoscenza
         return $stmt->execute(['id' => $id]);
     }
 
-    /**
-     * Loads related disciplines and school years.
-     */
-    private function loadRelatedData()
-    {
-        // Load disciplines
-        $stmt = $this->conn->prepare('SELECT disciplina_id FROM conoscenza_discipline WHERE conoscenza_id = :id');
-        $stmt->execute(['id' => $this->id]);
-        $this->discipline = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
-
-        // Load school years
-        $stmt = $this->conn->prepare('SELECT anno_corso FROM conoscenza_anni_corso WHERE conoscenza_id = :id');
-        $stmt->execute(['id' => $this->id]);
-        $this->anni_corso = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
-    }
-
-    /**
-     * A generic helper to sync many-to-many relationships.
-     */
-    private function syncRelatedData($tableName, $relatedIdColumn, $relatedIds)
-    {
-        $thisIdColumn = 'conoscenza_id';
-        // Delete existing relationships
-        $stmt = $this->conn->prepare("DELETE FROM {$tableName} WHERE {$thisIdColumn} = :id");
-        $stmt->execute(['id' => $this->id]);
-
-        // Insert new relationships
-        if (!empty($relatedIds)) {
-            $sql = "INSERT INTO {$tableName} ({$thisIdColumn}, {$relatedIdColumn}) VALUES ";
-            $placeholders = [];
-            $values = [];
-            foreach ($relatedIds as $relatedId) {
-                $placeholders[] = '(?, ?)';
-                $values[] = $this->id;
-                $values[] = $relatedId;
-            }
-            $sql .= implode(', ', $placeholders);
-            $stmt = $this->conn->prepare($sql);
-            $stmt->execute($values);
-        }
-    }
 }

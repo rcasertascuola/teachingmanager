@@ -15,7 +15,7 @@ class Verifica
 
     // Related data
     public $abilita_ids = [];
-    public $competenza_ids = [];
+    public $conoscenza_ids = [];
     public $griglia = null; // This will hold the Griglia object
 
     public function __construct($db, $data = [])
@@ -79,10 +79,10 @@ class Verifica
         $stmt_abilita->execute(['id' => $this->id]);
         $this->abilita_ids = $stmt_abilita->fetchAll(PDO::FETCH_COLUMN, 0);
 
-        // Load Competenza IDs
-        $stmt_competenze = $this->conn->prepare('SELECT competenza_id FROM verifica_competenze WHERE verifica_id = :id');
-        $stmt_competenze->execute(['id' => $this->id]);
-        $this->competenza_ids = $stmt_competenze->fetchAll(PDO::FETCH_COLUMN, 0);
+        // Load Conoscenza IDs
+        $stmt_conoscenze = $this->conn->prepare('SELECT conoscenza_id FROM verifica_conoscenze WHERE verifica_id = :id');
+        $stmt_conoscenze->execute(['id' => $this->id]);
+        $this->conoscenza_ids = $stmt_conoscenze->fetchAll(PDO::FETCH_COLUMN, 0);
 
         // Load Griglia and Descrittori
         $stmt_griglia = $this->conn->prepare('SELECT * FROM griglie_valutazione WHERE verifica_id = :id LIMIT 1');
@@ -123,9 +123,9 @@ class Verifica
                 $this->id = $this->conn->lastInsertId();
             }
 
-            // Sync abilities and competencies
+            // Sync abilities and knowledges
             $this->syncRelatedData('verifica_abilita', 'abilita_id', $this->abilita_ids);
-            $this->syncRelatedData('verifica_competenze', 'competenza_id', $this->competenza_ids);
+            $this->syncRelatedData('verifica_conoscenze', 'conoscenza_id', $this->conoscenza_ids);
 
             // Sync griglia
             if ($this->griglia) {

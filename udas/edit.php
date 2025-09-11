@@ -1,6 +1,7 @@
 <?php
 require_once '../src/Database.php';
 require_once '../src/Uda.php';
+require_once '../src/Disciplina.php';
 include '../header.php';
 
 // Auth check
@@ -14,6 +15,9 @@ if ($_SESSION["role"] !== 'teacher') {
 // Get the database connection
 $db = Database::getInstance()->getConnection();
 $uda_manager = new Uda($db);
+$disciplina_manager = new Disciplina($db);
+
+$all_discipline = $disciplina_manager->findAll();
 
 $uda = null;
 $pageTitle = 'Aggiungi Nuova UDA';
@@ -53,6 +57,24 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                     <div class="mb-3">
                         <label for="description" class="form-label">Descrizione</label>
                         <textarea class="form-control" id="description" name="description" rows="5"><?php echo htmlspecialchars($uda->description ?? ''); ?></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="disciplina_id" class="form-label">Disciplina</label>
+                            <select class="form-select" id="disciplina_id" name="disciplina_id">
+                                <option value="">Seleziona una disciplina</option>
+                                <?php foreach ($all_discipline as $disciplina): ?>
+                                    <option value="<?php echo $disciplina->id; ?>" <?php echo ($uda->disciplina_id == $disciplina->id) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($disciplina->nome); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="anno_corso" class="form-label">Anno di Corso</label>
+                            <input type="number" class="form-control" id="anno_corso" name="anno_corso" min="1" max="5" value="<?php echo htmlspecialchars($uda->anno_corso ?? ''); ?>">
+                        </div>
                     </div>
 
                     <a href="index.php" class="btn btn-secondary">Annulla</a>
