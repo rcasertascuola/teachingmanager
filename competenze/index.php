@@ -31,6 +31,11 @@ $columns = [
     'tipologia' => 'Tipologia'
 ];
 
+// Map columns that need a dependency tooltip to the table containing the FK.
+$tooltip_map = [
+    'tipologia' => 'competenze'
+];
+
 // Include the generic handler
 require_once '../handlers/index_handler.php';
 ?>
