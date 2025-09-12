@@ -42,13 +42,6 @@ foreach ($all_abilita as $a) {
     $abilita_map[$a->id] = $a->nome;
 }
 
-$disciplina_manager = new Disciplina($db);
-$all_discipline = $disciplina_manager->findAll();
-$discipline_map = [];
-foreach ($all_discipline as $d) {
-    $discipline_map[$d->id] = $d->nome;
-}
-
 ?>
     <div class="container mt-5">
         <h2>Dettaglio: <?php echo htmlspecialchars($competenza->nome); ?></h2>
@@ -81,17 +74,6 @@ foreach ($all_discipline as $d) {
                     </ul>
                 <?php else: ?>
                     <p>Nessuna abilità.</p>
-                <?php endif; ?>
-
-                <h5 class="card-title mt-4">Discipline</h5>
-                <?php if (!empty($competenza->discipline)): ?>
-                    <ul>
-                        <?php foreach ($competenza->discipline as $id): ?>
-                            <li><?php echo htmlspecialchars($discipline_map[$id] ?? 'ID Sconosciuto'); ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                <?php else: ?>
-                    <p>Nessuna disciplina.</p>
                 <?php endif; ?>
 
                 <h5 class="card-title mt-4">Anni di Corso</h5>
