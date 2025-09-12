@@ -5,6 +5,7 @@ require_once '../src/TipologiaCompetenza.php';
 require_once '../src/Conoscenza.php';
 require_once '../src/Abilita.php';
 require_once '../src/Disciplina.php';
+require_once '../src/TooltipHelper.php';
 include '../header.php';
 
 
@@ -58,13 +59,13 @@ foreach ($all_discipline as $d) {
                 <p class="card-text"><?php echo nl2br(htmlspecialchars($competenza->descrizione)); ?></p>
 
                 <h5 class="card-title mt-4">Tipologia</h5>
-                <p class="card-text"><?php echo $tipologia ? add_dependency_tooltip($tipologia->nome, 'competenze') : 'N/A'; ?></p>
+                <p class="card-text"><?php echo $tipologia ? add_dependency_tooltip($tipologia->nome, 'competenze', 'tipologie_competenze') : 'N/A'; ?></p>
 
                 <h5 class="card-title mt-4">Conoscenze</h5>
                 <?php if (!empty($competenza->conoscenze)): ?>
                     <ul>
                         <?php foreach ($competenza->conoscenze as $id): ?>
-                            <li><?php echo htmlspecialchars($conoscenze_map[$id] ?? 'ID Sconosciuto'); ?></li>
+                            <li><?php echo add_dependency_tooltip($conoscenze_map[$id] ?? 'ID Sconosciuto', 'competenze', 'conoscenze'); ?></li>
                         <?php endforeach; ?>
                     </ul>
                 <?php else: ?>
@@ -75,7 +76,7 @@ foreach ($all_discipline as $d) {
                 <?php if (!empty($competenza->abilita)): ?>
                     <ul>
                         <?php foreach ($competenza->abilita as $id): ?>
-                            <li><?php echo htmlspecialchars($abilita_map[$id] ?? 'ID Sconosciuto'); ?></li>
+                            <li><?php echo add_dependency_tooltip($abilita_map[$id] ?? 'ID Sconosciuto', 'competenze', 'abilita'); ?></li>
                         <?php endforeach; ?>
                     </ul>
                 <?php else: ?>
