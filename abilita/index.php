@@ -19,7 +19,12 @@ $entity_name = 'Abilità';
 $table_name = 'abilita';
 $columns = [
     'nome' => 'Nome',
-    'tipo' => 'Tipo'
+    'tipo' => 'Tipo',
+    'anni_corso' => 'Anni di Corso'
+];
+
+$renderers = [
+    'anni_corso' => 'anniCorsoBadge'
 ];
 
 $custom_actions = [

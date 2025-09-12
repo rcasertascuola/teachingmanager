@@ -77,11 +77,15 @@ foreach ($all_abilita as $a) {
                 <?php endif; ?>
 
                 <h5 class="card-title mt-4">Anni di Corso</h5>
+                <div>
                 <?php if (!empty($competenza->anni_corso)): ?>
-                    <p><?php echo implode(', ', array_map(function($y) { return $y . '° anno'; }, $competenza->anni_corso)); ?></p>
+                    <?php foreach ($competenza->anni_corso as $anno): ?>
+                        <span class="badge bg-info me-1"><?php echo htmlspecialchars($anno); ?></span>
+                    <?php endforeach; ?>
                 <?php else: ?>
-                    <p>Nessun anno di corso.</p>
+                    <p>Nessun anno di corso calcolato.</p>
                 <?php endif; ?>
+                </div>
             </div>
         </div>
 

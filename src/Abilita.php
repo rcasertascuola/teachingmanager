@@ -11,6 +11,7 @@ class Abilita
 
     // Related data
     public $conoscenze;
+    public $anni_corso;
 
     public function __construct($db, $data = [])
     {
@@ -22,6 +23,7 @@ class Abilita
 
         // These will be loaded separately
         $this->conoscenze = $data['conoscenze'] ?? [];
+        $this->anni_corso = $data['anni_corso'] ?? [];
     }
 
     /**
@@ -36,9 +38,37 @@ class Abilita
 
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $abilita_list = [];
+        $abilita_ids = [];
         foreach ($results as $data) {
             $abilita_list[] = new self($this->conn, $data);
+            $abilita_ids[] = $data['id'];
         }
+
+        if (empty($abilita_ids)) {
+            return $abilita_list;
+        }
+
+        // Fetch all related anni_corso in a single query
+        $ids_placeholder = implode(',', array_fill(0, count($abilita_ids), '?'));
+        $stmt_anni = $this->conn->prepare("
+            SELECT abilita_id, anno_corso
+            FROM abilita_anni_corso
+            WHERE abilita_id IN ({$ids_placeholder})
+            ORDER BY anno_corso ASC
+        ");
+        $stmt_anni->execute($abilita_ids);
+        $anni_map = [];
+        while ($row = $stmt_anni->fetch(PDO::FETCH_ASSOC)) {
+            $anni_map[$row['abilita_id']][] = $row['anno_corso'];
+        }
+
+        // Assign the anni_corso to each
+        foreach ($abilita_list as $abilita) {
+            if (isset($anni_map[$abilita->id])) {
+                $abilita->anni_corso = $anni_map[$abilita->id];
+            }
+        }
+
         return $abilita_list;
     }
 
@@ -128,6 +158,11 @@ class Abilita
         $stmt = $this->conn->prepare('SELECT conoscenza_id FROM abilita_conoscenze WHERE abilita_id = :id');
         $stmt->execute(['id' => $this->id]);
         $this->conoscenze = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+
+        // Load anni_corso
+        $stmt_anni = $this->conn->prepare('SELECT anno_corso FROM abilita_anni_corso WHERE abilita_id = :id ORDER BY anno_corso ASC');
+        $stmt_anni->execute(['id' => $this->id]);
+        $this->anni_corso = $stmt_anni->fetchAll(PDO::FETCH_COLUMN, 0);
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/AnniCorsoManager.php';
+
 class Lesson
 {
     private $conn;
@@ -192,6 +194,12 @@ class Lesson
                 $this->syncRelatedData('uda_lessons', 'uda_id', [$this->uda_id], 'lesson_id');
             } else {
                 $this->syncRelatedData('uda_lessons', 'uda_id', [], 'lesson_id');
+            }
+
+            // After all relationships are synced, trigger the course year recalculation
+            $anniCorsoManager = new AnniCorsoManager($this->conn);
+            if (!$anniCorsoManager->updateAll()) {
+                throw new Exception("Failed to update course year associations.");
             }
 
             $this->conn->commit();
