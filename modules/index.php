@@ -36,8 +36,8 @@ $columns = [
 
 // The "view" for a module is the list of UDAs associated with it.
 $custom_actions = [
-    ['href' => '../modules/view.php?id=', 'class' => 'btn-success', 'icon' => 'fa-eye'],
-    ['href' => '../udas/view.php?module_id=', 'class' => 'btn-info', 'icon' => 'fa-layer-group']
+    ['href' => '../modules/view.php?id=', 'class' => 'btn-info', 'icon' => 'fa-eye'],
+    ['href' => '../udas/view.php?module_id=', 'class' => 'btn-success', 'icon' => 'fa-layer-group']
 ];
 
 $tooltip_map = [

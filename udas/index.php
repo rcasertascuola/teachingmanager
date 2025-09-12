@@ -34,8 +34,8 @@ $columns = [
 
 // The "view" for a UDA is the list of lessons associated with it.
 $custom_actions = [
-    ['href' => '../udas/view.php?id=', 'class' => 'btn-success', 'icon' => 'fa-eye'],
-    ['href' => '../lessons/index.php?uda_id=', 'class' => 'btn-info', 'icon' => 'fa-layer-group']
+    ['href' => '../udas/edit.php?id=', 'class' => 'btn-info', 'icon' => 'fa-eye'],
+    ['href' => '../lessons/index.php?uda_id=', 'class' => 'btn-success', 'icon' => 'fa-layer-group']
 ];
 
 $tooltip_map = [
