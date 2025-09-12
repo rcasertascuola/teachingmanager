@@ -117,12 +117,13 @@ try {
     $tooltip_map = $params['tooltip_map'] ?? [];
     if (!empty($tooltip_map) && !empty($data)) {
         foreach ($data as $rowIndex => $row) {
-            foreach ($tooltip_map as $columnName => $tableName) {
+            foreach ($tooltip_map as $columnName => $targetTable) {
                 if (isset($row[$columnName])) {
                     // NOTE: The helper function now handles htmlspecialchars internally
                     $data[$rowIndex][$columnName] = add_dependency_tooltip(
                         $row[$columnName],
-                        $tableName
+                        $table, // The source table is the main table of the query
+                        $targetTable
                     );
                 }
             }
