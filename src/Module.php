@@ -28,7 +28,7 @@ class Module
      * @param int|null $anno_corso
      * @return Module[]
      */
-    public function findAll($anno_corso = null)
+    public function findAll($anno_corso = null, $disciplina_id = null)
     {
         $params = [];
         $query = '
@@ -40,9 +40,18 @@ class Module
             LEFT JOIN
                 discipline d ON m.disciplina_id = d.id';
 
+        $where_clauses = [];
         if ($anno_corso) {
-            $query .= ' WHERE m.anno_corso = :anno_corso';
+            $where_clauses[] = 'm.anno_corso = :anno_corso';
             $params[':anno_corso'] = $anno_corso;
+        }
+        if ($disciplina_id) {
+            $where_clauses[] = 'm.disciplina_id = :disciplina_id';
+            $params[':disciplina_id'] = $disciplina_id;
+        }
+
+        if (count($where_clauses) > 0) {
+            $query .= ' WHERE ' . implode(' AND ', $where_clauses);
         }
 
         $query .= ' ORDER BY m.name ASC';

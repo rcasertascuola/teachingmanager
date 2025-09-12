@@ -20,6 +20,7 @@ $uda_manager = new Uda($db);
 $exercise_manager = new Exercise($db);
 
 $anno_corso = isset($_GET['anno_corso']) && !empty($_GET['anno_corso']) ? (int)$_GET['anno_corso'] : null;
+$disciplina_id = isset($_GET['disciplina_id']) && !empty($_GET['disciplina_id']) ? (int)$_GET['disciplina_id'] : null;
 
 function getCompetenzeByAbilita($pdo, $abilitaId) {
     $stmt = $pdo->prepare('
@@ -51,7 +52,7 @@ function getDisciplineByCompetenza($pdo, $competenzaId) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-$modules = $module_manager->findAll($anno_corso);
+$modules = $module_manager->findAll($anno_corso, $disciplina_id);
 $result = [];
 
 foreach ($modules as $module) {

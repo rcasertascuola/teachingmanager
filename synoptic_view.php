@@ -51,13 +51,17 @@ include 'header.php';
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Synoptic View</h1>
                 <div class="col-md-3">
-                    <select id="anno-corso-filter" class="form-select">
+                    <select id="anno-corso-filter" class="form-select mb-2">
                         <option value="">All Years</option>
                         <option value="1">Year 1</option>
                         <option value="2">Year 2</option>
                         <option value="3">Year 3</option>
                         <option value="4">Year 4</option>
                         <option value="5">Year 5</option>
+                    </select>
+                    <select id="disciplina-filter" class="form-select">
+                        <option value="">All Disciplines</option>
+                        <!-- Options will be populated by JS -->
                     </select>
                 </div>
             </div>
@@ -73,12 +77,27 @@ include 'header.php';
         document.addEventListener('DOMContentLoaded', function () {
             const synopticTreeContainer = document.getElementById('synoptic-tree-container');
             const annoCorsoFilter = document.getElementById('anno-corso-filter');
+            const disciplinaFilter = document.getElementById('disciplina-filter');
 
-            function fetchData(annoCorso = '') {
-                let url = 'synoptic_data.php';
-                if (annoCorso) {
-                    url += '?anno_corso=' + annoCorso;
-                }
+            function populateDisciplineFilter() {
+                fetch('get_disciplines.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(disciplina => {
+                            const option = document.createElement('option');
+                            option.value = disciplina.id;
+                            option.textContent = disciplina.nome;
+                            disciplinaFilter.appendChild(option);
+                        });
+                    });
+            }
+
+            function fetchData(annoCorso = '', disciplinaId = '') {
+                let params = new URLSearchParams();
+                if (annoCorso) params.append('anno_corso', annoCorso);
+                if (disciplinaId) params.append('disciplina_id', disciplinaId);
+
+                let url = 'synoptic_data.php?' + params.toString();
 
                 fetch(url)
                     .then(response => response.json())
@@ -289,11 +308,15 @@ include 'header.php';
                 synopticTreeContainer.appendChild(rootUl);
             }
 
+            function handleFilterChange() {
+                fetchData(annoCorsoFilter.value, disciplinaFilter.value);
+            }
+
+            populateDisciplineFilter();
             fetchData();
 
-            annoCorsoFilter.addEventListener('change', function () {
-                fetchData(this.value);
-            });
+            annoCorsoFilter.addEventListener('change', handleFilterChange);
+            disciplinaFilter.addEventListener('change', handleFilterChange);
 
             synopticTreeContainer.addEventListener('click', function (event) {
                 if (event.target.classList.contains('toggler')) {
