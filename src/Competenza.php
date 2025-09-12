@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/AnniCorsoManager.php';
+
 class Competenza
 {
     private $conn;
@@ -100,6 +102,12 @@ class Competenza
             // Sync relationships
             $this->syncRelatedData('competenza_conoscenze', 'conoscenza_id', $this->conoscenze);
             $this->syncRelatedData('competenza_abilita', 'abilita_id', $this->abilita);
+
+            // After all relationships are synced, trigger the course year recalculation
+            $anniCorsoManager = new AnniCorsoManager($this->conn);
+            if (!$anniCorsoManager->updateAll()) {
+                throw new Exception("Failed to update course year associations.");
+            }
 
             $this->conn->commit();
             return true;

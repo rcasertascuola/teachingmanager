@@ -348,3 +348,11 @@ CREATE TABLE `abilita_anni_corso` (
   PRIMARY KEY (`abilita_id`, `anno_corso`),
   FOREIGN KEY (`abilita_id`) REFERENCES `abilita`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Relazione Competenze -> Anno Corso (N a N)
+CREATE TABLE `competenza_anni_corso` (
+  `competenza_id` INT(11) NOT NULL,
+  `anno_corso` TINYINT NOT NULL,
+  PRIMARY KEY (`competenza_id`, `anno_corso`),
+  FOREIGN KEY (`competenza_id`) REFERENCES `competenze`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
