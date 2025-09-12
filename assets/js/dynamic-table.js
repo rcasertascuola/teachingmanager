@@ -157,8 +157,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (rendererName && renderers[rendererName]) {
                             td.innerHTML = renderers[rendererName](row[col]);
                         } else {
-                            // Use innerHTML to render tooltips, and textContent for everything else to be safe.
-                            // The search handler now provides HTML for tooltips.
                             td.innerHTML = row[col] || '';
                         }
                     }

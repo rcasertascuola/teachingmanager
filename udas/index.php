@@ -32,11 +32,14 @@ $columns = [
     'module_name' => 'Modulo'
 ];
 
-// Note: A 'view' custom action is intentionally omitted.
-// The udas/view.php file is a list view for a module's UDAs, not a detail view for a single UDA.
-// The intended "view" action from this table is to see the lessons for the UDA,
-// but this was found to be confusing for the user.
+// The "view" for a UDA is the list of lessons associated with it.
+$custom_actions = [
+    ['href' => '../lessons/index.php?uda_id=', 'class' => 'btn-info', 'icon' => 'fa-eye']
+];
 
+$tooltip_map = [
+    'module_name' => 'udas'
+];
 
 // Include the generic handler
 require_once '../handlers/index_handler.php';

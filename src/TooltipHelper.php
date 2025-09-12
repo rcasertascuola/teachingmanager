@@ -10,10 +10,13 @@ require_once __DIR__ . '/SchemaManager.php';
  * @return string The original HTML content, possibly wrapped in a <span> with tooltip attributes.
  */
 function add_dependency_tooltip($htmlContent, $tableName) {
+    // Ensure content is properly escaped before wrapping
+    $escapedContent = htmlspecialchars($htmlContent ?? '', ENT_QUOTES, 'UTF-8');
+
     $chains = SchemaManager::getDependencyChains($tableName);
 
     if (empty($chains)) {
-        return $htmlContent;
+        return $escapedContent;
     }
 
     $tooltipTitle = "Provenienza del dato:<br><ul>";
@@ -23,13 +26,11 @@ function add_dependency_tooltip($htmlContent, $tableName) {
     $tooltipTitle .= "</ul>";
 
     // The 'data-bs-html="true"' attribute is crucial for rendering HTML inside the tooltip.
-    // The 'data-bs-placement="top"' is for positioning.
-    // The 'data-bs-toggle="tooltip"' initializes the tooltip.
     return '<span
         data-bs-toggle="tooltip"
         data-bs-html="true"
         data-bs-placement="top"
         title="' . $tooltipTitle . '"
-    >' . $htmlContent . '</span>';
+    >' . $escapedContent . '</span>';
 }
 ?>

@@ -1,6 +1,6 @@
 <?php
 
-require_once 'Database.php';
+require_once __DIR__ . '/Database.php';
 
 class SchemaManager {
     // Cache for foreign key data. Key: table name, Value: array of [column_name => referenced_table_name]
@@ -17,7 +17,15 @@ class SchemaManager {
         }
 
         self::$foreignKeysMap = [];
-        $db = Database::getInstance()->getConnection();
+        // Use a try-catch block to handle potential DB connection issues gracefully
+        try {
+            $db = Database::getInstance()->getConnection();
+            $dbName = DB_NAME; // Assuming DB_NAME is available from config
+        } catch (Exception $e) {
+            // If DB connection fails, we can't proceed.
+            self::$foreignKeysMap = [];
+            return;
+        }
 
         // Query to get all foreign key constraints in the current database
         $query = "
@@ -33,12 +41,12 @@ class SchemaManager {
                 AND kcu.table_schema = tc.table_schema
             WHERE
                 tc.constraint_type = 'FOREIGN KEY'
-                AND kcu.table_schema = DATABASE()
+                AND kcu.table_schema = ?
         ";
 
         try {
             $stmt = $db->prepare($query);
-            $stmt->execute();
+            $stmt->execute([$dbName]);
             $constraints = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             foreach ($constraints as $c) {
@@ -69,12 +77,9 @@ class SchemaManager {
         $chains = [];
         if (isset(self::$foreignKeysMap[$tableName])) {
             foreach (self::$foreignKeysMap[$tableName] as $columnName => $referencedTable) {
-                // Start the chain with the current table
-                $currentChain = $tableName;
-                // Get the rest of the chain from the referenced table
-                $nextChains = self::buildChain($referencedTable, [$tableName]);
-                foreach ($nextChains as $chain) {
-                    $chains[] = $currentChain . ' -> ' . $chain;
+                $subChains = self::buildChain($referencedTable, [$tableName]);
+                foreach ($subChains as $chain) {
+                    $chains[] = $tableName . ' -> ' . $chain;
                 }
             }
         }
@@ -96,16 +101,17 @@ class SchemaManager {
         }
 
         $chains = [];
-        // Add the current table to the visited list for this path
         $visited[] = $tableName;
 
         $hasSubchains = false;
-        foreach (self::$foreignKeysMap[$tableName] as $columnName => $referencedTable) {
-            $subChains = self::buildChain($referencedTable, $visited);
-            if (!empty($subChains)) {
-                $hasSubchains = true;
-                foreach ($subChains as $subChain) {
-                    $chains[] = $tableName . ' -> ' . $subChain;
+        if (isset(self::$foreignKeysMap[$tableName])) {
+            foreach (self::$foreignKeysMap[$tableName] as $columnName => $referencedTable) {
+                $subChains = self::buildChain($referencedTable, $visited);
+                if (!empty($subChains)) {
+                    $hasSubchains = true;
+                    foreach ($subChains as $subChain) {
+                        $chains[] = $tableName . ' -> ' . $subChain;
+                    }
                 }
             }
         }

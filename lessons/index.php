@@ -35,6 +35,10 @@ $custom_actions = [
     ['href' => 'view.php?id=', 'class' => 'btn-info', 'icon' => 'fa-eye']
 ];
 
+$tooltip_map = [
+    'module_name' => 'modules',
+    'uda_name' => 'udas'
+];
 ?>
 
 <div class="container mt-4">

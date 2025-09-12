@@ -119,8 +119,9 @@ try {
         foreach ($data as $rowIndex => $row) {
             foreach ($tooltip_map as $columnName => $tableName) {
                 if (isset($row[$columnName])) {
+                    // NOTE: The helper function now handles htmlspecialchars internally
                     $data[$rowIndex][$columnName] = add_dependency_tooltip(
-                        htmlspecialchars($row[$columnName]),
+                        $row[$columnName],
                         $tableName
                     );
                 }

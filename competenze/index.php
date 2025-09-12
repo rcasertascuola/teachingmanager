@@ -35,6 +35,10 @@ $custom_actions = [
     ['href' => 'view.php?id=', 'class' => 'btn-info', 'icon' => 'fa-eye']
 ];
 
+$tooltip_map = [
+    'tipologia' => 'competenze'
+];
+
 // Include the generic handler
 require_once '../handlers/index_handler.php';
 ?>
