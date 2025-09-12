@@ -167,6 +167,7 @@ include 'header.php';
                         module.udas.forEach(uda => {
                             const udaLi = document.createElement('li');
                             const hasLessons = uda.lessons.length > 0;
+
                             udaLi.innerHTML = `${hasLessons ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<div class="tree-item-content"><h6><i class="fas fa-book"></i> ${uda.name}</h6><a href="udas/view.php?id=${uda.id}" class="link-icon" target="_blank"><i class="fas fa-external-link-alt"></i></a></div>`;
 
                             if (hasLessons) {
