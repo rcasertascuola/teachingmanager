@@ -3,6 +3,7 @@ header('Content-Type: application/json');
 
 try {
     require_once '../src/Database.php';
+    require_once '../src/TooltipHelper.php'; // Include the helper
 
     $db = Database::getInstance()->getConnection();
 

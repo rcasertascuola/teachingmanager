@@ -39,7 +39,6 @@ $tooltip_map = [
     'module_name' => 'modules',
     'uda_name' => 'udas'
 ];
-
 ?>
 
 <div class="container mt-4">
