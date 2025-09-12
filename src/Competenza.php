@@ -196,7 +196,7 @@ class Competenza
         $stmt_anni = $this->conn->prepare('SELECT anno_corso FROM competenza_anni_corso WHERE competenza_id = :id ORDER BY anno_corso ASC');
         $stmt_anni->execute(['id' => $this->id]);
         $this->anni_corso = $stmt_anni->fetchAll(PDO::FETCH_COLUMN, 0);
-
+      
         // Load discipline
         $stmt_disc = $this->conn->prepare('
             SELECT d.nome

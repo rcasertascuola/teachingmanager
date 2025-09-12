@@ -64,7 +64,7 @@ class Conoscenza
                 $conoscenza->anni_corso = $anni_map[$conoscenza->id];
             }
         }
-
+      
         // Fetch all related disciplines in a single query
         $stmt_disc = $this->conn->prepare("
             SELECT cd.conoscenza_id, d.nome
