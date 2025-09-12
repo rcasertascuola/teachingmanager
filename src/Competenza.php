@@ -14,6 +14,7 @@ class Competenza
     // Related data
     public $conoscenze;
     public $abilita;
+    public $anni_corso;
 
     public function __construct($db, $data = [])
     {
@@ -26,6 +27,7 @@ class Competenza
         // These will be loaded separately if not provided
         $this->conoscenze = $data['conoscenze'] ?? [];
         $this->abilita = $data['abilita'] ?? [];
+        $this->anni_corso = $data['anni_corso'] ?? [];
     }
 
     /**
@@ -40,9 +42,37 @@ class Competenza
 
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $competenze = [];
+        $competenza_ids = [];
         foreach ($results as $data) {
             $competenze[] = new self($this->conn, $data);
+            $competenza_ids[] = $data['id'];
         }
+
+        if (empty($competenza_ids)) {
+            return $competenze;
+        }
+
+        // Fetch all related anni_corso in a single query
+        $ids_placeholder = implode(',', array_fill(0, count($competenza_ids), '?'));
+        $stmt_anni = $this->conn->prepare("
+            SELECT competenza_id, anno_corso
+            FROM competenza_anni_corso
+            WHERE competenza_id IN ({$ids_placeholder})
+            ORDER BY anno_corso ASC
+        ");
+        $stmt_anni->execute($competenza_ids);
+        $anni_map = [];
+        while ($row = $stmt_anni->fetch(PDO::FETCH_ASSOC)) {
+            $anni_map[$row['competenza_id']][] = $row['anno_corso'];
+        }
+
+        // Assign the anni_corso to each
+        foreach ($competenze as $competenza) {
+            if (isset($anni_map[$competenza->id])) {
+                $competenza->anni_corso = $anni_map[$competenza->id];
+            }
+        }
+
         return $competenze;
     }
 
@@ -138,6 +168,11 @@ class Competenza
     {
         $this->conoscenze = $this->getRelatedIds('competenza_conoscenze', 'conoscenza_id');
         $this->abilita = $this->getRelatedIds('competenza_abilita', 'abilita_id');
+
+        // Load anni_corso
+        $stmt_anni = $this->conn->prepare('SELECT anno_corso FROM competenza_anni_corso WHERE competenza_id = :id ORDER BY anno_corso ASC');
+        $stmt_anni->execute(['id' => $this->id]);
+        $this->anni_corso = $stmt_anni->fetchAll(PDO::FETCH_COLUMN, 0);
     }
 
     /**

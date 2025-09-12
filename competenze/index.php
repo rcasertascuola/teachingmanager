@@ -28,7 +28,12 @@ $selects = [
 ];
 $columns = [
     'nome' => 'Nome',
-    'tipologia' => 'Tipologia'
+    'tipologia' => 'Tipologia',
+    'anni_corso' => 'Anni di Corso'
+];
+
+$renderers = [
+    'anni_corso' => 'anniCorsoBadge'
 ];
 
 $custom_actions = [

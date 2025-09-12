@@ -97,6 +97,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     default:
                         return '<span class="badge bg-secondary">Sconosciuto</span>';
                 }
+            },
+            anniCorsoBadge: (data) => {
+                if (!data || !Array.isArray(data) || data.length === 0) {
+                    return '';
+                }
+                return data.map(anno => `<span class="badge bg-info me-1">${anno}</span>`).join(' ');
             }
         };
 

@@ -85,11 +85,15 @@ $derived_discipline_ids = array_unique($derived_discipline_ids);
                 <?php endif; ?>
 
                 <h5 class="card-title mt-4">Anni di Corso</h5>
+                <div>
                 <?php if (!empty($abilita->anni_corso)): ?>
-                    <p><?php echo implode(', ', array_map(function($y) { return $y . '° anno'; }, $abilita->anni_corso)); ?></p>
+                    <?php foreach ($abilita->anni_corso as $anno): ?>
+                        <span class="badge bg-info me-1"><?php echo htmlspecialchars($anno); ?></span>
+                    <?php endforeach; ?>
                 <?php else: ?>
-                    <p>Nessun anno di corso specificato.</p>
+                    <p>Nessun anno di corso calcolato.</p>
                 <?php endif; ?>
+                </div>
             </div>
         </div>
 
