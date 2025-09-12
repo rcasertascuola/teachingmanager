@@ -34,16 +34,10 @@ $columns = [
     'anno_corso' => 'Anno Corso'
 ];
 
-// Map columns that need a dependency tooltip to the table containing the FK.
-$tooltip_map = [
-    'disciplina_name' => 'modules'
-];
-
-
-$custom_actions = [
-    ['href' => '../udas/view.php?module_id=', 'class' => 'btn-info', 'icon' => 'fa-eye']
-];
-
+// Note: A 'view' custom action is intentionally omitted.
+// The modules/view.php file is a list view, not a detail view for a single module.
+// The intended "view" action from this table is handled by linking to the UDA list for the module,
+// but this was found to be confusing for the user.
 
 // Include the generic handler
 require_once '../handlers/index_handler.php';

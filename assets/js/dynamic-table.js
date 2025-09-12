@@ -121,13 +121,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 columns.forEach(col => {
                     const td = document.createElement('td');
                     if (col === 'actions') {
-                        let buttons = `
+                        let custom_buttons = '';
+                        // Custom buttons (render them first)
+                        if (table.dataset.tableCustomActions) {
+                            const customActions = JSON.parse(table.dataset.tableCustomActions);
+                            customActions.forEach(action => {
+                                custom_buttons += `<a href="${action.href}${row.id}" class="btn btn-sm ${action.class}"><i class="fas ${action.icon}"></i></a> `;
+                            });
+                        }
+
+                        let default_buttons = `
                             <a href="edit.php?id=${row.id}" class="btn btn-sm btn-warning"><i class="fas fa-pencil-alt"></i></a>
                             <a href="delete.php?id=${row.id}" class="btn btn-sm btn-danger" onclick="return confirm('Sei sicuro?');"><i class="fas fa-trash"></i></a>
                         `;
 
                         if (tableName === 'users') {
-                             buttons += `
+                            default_buttons += `
                                 <form action="update_status.php" method="POST" class="d-inline-flex ms-2">
                                     <input type="hidden" name="id" value="${row.id}">
                                     <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
@@ -139,15 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             `;
                         }
 
-
-                        // Custom buttons
-                        if (table.dataset.tableCustomActions) {
-                            const customActions = JSON.parse(table.dataset.tableCustomActions);
-                            customActions.forEach(action => {
-                                buttons += ` <a href="${action.href}${row.id}" class="btn btn-sm ${action.class}"><i class="fas ${action.icon}"></i></a>`;
-                            });
-                        }
-                        td.innerHTML = buttons;
+                        td.innerHTML = custom_buttons + default_buttons;
                     } else if (col === 'status' && tableName === 'users') {
                         td.innerHTML = renderers.statusBadge(row[col]);
                     }

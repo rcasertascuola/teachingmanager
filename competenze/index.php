@@ -31,11 +31,6 @@ $columns = [
     'tipologia' => 'Tipologia'
 ];
 
-// Map columns that need a dependency tooltip to the table containing the FK.
-$tooltip_map = [
-    'tipologia' => 'competenze'
-];
-
 $custom_actions = [
     ['href' => 'view.php?id=', 'class' => 'btn-info', 'icon' => 'fa-eye']
 ];
