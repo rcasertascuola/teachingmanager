@@ -66,7 +66,7 @@ $derived_discipline_ids = array_unique($derived_discipline_ids);
                 <?php if (!empty($abilita->conoscenze)): ?>
                     <ul>
                         <?php foreach ($abilita->conoscenze as $conoscenza_id): ?>
-                            <li><?php echo htmlspecialchars($conoscenze_map[$conoscenza_id] ?? 'ID Sconosciuto'); ?></li>
+                            <li><?php echo add_dependency_tooltip($conoscenze_map[$conoscenza_id] ?? 'ID Sconosciuto', 'abilita', 'conoscenze'); ?></li>
                         <?php endforeach; ?>
                     </ul>
                 <?php else: ?>

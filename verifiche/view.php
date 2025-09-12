@@ -64,7 +64,7 @@ $is_teacher = isset($_SESSION['role']) && $_SESSION['role'] === 'teacher';
                         <?php if (!empty($verifica->abilita_ids)): ?>
                             <ul class="list-group">
                                 <?php foreach ($verifica->abilita_ids as $id): ?>
-                                    <li class="list-group-item"><?php echo htmlspecialchars($abilita_map[$id] ?? 'ID Sconosciuto'); ?></li>
+                                    <li class="list-group-item"><?php echo add_dependency_tooltip($abilita_map[$id] ?? 'ID Sconosciuto', 'verifiche', 'abilita'); ?></li>
                                 <?php endforeach; ?>
                             </ul>
                         <?php else: ?>
@@ -76,7 +76,7 @@ $is_teacher = isset($_SESSION['role']) && $_SESSION['role'] === 'teacher';
                         <?php if (!empty($verifica->conoscenza_ids)): ?>
                             <ul class="list-group">
                                 <?php foreach ($verifica->conoscenza_ids as $id): ?>
-                                    <li class="list-group-item"><?php echo htmlspecialchars($conoscenze_map[$id] ?? 'ID Sconosciuto'); ?></li>
+                                    <li class="list-group-item"><?php echo add_dependency_tooltip($conoscenze_map[$id] ?? 'ID Sconosciuto', 'verifiche', 'conoscenze'); ?></li>
                                 <?php endforeach; ?>
                             </ul>
                         <?php else: ?>
