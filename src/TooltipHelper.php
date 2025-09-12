@@ -15,7 +15,7 @@ function add_dependency_tooltip($htmlContent, $tableName, $targetTable = null) {
     $escapedContent = htmlspecialchars($htmlContent ?? '', ENT_QUOTES, 'UTF-8');
 
     // If no target table is specified, return the escaped content without a tooltip.
-    // This makes the function backward-compatible with old calls.
+    // This makes the function backward-compatible with old calls that only pass 2 arguments.
     if ($targetTable === null) {
         return $escapedContent;
     }
