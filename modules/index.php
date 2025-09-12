@@ -39,9 +39,11 @@ $tooltip_map = [
     'disciplina_name' => 'modules'
 ];
 
+
 $custom_actions = [
     ['href' => '../udas/view.php?module_id=', 'class' => 'btn-info', 'icon' => 'fa-eye']
 ];
+
 
 // Include the generic handler
 require_once '../handlers/index_handler.php';
