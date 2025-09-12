@@ -33,6 +33,14 @@ include 'header.php';
     .tree-view .leaf-node {
         padding-left: 15px;
     }
+    .tree-view .link-icon {
+        margin-left: 8px;
+        color: #007bff;
+        text-decoration: none;
+    }
+    .tree-view .link-icon:hover {
+        color: #0056b3;
+    }
 </style>
     <div class="container-fluid">
         <main class="px-md-4">
@@ -108,7 +116,7 @@ include 'header.php';
                         const hasChildren = node.children.length > 0;
                         const slug = slugify(node.title);
                         const link = `lessons/view.php?id=${lessonId}#${slug}`;
-                        li.innerHTML = `${hasChildren ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<a href="${link}">${node.title}</a>`;
+                        li.innerHTML = `${hasChildren ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<span>${node.title}</span><a href="${link}" class="link-icon" target="_blank"><i class="fas fa-external-link-alt"></i></a>`;
                         if (hasChildren) {
                             const ul = document.createElement('ul');
                             ul.className = 'children';
@@ -121,7 +129,6 @@ include 'header.php';
 
                 render(root.children, container);
             }
-
             function slugify(text) {
                 return text.toString().toLowerCase()
                     .replace(/\s+/g, '-')           // Replace spaces with -
@@ -138,7 +145,14 @@ include 'header.php';
                 data.forEach(module => {
                     const moduleLi = document.createElement('li');
                     const hasUdas = module.udas.length > 0;
-                    moduleLi.innerHTML = `${hasUdas ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<h5><a href="modules/view.php?id=${module.id}"><i class="fas fa-puzzle-piece"></i> ${module.name}</a></h5>`;
+                    let moduleInfo = '';
+                    if (module.disciplina_name || module.anno_corso) {
+                        const infoParts = [];
+                        if (module.disciplina_name) infoParts.push(module.disciplina_name);
+                        if (module.anno_corso) infoParts.push(`Anno ${module.anno_corso}`);
+                        moduleInfo = ` <small>(${infoParts.join(', ')})</small>`;
+                    }
+                    moduleLi.innerHTML = `${hasUdas ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<h5><i class="fas fa-puzzle-piece"></i> ${module.name}${moduleInfo}</h5><a href="modules/view.php?id=${module.id}" class="link-icon" target="_blank"><i class="fas fa-external-link-alt"></i></a>`;
 
                     if (hasUdas) {
                         const moduleUl = document.createElement('ul');
@@ -147,7 +161,7 @@ include 'header.php';
                         module.udas.forEach(uda => {
                             const udaLi = document.createElement('li');
                             const hasLessons = uda.lessons.length > 0;
-                            udaLi.innerHTML = `${hasLessons ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<h6><a href="udas/view.php?id=${uda.id}"><i class="fas fa-book"></i> ${uda.name}</a></h6>`;
+                            udaLi.innerHTML = `${hasLessons ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<h6><i class="fas fa-book"></i> ${uda.name}</h6><a href="udas/view.php?id=${uda.id}" class="link-icon" target="_blank"><i class="fas fa-external-link-alt"></i></a>`;
 
                             if (hasLessons) {
                                 const udaUl = document.createElement('ul');
@@ -156,7 +170,7 @@ include 'header.php';
                                 uda.lessons.forEach(lesson => {
                                     const lessonLi = document.createElement('li');
                                     const hasContent = lesson.content || lesson.conoscenze.length > 0 || lesson.abilita.length > 0 || lesson.exercises.length > 0;
-                                    lessonLi.innerHTML = `${hasContent ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<strong><a href="lessons/view.php?id=${lesson.id}"><i class="fas fa-chalkboard-teacher"></i> ${lesson.title}</a></strong>`;
+                                    lessonLi.innerHTML = `${hasContent ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<strong><i class="fas fa-chalkboard-teacher"></i> ${lesson.title}</strong><a href="lessons/view.php?id=${lesson.id}" class="link-icon" target="_blank"><i class="fas fa-external-link-alt"></i></a>`;
 
                                     if (hasContent) {
                                         const lessonUl = document.createElement('ul');
@@ -174,21 +188,21 @@ include 'header.php';
                                             lesson.conoscenze.forEach(conoscenza => {
                                                 const li = document.createElement('li');
                                                 const hasCompetenze = conoscenza.competenze && conoscenza.competenze.length > 0;
-                                                li.innerHTML = `${hasCompetenze ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<a href="conoscenze/view.php?id=${conoscenza.id}">${conoscenza.nome}</a>`;
+                                                li.innerHTML = `${hasCompetenze ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<span>${conoscenza.nome}</span><a href="conoscenze/view.php?id=${conoscenza.id}" class="link-icon" target="_blank"><i class="fas fa-external-link-alt"></i></a>`;
                                                 if (hasCompetenze) {
                                                     const ul = document.createElement('ul');
                                                     ul.className = 'children';
                                                     conoscenza.competenze.forEach(competenza => {
                                                         const compLi = document.createElement('li');
                                                         const hasDiscipline = competenza.discipline && competenza.discipline.length > 0;
-                                                        compLi.innerHTML = `${hasDiscipline ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<a href="competenze/view.php?id=${competenza.id}"><i class="fas fa-graduation-cap"></i> ${competenza.nome}</a>`;
+                                                        compLi.innerHTML = `${hasDiscipline ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<span><i class="fas fa-graduation-cap"></i> ${competenza.nome}</span><a href="competenze/view.php?id=${competenza.id}" class="link-icon" target="_blank"><i class="fas fa-external-link-alt"></i></a>`;
                                                         if (hasDiscipline) {
                                                             const discUl = document.createElement('ul');
                                                             discUl.className = 'children';
                                                             competenza.discipline.forEach(disciplina => {
                                                                 const discLi = document.createElement('li');
                                                                 discLi.className = 'leaf-node';
-                                                                discLi.innerHTML = `<a href="discipline/view.php?id=${disciplina.id}"><i class="fas fa-atom"></i> ${disciplina.nome}</a>`;
+                                                                discLi.innerHTML = `<span><i class="fas fa-atom"></i> ${disciplina.nome}</span><a href="discipline/view.php?id=${disciplina.id}" class="link-icon" target="_blank"><i class="fas fa-external-link-alt"></i></a>`;
                                                                 discUl.appendChild(discLi);
                                                             });
                                                             compLi.appendChild(discUl);
@@ -211,21 +225,21 @@ include 'header.php';
                                             lesson.abilita.forEach(skill => {
                                                 const li = document.createElement('li');
                                                 const hasCompetenze = skill.competenze && skill.competenze.length > 0;
-                                                li.innerHTML = `${hasCompetenze ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<a href="abilita/view.php?id=${skill.id}">${skill.nome}</a>`;
+                                                li.innerHTML = `${hasCompetenze ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<span>${skill.nome}</span><a href="abilita/view.php?id=${skill.id}" class="link-icon" target="_blank"><i class="fas fa-external-link-alt"></i></a>`;
                                                 if (hasCompetenze) {
                                                     const ul = document.createElement('ul');
                                                     ul.className = 'children';
                                                     skill.competenze.forEach(competenza => {
                                                         const compLi = document.createElement('li');
                                                         const hasDiscipline = competenza.discipline && competenza.discipline.length > 0;
-                                                        compLi.innerHTML = `${hasDiscipline ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<a href="competenze/view.php?id=${competenza.id}"><i class="fas fa-graduation-cap"></i> ${competenza.nome}</a>`;
+                                                        compLi.innerHTML = `${hasDiscipline ? '<span class="toggler"></span>' : '<span class="leaf-node"></span>'}<span><i class="fas fa-graduation-cap"></i> ${competenza.nome}</span><a href="competenze/view.php?id=${competenza.id}" class="link-icon" target="_blank"><i class="fas fa-external-link-alt"></i></a>`;
                                                         if (hasDiscipline) {
                                                             const discUl = document.createElement('ul');
                                                             discUl.className = 'children';
                                                             competenza.discipline.forEach(disciplina => {
                                                                 const discLi = document.createElement('li');
                                                                 discLi.className = 'leaf-node';
-                                                                discLi.innerHTML = `<a href="discipline/view.php?id=${disciplina.id}"><i class="fas fa-atom"></i> ${disciplina.nome}</a>`;
+                                                                discLi.innerHTML = `<span><i class="fas fa-atom"></i> ${disciplina.nome}</span><a href="discipline/view.php?id=${disciplina.id}" class="link-icon" target="_blank"><i class="fas fa-external-link-alt"></i></a>`;
                                                                 discUl.appendChild(discLi);
                                                             });
                                                             compLi.appendChild(discUl);
@@ -248,7 +262,7 @@ include 'header.php';
                                             lesson.exercises.forEach(exercise => {
                                                 const li = document.createElement('li');
                                                 li.className = 'leaf-node';
-                                                li.innerHTML = `<a href="exercises/view.php?id=${exercise.id}">${exercise.title}</a>`;
+                                                li.innerHTML = `<span>${exercise.title}</span><a href="exercises/view.php?id=${exercise.id}" class="link-icon" target="_blank"><i class="fas fa-external-link-alt"></i></a>`;
                                                 exercisesUl.appendChild(li);
                                             });
                                             exercisesLi.appendChild(exercisesUl);

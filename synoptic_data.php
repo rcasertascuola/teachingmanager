@@ -144,6 +144,8 @@ foreach ($modules as $module) {
         'id' => $module->id,
         'name' => $module->name,
         'description' => $module->description,
+        'disciplina_name' => $module->disciplina_name,
+        'anno_corso' => $module->anno_corso,
         'udas' => $udaData,
     ];
 }
