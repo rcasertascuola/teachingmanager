@@ -58,7 +58,7 @@ foreach ($all_discipline as $d) {
                 <p class="card-text"><?php echo nl2br(htmlspecialchars($competenza->descrizione)); ?></p>
 
                 <h5 class="card-title mt-4">Tipologia</h5>
-                <p class="card-text"><?php echo $tipologia ? htmlspecialchars($tipologia->nome) : 'N/A'; ?></p>
+                <p class="card-text"><?php echo $tipologia ? add_dependency_tooltip($tipologia->nome, 'competenze') : 'N/A'; ?></p>
 
                 <h5 class="card-title mt-4">Conoscenze</h5>
                 <?php if (!empty($competenza->conoscenze)): ?>

@@ -44,6 +44,7 @@ $json_columns = json_encode(array_merge(array_keys($columns), ['actions']));
                        <?php if (isset($joins)): ?>data-table-joins='<?php echo json_encode($joins); ?>'<?php endif; ?>
                        <?php if (isset($custom_actions)): ?>data-table-custom-actions='<?php echo json_encode($custom_actions); ?>'<?php endif; ?>
                        <?php if (isset($renderers)): ?>data-table-renderers='<?php echo json_encode($renderers); ?>'<?php endif; ?>
+                       <?php if (isset($tooltip_map)): ?>data-table-tooltip-map='<?php echo htmlspecialchars(json_encode($tooltip_map)); ?>'<?php endif; ?>
                        >
                     <thead>
                         <tr>

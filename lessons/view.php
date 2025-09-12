@@ -134,10 +134,10 @@ if ($lesson) {
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <?php if ($module): ?>
-                        <li class="breadcrumb-item"><a href="../modules/view.php?id=<?php echo $module->id; ?>"><?php echo htmlspecialchars($module->name); ?></a></li>
+                        <li class="breadcrumb-item"><a href="../modules/view.php?id=<?php echo $module->id; ?>"><?php echo add_dependency_tooltip($module->name, 'modules'); ?></a></li>
                     <?php endif; ?>
                     <?php if ($uda): ?>
-                        <li class="breadcrumb-item"><a href="../udas/view.php?id=<?php echo $uda->id; ?>"><?php echo htmlspecialchars($uda->name); ?></a></li>
+                        <li class="breadcrumb-item"><a href="../udas/view.php?id=<?php echo $uda->id; ?>"><?php echo add_dependency_tooltip($uda->name, 'udas'); ?></a></li>
                     <?php endif; ?>
                     <li class="breadcrumb-item active" aria-current="page"><?php echo htmlspecialchars($lesson->title); ?></li>
                 </ol>

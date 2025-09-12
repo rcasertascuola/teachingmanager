@@ -34,6 +34,15 @@ $columns = [
     'anno_corso' => 'Anno Corso'
 ];
 
+// The "view" for a module is the list of UDAs associated with it.
+$custom_actions = [
+    ['href' => '../udas/view.php?module_id=', 'class' => 'btn-info', 'icon' => 'fa-eye']
+];
+
+$tooltip_map = [
+    'disciplina_name' => 'modules'
+];
+
 // Include the generic handler
 require_once '../handlers/index_handler.php';
 ?>

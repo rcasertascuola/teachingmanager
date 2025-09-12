@@ -24,6 +24,11 @@ $columns = [
 ];
 $custom_actions = [
     [
+        'href' => 'view.php?id=',
+        'class' => 'btn-info',
+        'icon' => 'fa-eye'
+    ],
+    [
         'href' => 'registro.php?id=',
         'class' => 'btn-success',
         'icon' => 'fa-book'

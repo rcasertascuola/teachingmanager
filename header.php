@@ -1,6 +1,9 @@
 <?php
 session_start();
 
+// Include the tooltip helper function globally
+require_once __DIR__ . '/src/TooltipHelper.php';
+
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     // Adjust path for login.php based on the current script's location
     $path_to_login = (basename($_SERVER['PHP_SELF']) == 'index.php' && dirname($_SERVER['PHP_SELF']) == '/') ? 'login.php' : '../login.php';

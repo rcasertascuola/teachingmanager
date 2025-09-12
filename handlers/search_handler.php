@@ -112,6 +112,22 @@ try {
     $stmt->execute();
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // --- Apply tooltips if a map is provided ---
+    $tooltip_map = $params['tooltip_map'] ?? [];
+    if (!empty($tooltip_map) && !empty($data)) {
+        foreach ($data as $rowIndex => $row) {
+            foreach ($tooltip_map as $columnName => $tableName) {
+                if (isset($row[$columnName])) {
+                    // NOTE: The helper function now handles htmlspecialchars internally
+                    $data[$rowIndex][$columnName] = add_dependency_tooltip(
+                        $row[$columnName],
+                        $tableName
+                    );
+                }
+            }
+        }
+    }
+
     // --- Return JSON response ---
     echo json_encode([
         'data' => $data,
