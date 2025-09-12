@@ -31,6 +31,16 @@ $columns = [
     'tags' => 'Tags'
 ];
 
+// Map columns that need a dependency tooltip to the table containing the FK.
+$tooltip_map = [
+    'module_name' => 'modules',
+    'uda_name' => 'udas'
+];
+
+$custom_actions = [
+    ['href' => 'view.php?id=', 'class' => 'btn-info', 'icon' => 'fa-eye']
+];
+
 ?>
 
 <div class="container mt-4">

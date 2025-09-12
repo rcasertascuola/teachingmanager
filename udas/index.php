@@ -32,6 +32,16 @@ $columns = [
     'module_name' => 'Modulo'
 ];
 
+// Map columns that need a dependency tooltip to the table containing the FK.
+$tooltip_map = [
+    'module_name' => 'udas'
+];
+
+// The "view" for a UDA is the list of lessons associated with it.
+$custom_actions = [
+    ['href' => '../lessons/index.php?uda_id=', 'class' => 'btn-info', 'icon' => 'fa-eye']
+];
+
 // Include the generic handler
 require_once '../handlers/index_handler.php';
 ?>

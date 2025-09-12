@@ -34,6 +34,15 @@ $columns = [
     'anno_corso' => 'Anno Corso'
 ];
 
+// Map columns that need a dependency tooltip to the table containing the FK.
+$tooltip_map = [
+    'disciplina_name' => 'modules'
+];
+
+$custom_actions = [
+    ['href' => '../udas/view.php?module_id=', 'class' => 'btn-info', 'icon' => 'fa-eye']
+];
+
 // Include the generic handler
 require_once '../handlers/index_handler.php';
 ?>
