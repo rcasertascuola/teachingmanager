@@ -37,6 +37,7 @@ $columns = [
 // The intended "view" action from this table is to see the lessons for the UDA,
 // but this was found to be confusing for the user.
 
+
 // Include the generic handler
 require_once '../handlers/index_handler.php';
 ?>

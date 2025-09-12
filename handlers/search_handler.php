@@ -3,6 +3,7 @@ header('Content-Type: application/json');
 
 try {
     require_once '../src/Database.php';
+    require_once '../src/TooltipHelper.php'; // Include the helper
 
     $db = Database::getInstance()->getConnection();
 
@@ -111,6 +112,21 @@ try {
 
     $stmt->execute();
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // --- Apply tooltips if a map is provided ---
+    $tooltip_map = $params['tooltip_map'] ?? [];
+    if (!empty($tooltip_map) && !empty($data)) {
+        foreach ($data as $rowIndex => $row) {
+            foreach ($tooltip_map as $columnName => $tableName) {
+                if (isset($row[$columnName])) {
+                    $data[$rowIndex][$columnName] = add_dependency_tooltip(
+                        htmlspecialchars($row[$columnName]),
+                        $tableName
+                    );
+                }
+            }
+        }
+    }
 
     // --- Return JSON response ---
     echo json_encode([
