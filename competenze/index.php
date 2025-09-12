@@ -31,6 +31,10 @@ $columns = [
     'tipologia' => 'Tipologia'
 ];
 
+$custom_actions = [
+    ['href' => 'view.php?id=', 'class' => 'btn-info', 'icon' => 'fa-eye']
+];
+
 // Include the generic handler
 require_once '../handlers/index_handler.php';
 ?>

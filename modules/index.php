@@ -34,6 +34,11 @@ $columns = [
     'anno_corso' => 'Anno Corso'
 ];
 
+// Note: A 'view' custom action is intentionally omitted.
+// The modules/view.php file is a list view, not a detail view for a single module.
+// The intended "view" action from this table is handled by linking to the UDA list for the module,
+// but this was found to be confusing for the user.
+
 // Include the generic handler
 require_once '../handlers/index_handler.php';
 ?>
