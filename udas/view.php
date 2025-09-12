@@ -25,7 +25,7 @@ $udas = $uda_manager->findByModuleId($module_id);
 ?>
 
     <div class="container mt-4">
-        <h1 class="h2 mb-4">Elenco UDA per <?php echo htmlspecialchars($module->name); ?></h1>
+        <h1 class="h2 mb-4">Elenco UDA per <?php echo add_dependency_tooltip(htmlspecialchars($module->name), 'udas', 'modules'); ?></h1>
 
         <div class="list-group">
             <?php if (empty($udas)): ?>
