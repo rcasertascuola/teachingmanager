@@ -24,7 +24,7 @@ $modules = $module_manager->findAll();
                             <small>Anno: <?php echo htmlspecialchars($module->anno_corso); ?></small>
                         </div>
                         <p class="mb-1"><?php echo htmlspecialchars($module->description); ?></p>
-                        <small>Disciplina: <?php echo htmlspecialchars($module->disciplina_name ?? 'Non specificata'); ?></small>
+                        <small>Disciplina: <?php echo add_dependency_tooltip(htmlspecialchars($module->disciplina_name ?? 'Non specificata'), 'modules'); ?></small>
                     </a>
                 <?php endforeach; ?>
             <?php endif; ?>

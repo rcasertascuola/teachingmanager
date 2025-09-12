@@ -32,6 +32,11 @@ $columns = [
     'module_name' => 'Modulo'
 ];
 
+// Map columns that need a dependency tooltip to the table containing the FK.
+$tooltip_map = [
+    'module_name' => 'udas'
+];
+
 // Include the generic handler
 require_once '../handlers/index_handler.php';
 ?>
