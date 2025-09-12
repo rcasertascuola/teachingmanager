@@ -29,11 +29,13 @@ $selects = [
 $columns = [
     'nome' => 'Nome',
     'tipologia' => 'Tipologia',
-    'anni_corso' => 'Anni di Corso'
+    'anni_corso' => 'Anni di Corso',
+    'discipline' => 'Discipline'
 ];
 
 $renderers = [
-    'anni_corso' => 'anniCorsoBadge'
+    'anni_corso' => 'anniCorsoBadge',
+    'discipline' => 'arrayBadge'
 ];
 
 $custom_actions = [

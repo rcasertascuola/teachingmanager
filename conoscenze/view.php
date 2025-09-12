@@ -37,17 +37,6 @@ foreach ($all_discipline as $d) {
                 <h5 class="card-title">Descrizione</h5>
                 <p class="card-text"><?php echo nl2br(htmlspecialchars($conoscenza->descrizione)); ?></p>
 
-                <h5 class="card-title mt-4">Discipline Correlate</h5>
-                <?php if (!empty($conoscenza->discipline)): ?>
-                    <ul>
-                        <?php foreach ($conoscenza->discipline as $disciplina_id): ?>
-                            <li><?php echo htmlspecialchars($discipline_map[$disciplina_id] ?? 'ID Sconosciuto'); ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                <?php else: ?>
-                    <p>Nessuna disciplina correlata.</p>
-                <?php endif; ?>
-
                 <h5 class="card-title mt-4">Anni di Corso</h5>
                 <div>
                 <?php if (!empty($conoscenza->anni_corso)): ?>
@@ -56,6 +45,17 @@ foreach ($all_discipline as $d) {
                     <?php endforeach; ?>
                 <?php else: ?>
                     <p>Nessun anno di corso calcolato.</p>
+                <?php endif; ?>
+                </div>
+
+                <h5 class="card-title mt-4">Discipline Ereditate</h5>
+                <div>
+                <?php if (!empty($conoscenza->discipline)): ?>
+                    <?php foreach ($conoscenza->discipline as $disciplina): ?>
+                        <span class="badge bg-secondary me-1"><?php echo htmlspecialchars($disciplina); ?></span>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p>Nessuna disciplina calcolata.</p>
                 <?php endif; ?>
                 </div>
             </div>

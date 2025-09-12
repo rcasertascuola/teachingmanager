@@ -86,6 +86,17 @@ foreach ($all_abilita as $a) {
                     <p>Nessun anno di corso calcolato.</p>
                 <?php endif; ?>
                 </div>
+
+                <h5 class="card-title mt-4">Discipline Ereditate</h5>
+                <div>
+                <?php if (!empty($competenza->discipline)): ?>
+                    <?php foreach ($competenza->discipline as $disciplina): ?>
+                        <span class="badge bg-secondary me-1"><?php echo htmlspecialchars($disciplina); ?></span>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p>Nessuna disciplina calcolata.</p>
+                <?php endif; ?>
+                </div>
             </div>
         </div>
 

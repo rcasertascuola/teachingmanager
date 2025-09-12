@@ -12,6 +12,7 @@ class Abilita
     // Related data
     public $conoscenze;
     public $anni_corso;
+    public $discipline;
 
     public function __construct($db, $data = [])
     {
@@ -24,6 +25,7 @@ class Abilita
         // These will be loaded separately
         $this->conoscenze = $data['conoscenze'] ?? [];
         $this->anni_corso = $data['anni_corso'] ?? [];
+        $this->discipline = $data['discipline'] ?? [];
     }
 
     /**
@@ -66,6 +68,27 @@ class Abilita
         foreach ($abilita_list as $abilita) {
             if (isset($anni_map[$abilita->id])) {
                 $abilita->anni_corso = $anni_map[$abilita->id];
+            }
+        }
+
+        // Fetch all related disciplines in a single query
+        $stmt_disc = $this->conn->prepare("
+            SELECT ad.abilita_id, d.nome
+            FROM abilita_discipline ad
+            JOIN discipline d ON ad.disciplina_id = d.id
+            WHERE ad.abilita_id IN ({$ids_placeholder})
+            ORDER BY d.nome ASC
+        ");
+        $stmt_disc->execute($abilita_ids);
+        $disc_map = [];
+        while ($row = $stmt_disc->fetch(PDO::FETCH_ASSOC)) {
+            $disc_map[$row['abilita_id']][] = $row['nome'];
+        }
+
+        // Assign the disciplines to each
+        foreach ($abilita_list as $abilita) {
+            if (isset($disc_map[$abilita->id])) {
+                $abilita->discipline = $disc_map[$abilita->id];
             }
         }
 
@@ -163,6 +186,17 @@ class Abilita
         $stmt_anni = $this->conn->prepare('SELECT anno_corso FROM abilita_anni_corso WHERE abilita_id = :id ORDER BY anno_corso ASC');
         $stmt_anni->execute(['id' => $this->id]);
         $this->anni_corso = $stmt_anni->fetchAll(PDO::FETCH_COLUMN, 0);
+
+        // Load discipline
+        $stmt_disc = $this->conn->prepare('
+            SELECT d.nome
+            FROM abilita_discipline ad
+            JOIN discipline d ON ad.disciplina_id = d.id
+            WHERE ad.abilita_id = :id
+            ORDER BY d.nome ASC
+        ');
+        $stmt_disc->execute(['id' => $this->id]);
+        $this->discipline = $stmt_disc->fetchAll(PDO::FETCH_COLUMN, 0);
     }
 
     /**

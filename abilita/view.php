@@ -38,18 +38,6 @@ foreach ($all_discipline as $d) {
     $discipline_map[$d->id] = $d->nome;
 }
 
-// Derive disciplines from linked conoscenze
-$derived_discipline_ids = [];
-if (!empty($abilita->conoscenze)) {
-    foreach ($abilita->conoscenze as $conoscenza_id) {
-        $conoscenza = $conoscenza_manager->findById($conoscenza_id);
-        if ($conoscenza && !empty($conoscenza->discipline)) {
-            $derived_discipline_ids = array_merge($derived_discipline_ids, $conoscenza->discipline);
-        }
-    }
-}
-$derived_discipline_ids = array_unique($derived_discipline_ids);
-
 ?>
     <div class="container mt-5">
         <h2>Dettaglio: <?php echo htmlspecialchars($abilita->nome); ?></h2>
@@ -73,17 +61,6 @@ $derived_discipline_ids = array_unique($derived_discipline_ids);
                     <p>Nessuna conoscenza collegata.</p>
                 <?php endif; ?>
 
-                <h5 class="card-title mt-4">Discipline (derivate dalle conoscenze)</h5>
-                <?php if (!empty($derived_discipline_ids)): ?>
-                    <ul>
-                        <?php foreach ($derived_discipline_ids as $disciplina_id): ?>
-                            <li><?php echo htmlspecialchars($discipline_map[$disciplina_id] ?? 'ID Sconosciuto'); ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                <?php else: ?>
-                    <p>Nessuna disciplina derivata (collegare a conoscenze per vederle).</p>
-                <?php endif; ?>
-
                 <h5 class="card-title mt-4">Anni di Corso</h5>
                 <div>
                 <?php if (!empty($abilita->anni_corso)): ?>
@@ -92,6 +69,17 @@ $derived_discipline_ids = array_unique($derived_discipline_ids);
                     <?php endforeach; ?>
                 <?php else: ?>
                     <p>Nessun anno di corso calcolato.</p>
+                <?php endif; ?>
+                </div>
+
+                <h5 class="card-title mt-4">Discipline Ereditate</h5>
+                <div>
+                <?php if (!empty($abilita->discipline)): ?>
+                    <?php foreach ($abilita->discipline as $disciplina): ?>
+                        <span class="badge bg-secondary me-1"><?php echo htmlspecialchars($disciplina); ?></span>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p>Nessuna disciplina calcolata.</p>
                 <?php endif; ?>
                 </div>
             </div>

@@ -98,11 +98,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         return '<span class="badge bg-secondary">Sconosciuto</span>';
                 }
             },
-            anniCorsoBadge: (data) => {
+            arrayBadge: (data, color = 'secondary') => {
                 if (!data || !Array.isArray(data) || data.length === 0) {
                     return '';
                 }
-                return data.map(anno => `<span class="badge bg-info me-1">${anno}</span>`).join(' ');
+                return data.map(item => `<span class="badge bg-${color} me-1">${item}</span>`).join(' ');
+            },
+            anniCorsoBadge: (data) => {
+                return renderers.arrayBadge(data, 'info');
             }
         };
 

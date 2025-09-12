@@ -19,11 +19,13 @@ $entity_name = 'Conoscenza';
 $table_name = 'conoscenze';
 $columns = [
     'nome' => 'Nome',
-    'anni_corso' => 'Anni di Corso'
+    'anni_corso' => 'Anni di Corso',
+    'discipline' => 'Discipline'
 ];
 
 $renderers = [
-    'anni_corso' => 'anniCorsoBadge'
+    'anni_corso' => 'anniCorsoBadge',
+    'discipline' => 'arrayBadge'
 ];
 
 $custom_actions = [
