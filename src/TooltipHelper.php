@@ -1,6 +1,6 @@
 <?php
 
-require_once 'SchemaManager.php';
+require_once __DIR__ . '/SchemaManager.php';
 
 /**
  * Wraps HTML content with a Bootstrap tooltip that shows data dependencies.
