@@ -4,6 +4,7 @@ require_once '../src/Competenza.php';
 require_once '../src/TipologiaCompetenza.php';
 require_once '../src/Conoscenza.php';
 require_once '../src/Abilita.php';
+require_once '../src/Disciplina.php';
 require_once '../src/TooltipHelper.php';
 include '../header.php';
 
@@ -57,11 +58,7 @@ foreach ($all_abilita as $a) {
                 <?php if (!empty($competenza->conoscenze)): ?>
                     <ul>
                         <?php foreach ($competenza->conoscenze as $id): ?>
-                            <li><?php echo add_dependency_tooltip(
-                                $conoscenze_map[$id] ?? 'ID Sconosciuto',
-                                'competenze',
-                                'conoscenze'
-                            ); ?></li>
+                            <li><?php echo add_dependency_tooltip($conoscenze_map[$id] ?? 'ID Sconosciuto', 'competenze', 'conoscenze'); ?></li>
                         <?php endforeach; ?>
                     </ul>
                 <?php else: ?>
@@ -72,11 +69,7 @@ foreach ($all_abilita as $a) {
                 <?php if (!empty($competenza->abilita)): ?>
                     <ul>
                         <?php foreach ($competenza->abilita as $id): ?>
-                            <li><?php echo add_dependency_tooltip(
-                                $abilita_map[$id] ?? 'ID Sconosciuto',
-                                'competenze',
-                                'abilita'
-                            ); ?></li>
+                            <li><?php echo add_dependency_tooltip($abilita_map[$id] ?? 'ID Sconosciuto', 'competenze', 'abilita'); ?></li>
                         <?php endforeach; ?>
                     </ul>
                 <?php else: ?>

@@ -40,7 +40,7 @@ $custom_actions = [
 ];
 
 $tooltip_map = [
-    'disciplina_name' => 'modules'
+    'disciplina_name' => 'discipline'
 ];
 
 // Include the generic handler

@@ -7,12 +7,18 @@ require_once __DIR__ . '/SchemaManager.php';
  *
  * @param string $htmlContent The HTML content to be displayed (e.g., a field value).
  * @param string $tableName The database table name where the dependency originates.
- * @param string $targetTable The final table in the dependency chain we are interested in.
+ * @param string|null $targetTable The final table in the dependency chain we are interested in. If null, no tooltip is added.
  * @return string The original HTML content, possibly wrapped in a <span> with tooltip attributes.
  */
-function add_dependency_tooltip($htmlContent, $tableName, $targetTable) {
-    // Ensure content is properly escaped before wrapping
+function add_dependency_tooltip($htmlContent, $tableName, $targetTable = null) {
+    // Ensure content is properly escaped before wrapping. This is always safe to do.
     $escapedContent = htmlspecialchars($htmlContent ?? '', ENT_QUOTES, 'UTF-8');
+
+    // If no target table is specified, return the escaped content without a tooltip.
+    // This makes the function backward-compatible with old calls.
+    if ($targetTable === null) {
+        return $escapedContent;
+    }
 
     $allChains = SchemaManager::getDependencyChains($tableName);
 

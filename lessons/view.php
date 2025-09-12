@@ -134,10 +134,10 @@ if ($lesson) {
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <?php if ($module): ?>
-                        <li class="breadcrumb-item"><a href="../modules/view.php?id=<?php echo $module->id; ?>"><?php echo add_dependency_tooltip(htmlspecialchars($module->name), 'lessons', 'modules'); ?></a></li>
+                        <li class="breadcrumb-item"><a href="../modules/view.php?id=<?php echo $module->id; ?>"><?php echo add_dependency_tooltip($module->name, 'lessons', 'modules'); ?></a></li>
                     <?php endif; ?>
                     <?php if ($uda): ?>
-                        <li class="breadcrumb-item"><a href="../udas/view.php?id=<?php echo $uda->id; ?>"><?php echo add_dependency_tooltip(htmlspecialchars($uda->name), 'lessons', 'udas'); ?></a></li>
+                        <li class="breadcrumb-item"><a href="../udas/view.php?id=<?php echo $uda->id; ?>"><?php echo add_dependency_tooltip($uda->name, 'lessons', 'udas'); ?></a></li>
                     <?php endif; ?>
                     <li class="breadcrumb-item active" aria-current="page"><?php echo htmlspecialchars($lesson->title); ?></li>
                 </ol>
@@ -173,7 +173,7 @@ if ($lesson) {
                             <?php if (!empty($lesson->conoscenze)): ?>
                                 <ul class="list-group">
                                     <?php foreach ($lesson->conoscenze as $id): ?>
-                                        <li class="list-group-item"><?php echo add_dependency_tooltip(htmlspecialchars($conoscenze_map[$id] ?? 'ID Sconosciuto'), 'lessons', 'conoscenze'); ?></li>
+                                        <li class="list-group-item"><?php echo add_dependency_tooltip($conoscenze_map[$id] ?? 'ID Sconosciuto', 'lessons', 'conoscenze'); ?></li>
                                     <?php endforeach; ?>
                                 </ul>
                             <?php else: ?>
@@ -185,7 +185,7 @@ if ($lesson) {
                             <?php if (!empty($lesson->abilita)): ?>
                                 <ul class="list-group">
                                     <?php foreach ($lesson->abilita as $id): ?>
-                                        <li class="list-group-item"><?php echo add_dependency_tooltip(htmlspecialchars($abilita_map[$id] ?? 'ID Sconosciuto'), 'lessons', 'abilita'); ?></li>
+                                        <li class="list-group-item"><?php echo add_dependency_tooltip($abilita_map[$id] ?? 'ID Sconosciuto', 'lessons', 'abilita'); ?></li>
                                     <?php endforeach; ?>
                                 </ul>
                             <?php else: ?>
