@@ -71,6 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (table.dataset.tableRenderers) {
                 payload.renderers = JSON.parse(table.dataset.tableRenderers);
             }
+            if (table.dataset.tableTooltipMap) {
+                payload.tooltip_map = JSON.parse(table.dataset.tableTooltipMap);
+            }
 
             const response = await fetch('/handlers/search_handler.php', {
                 method: 'POST',
@@ -153,7 +156,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (rendererName && renderers[rendererName]) {
                             td.innerHTML = renderers[rendererName](row[col]);
                         } else {
-                            td.textContent = row[col] || '';
+                            // Use innerHTML to render tooltips, and textContent for everything else to be safe.
+                            // The search handler now provides HTML for tooltips.
+                            td.innerHTML = row[col] || '';
                         }
                     }
                     tr.appendChild(td);
