@@ -42,7 +42,6 @@ class Conoscenza
 
         if (empty($conoscenza_ids)) {
             return $conoscenze;
-
         }
 
         // Fetch all related anni_corso in a single query
