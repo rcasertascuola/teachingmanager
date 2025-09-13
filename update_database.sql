@@ -32,3 +32,5 @@ CREATE TABLE `lezione_contenuti` (
   FOREIGN KEY (`lezione_id`) REFERENCES `lessons`(`id`) ON DELETE CASCADE,
   FOREIGN KEY (`contenuto_id`) REFERENCES `contenuti`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE `modules` ADD `tempo_stimato` INT(11) DEFAULT NULL;

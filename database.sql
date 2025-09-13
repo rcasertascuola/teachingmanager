@@ -81,6 +81,7 @@ CREATE TABLE `modules` (
   `description` text,
   `disciplina_id` int(11) DEFAULT NULL,
   `anno_corso` tinyint(4) DEFAULT NULL,
+  `tempo_stimato` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `disciplina_id` (`disciplina_id`),
   CONSTRAINT `modules_ibfk_1` FOREIGN KEY (`disciplina_id`) REFERENCES `discipline` (`id`) ON DELETE SET NULL
