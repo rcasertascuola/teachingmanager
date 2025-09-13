@@ -18,18 +18,21 @@ $page_title = 'Gestione UDA';
 $entity_name = 'UDA';
 $table_name = 'udas';
 $joins = [
-    'LEFT JOIN modules ON udas.module_id = modules.id'
+    'LEFT JOIN modules ON udas.module_id = modules.id',
+    'LEFT JOIN discipline ON modules.disciplina_id = discipline.id'
 ];
 $selects = [
     'udas.id as id',
     'udas.name as name',
     'udas.description as description',
-    'modules.name as module_name'
+    'modules.name as module_name',
+    'discipline.nome as disciplina_nome'
 ];
 $columns = [
     'name' => 'Nome',
     'description' => 'Descrizione',
-    'module_name' => 'Modulo'
+    'module_name' => 'Modulo',
+    'disciplina_nome' => 'Disciplina'
 ];
 
 // The "view" for a UDA is the list of lessons associated with it.

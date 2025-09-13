@@ -18,7 +18,14 @@ $page_title = 'Gestione Conoscenze';
 $entity_name = 'Conoscenza';
 $table_name = 'conoscenze';
 $columns = [
-    'nome' => 'Nome'
+    'nome' => 'Nome',
+    'anni_corso' => 'Anni di Corso',
+    'discipline' => 'Discipline'
+];
+
+$renderers = [
+    'anni_corso' => 'anniCorsoBadge',
+    'discipline' => 'arrayBadge'
 ];
 
 $custom_actions = [

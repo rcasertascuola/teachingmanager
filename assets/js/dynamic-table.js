@@ -97,6 +97,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     default:
                         return '<span class="badge bg-secondary">Sconosciuto</span>';
                 }
+            },
+            arrayBadge: (data, color = 'secondary') => {
+                if (!data || !Array.isArray(data) || data.length === 0) {
+                    return '';
+                }
+                return data.map(item => `<span class="badge bg-${color} me-1">${item}</span>`).join(' ');
+            },
+            anniCorsoBadge: (data) => {
+                return renderers.arrayBadge(data, 'info');
             }
         };
 

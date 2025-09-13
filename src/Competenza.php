@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/AnniCorsoManager.php';
+
 class Competenza
 {
     private $conn;
@@ -12,6 +14,8 @@ class Competenza
     // Related data
     public $conoscenze;
     public $abilita;
+    public $anni_corso;
+    public $discipline;
 
     public function __construct($db, $data = [])
     {
@@ -24,6 +28,8 @@ class Competenza
         // These will be loaded separately if not provided
         $this->conoscenze = $data['conoscenze'] ?? [];
         $this->abilita = $data['abilita'] ?? [];
+        $this->anni_corso = $data['anni_corso'] ?? [];
+        $this->discipline = $data['discipline'] ?? [];
     }
 
     /**
@@ -38,9 +44,58 @@ class Competenza
 
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $competenze = [];
+        $competenza_ids = [];
         foreach ($results as $data) {
             $competenze[] = new self($this->conn, $data);
+            $competenza_ids[] = $data['id'];
         }
+
+        if (empty($competenza_ids)) {
+            return $competenze;
+        }
+
+        // Fetch all related anni_corso in a single query
+        $ids_placeholder = implode(',', array_fill(0, count($competenza_ids), '?'));
+        $stmt_anni = $this->conn->prepare("
+            SELECT competenza_id, anno_corso
+            FROM competenza_anni_corso
+            WHERE competenza_id IN ({$ids_placeholder})
+            ORDER BY anno_corso ASC
+        ");
+        $stmt_anni->execute($competenza_ids);
+        $anni_map = [];
+        while ($row = $stmt_anni->fetch(PDO::FETCH_ASSOC)) {
+            $anni_map[$row['competenza_id']][] = $row['anno_corso'];
+        }
+
+        // Assign the anni_corso to each
+        foreach ($competenze as $competenza) {
+            if (isset($anni_map[$competenza->id])) {
+                $competenza->anni_corso = $anni_map[$competenza->id];
+            }
+        }
+
+        // Fetch all related disciplines in a single query
+        $stmt_disc = $this->conn->prepare("
+            SELECT cd.competenza_id, d.nome
+            FROM competenza_discipline cd
+            JOIN discipline d ON cd.disciplina_id = d.id
+            WHERE cd.competenza_id IN ({$ids_placeholder})
+            ORDER BY d.nome ASC
+        ");
+        $stmt_disc->execute($competenza_ids);
+        $disc_map = [];
+        while ($row = $stmt_disc->fetch(PDO::FETCH_ASSOC)) {
+            $disc_map[$row['competenza_id']][] = $row['nome'];
+        }
+
+        // Assign the disciplines to each
+        foreach ($competenze as $competenza) {
+            if (isset($disc_map[$competenza->id])) {
+                $competenza->discipline = $disc_map[$competenza->id];
+            }
+        }
+
         return $competenze;
     }
 
@@ -101,6 +156,12 @@ class Competenza
             $this->syncRelatedData('competenza_conoscenze', 'conoscenza_id', $this->conoscenze);
             $this->syncRelatedData('competenza_abilita', 'abilita_id', $this->abilita);
 
+            // After all relationships are synced, trigger the course year recalculation
+            $anniCorsoManager = new AnniCorsoManager($this->conn);
+            if (!$anniCorsoManager->updateAll()) {
+                throw new Exception("Failed to update course year associations.");
+            }
+
             $this->conn->commit();
             return true;
         } catch (Exception $e) {
@@ -130,6 +191,22 @@ class Competenza
     {
         $this->conoscenze = $this->getRelatedIds('competenza_conoscenze', 'conoscenza_id');
         $this->abilita = $this->getRelatedIds('competenza_abilita', 'abilita_id');
+
+        // Load anni_corso
+        $stmt_anni = $this->conn->prepare('SELECT anno_corso FROM competenza_anni_corso WHERE competenza_id = :id ORDER BY anno_corso ASC');
+        $stmt_anni->execute(['id' => $this->id]);
+        $this->anni_corso = $stmt_anni->fetchAll(PDO::FETCH_COLUMN, 0);
+
+        // Load discipline
+        $stmt_disc = $this->conn->prepare('
+            SELECT d.nome
+            FROM competenza_discipline cd
+            JOIN discipline d ON cd.disciplina_id = d.id
+            WHERE cd.competenza_id = :id
+            ORDER BY d.nome ASC
+        ');
+        $stmt_disc->execute(['id' => $this->id]);
+        $this->discipline = $stmt_disc->fetchAll(PDO::FETCH_COLUMN, 0);
     }
 
     /**

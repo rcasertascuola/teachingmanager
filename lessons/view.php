@@ -146,9 +146,14 @@ if ($lesson) {
             <div class="card">
                 <div class="card-header">
                     <h1 class="h2 mb-0"><?php echo htmlspecialchars($lesson->title); ?></h1>
-                    <?php if (!empty($lesson->tags)): ?>
-                        <small class="text-muted">Tags: <?php echo htmlspecialchars($lesson->tags); ?></small>
-                    <?php endif; ?>
+                    <div>
+                        <?php if ($lesson->disciplina_nome): ?>
+                             <span class="badge bg-primary me-2"><?php echo htmlspecialchars($lesson->disciplina_nome); ?></span>
+                        <?php endif; ?>
+                        <?php if (!empty($lesson->tags)): ?>
+                            <small class="text-muted">Tags: <?php echo htmlspecialchars($lesson->tags); ?></small>
+                        <?php endif; ?>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div id="lesson-content" class="wikitext-content">
