@@ -13,7 +13,8 @@ $table_name = 'lessons';
 $joins = [
     'LEFT JOIN uda_lessons ON lessons.id = uda_lessons.lesson_id',
     'LEFT JOIN udas ON uda_lessons.uda_id = udas.id',
-    'LEFT JOIN modules ON udas.module_id = modules.id'
+    'LEFT JOIN modules ON udas.module_id = modules.id',
+    'LEFT JOIN discipline ON modules.disciplina_id = discipline.id'
 ];
 
 $selects = [
@@ -21,7 +22,8 @@ $selects = [
     'lessons.title as title',
     'modules.name as module_name',
     'udas.name as uda_name',
-    'lessons.tags as tags'
+    'lessons.tags as tags',
+    'discipline.nome as disciplina_nome'
 ];
 
 $columns = [
