@@ -36,7 +36,7 @@ class Database {
 
     // The clone and wakeup methods are private to prevent cloning of the instance.
     private function __clone() {}
-    private function __wakeup() {}
+    public function __wakeup() {}
 
     // The static method that controls the access to the singleton instance.
     public static function getInstance() {

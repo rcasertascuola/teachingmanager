@@ -10,7 +10,6 @@ class Abilita
     public $tipo;
 
     // Related data
-    public $conoscenze;
     public $anni_corso;
     public $discipline;
 
@@ -23,7 +22,6 @@ class Abilita
         $this->tipo = $data['tipo'] ?? 'cognitiva'; // Default value
 
         // These will be loaded separately
-        $this->conoscenze = $data['conoscenze'] ?? [];
         $this->anni_corso = $data['anni_corso'] ?? [];
         $this->discipline = $data['discipline'] ?? [];
     }
@@ -148,9 +146,6 @@ class Abilita
                 $this->id = $this->conn->lastInsertId();
             }
 
-            // Sync relationships
-            $this->syncRelatedData('abilita_conoscenze', 'conoscenza_id', $this->conoscenze);
-
             $this->conn->commit();
             return true;
         } catch (Exception $e) {
@@ -177,11 +172,6 @@ class Abilita
      */
     private function loadRelatedData()
     {
-        // Load conoscenze
-        $stmt = $this->conn->prepare('SELECT conoscenza_id FROM abilita_conoscenze WHERE abilita_id = :id');
-        $stmt->execute(['id' => $this->id]);
-        $this->conoscenze = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
-
         // Load anni_corso
         $stmt_anni = $this->conn->prepare('SELECT anno_corso FROM abilita_anni_corso WHERE abilita_id = :id ORDER BY anno_corso ASC');
         $stmt_anni->execute(['id' => $this->id]);
@@ -199,30 +189,19 @@ class Abilita
         $this->discipline = $stmt_disc->fetchAll(PDO::FETCH_COLUMN, 0);
     }
 
-    /**
-     * A generic helper to sync many-to-many relationships.
-     */
-    private function syncRelatedData($tableName, $relatedIdColumn, $relatedIds)
+    public function findByIds($ids)
     {
-        $thisIdColumn = 'abilita_id'; // Assuming the column name is based on the class name
-
-        $stmt = $this->conn->prepare("DELETE FROM {$tableName} WHERE {$thisIdColumn} = :id");
-        $stmt->execute(['id' => $this->id]);
-
-        if (!empty($relatedIds)) {
-            $sql = "INSERT INTO {$tableName} ({$thisIdColumn}, {$relatedIdColumn}) VALUES ";
-            $placeholders = [];
-            $values = [];
-            foreach ($relatedIds as $relatedId) {
-                // Ensure related IDs are of the correct type, e.g., int
-                $relatedId = (int)$relatedId;
-                $placeholders[] = '(?, ?)';
-                $values[] = $this->id;
-                $values[] = $relatedId;
-            }
-            $sql .= implode(', ', $placeholders);
-            $stmt = $this->conn->prepare($sql);
-            $stmt->execute($values);
+        if (empty($ids)) {
+            return [];
         }
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = $this->conn->prepare("SELECT * FROM abilita WHERE id IN ({$placeholders})");
+        $stmt->execute($ids);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $items = [];
+        foreach ($results as $data) {
+            $items[] = new self($this->conn, $data);
+        }
+        return $items;
     }
 }

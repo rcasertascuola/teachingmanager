@@ -1,7 +1,6 @@
 <?php
 require_once '../src/Database.php';
 require_once '../src/Abilita.php';
-require_once '../src/Conoscenza.php';
 include '../header.php';
 
 // Auth check
@@ -14,14 +13,6 @@ if ($_SESSION['role'] !== 'teacher') {
 // Configuration for the generic edit handler
 $db = Database::getInstance()->getConnection();
 $manager = new Abilita($db);
-
-// Fetch related data for form fields
-$conoscenza_manager = new Conoscenza($db);
-$all_conoscenze = $conoscenza_manager->findAll();
-$conoscenze_options = [];
-foreach ($all_conoscenze as $c) {
-    $conoscenze_options[$c->id] = $c->nome;
-}
 
 $entity = null;
 if (isset($_GET['id'])) {
@@ -50,12 +41,6 @@ $form_fields = [
             'cognitiva' => 'Cognitiva',
             'tecnico/pratica' => 'Tecnico/Pratica'
         ]
-    ],
-    'conoscenze' => [
-        'label' => 'Conoscenze Collegate',
-        'type' => 'checkbox_group',
-        'options' => $conoscenze_options,
-        'help_text' => 'Seleziona una o più conoscenze.'
     ]
 ];
 

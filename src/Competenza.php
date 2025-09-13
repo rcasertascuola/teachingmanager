@@ -12,8 +12,6 @@ class Competenza
     public $tipologia_id;
 
     // Related data
-    public $conoscenze;
-    public $abilita;
     public $anni_corso;
     public $discipline;
 
@@ -26,8 +24,6 @@ class Competenza
         $this->tipologia_id = $data['tipologia_id'] ?? null;
 
         // These will be loaded separately if not provided
-        $this->conoscenze = $data['conoscenze'] ?? [];
-        $this->abilita = $data['abilita'] ?? [];
         $this->anni_corso = $data['anni_corso'] ?? [];
         $this->discipline = $data['discipline'] ?? [];
     }
@@ -152,10 +148,6 @@ class Competenza
                 $this->id = $this->conn->lastInsertId();
             }
 
-            // Sync relationships
-            $this->syncRelatedData('competenza_conoscenze', 'conoscenza_id', $this->conoscenze);
-            $this->syncRelatedData('competenza_abilita', 'abilita_id', $this->abilita);
-
             // After all relationships are synced, trigger the course year recalculation
             $anniCorsoManager = new AnniCorsoManager($this->conn);
             if (!$anniCorsoManager->updateAll()) {
@@ -189,9 +181,6 @@ class Competenza
      */
     private function loadRelatedData()
     {
-        $this->conoscenze = $this->getRelatedIds('competenza_conoscenze', 'conoscenza_id');
-        $this->abilita = $this->getRelatedIds('competenza_abilita', 'abilita_id');
-
         // Load anni_corso
         $stmt_anni = $this->conn->prepare('SELECT anno_corso FROM competenza_anni_corso WHERE competenza_id = :id ORDER BY anno_corso ASC');
         $stmt_anni->execute(['id' => $this->id]);
@@ -209,38 +198,19 @@ class Competenza
         $this->discipline = $stmt_disc->fetchAll(PDO::FETCH_COLUMN, 0);
     }
 
-    /**
-     * Fetches related IDs from a join table.
-     */
-    private function getRelatedIds($tableName, $relatedIdColumn)
+    public function findByIds($ids)
     {
-        $thisIdColumn = 'competenza_id';
-        $stmt = $this->conn->prepare("SELECT {$relatedIdColumn} FROM {$tableName} WHERE {$thisIdColumn} = :id");
-        $stmt->execute(['id' => $this->id]);
-        return $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
-    }
-
-    /**
-     * A generic helper to sync many-to-many relationships.
-     */
-    private function syncRelatedData($tableName, $relatedIdColumn, $relatedIds)
-    {
-        $thisIdColumn = 'competenza_id';
-        $stmt = $this->conn->prepare("DELETE FROM {$tableName} WHERE {$thisIdColumn} = :id");
-        $stmt->execute(['id' => $this->id]);
-
-        if (!empty($relatedIds)) {
-            $sql = "INSERT INTO {$tableName} ({$thisIdColumn}, {$relatedIdColumn}) VALUES ";
-            $placeholders = [];
-            $values = [];
-            foreach ($relatedIds as $relatedId) {
-                $placeholders[] = '(?, ?)';
-                $values[] = $this->id;
-                $values[] = $relatedId;
-            }
-            $sql .= implode(', ', $placeholders);
-            $stmt = $this->conn->prepare($sql);
-            $stmt->execute($values);
+        if (empty($ids)) {
+            return [];
         }
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = $this->conn->prepare("SELECT * FROM competenze WHERE id IN ({$placeholders})");
+        $stmt->execute($ids);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $items = [];
+        foreach ($results as $data) {
+            $items[] = new self($this->conn, $data);
+        }
+        return $items;
     }
 }

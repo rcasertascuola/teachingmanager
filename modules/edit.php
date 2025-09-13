@@ -2,6 +2,9 @@
 require_once '../src/Database.php';
 require_once '../src/Module.php';
 require_once '../src/Disciplina.php';
+require_once '../src/Conoscenza.php';
+require_once '../src/Abilita.php';
+require_once '../src/Competenza.php';
 include '../header.php';
 
 // Auth check
@@ -16,8 +19,14 @@ if ($_SESSION["role"] !== 'teacher') {
 $db = Database::getInstance()->getConnection();
 $module_manager = new Module($db);
 $disciplina_manager = new Disciplina($db);
+$conoscenza_manager = new Conoscenza($db);
+$abilita_manager = new Abilita($db);
+$competenza_manager = new Competenza($db);
 
 $all_discipline = $disciplina_manager->findAll();
+$all_conoscenze = $conoscenza_manager->findAll();
+$all_abilita = $abilita_manager->findAll();
+$all_competenze = $competenza_manager->findAll();
 
 $module = null;
 $pageTitle = 'Aggiungi Nuovo Modulo';
@@ -85,6 +94,39 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                         <div class="col-md-4 mb-3">
                             <label for="tempo_stimato" class="form-label">Tempo Stimato (ore)</label>
                             <input type="number" class="form-control" id="tempo_stimato" name="tempo_stimato" min="0" value="<?php echo htmlspecialchars($module->tempo_stimato ?? ''); ?>">
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-4 mb-3">
+                            <label for="conoscenze" class="form-label">Conoscenze</label>
+                            <select multiple class="form-control" id="conoscenze" name="conoscenze[]" style="height: 200px;">
+                                <?php foreach ($all_conoscenze as $item): ?>
+                                    <option value="<?php echo $item->id; ?>" <?php echo in_array($item->id, $module->conoscenze) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($item->nome); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="abilita" class="form-label">Abilità</label>
+                            <select multiple class="form-control" id="abilita" name="abilita[]" style="height: 200px;">
+                                <?php foreach ($all_abilita as $item): ?>
+                                    <option value="<?php echo $item->id; ?>" <?php echo in_array($item->id, $module->abilita) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($item->nome); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="competenze" class="form-label">Competenze</label>
+                            <select multiple class="form-control" id="competenze" name="competenze[]" style="height: 200px;">
+                                <?php foreach ($all_competenze as $item): ?>
+                                    <option value="<?php echo $item->id; ?>" <?php echo in_array($item->id, $module->competenze) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($item->nome); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                     </div>
 

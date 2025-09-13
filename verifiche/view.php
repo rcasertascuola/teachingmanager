@@ -1,14 +1,17 @@
 <?php
 require_once '../src/Database.php';
-require_once '../src/Database.php';
 require_once '../src/Verifica.php';
+require_once '../src/Module.php';
 require_once '../src/Abilita.php';
 require_once '../src/Conoscenza.php';
+require_once '../src/Competenza.php';
 include '../header.php';
 
 $verifica = null;
-$abilita_map = [];
-$conoscenze_map = [];
+$module = null;
+$conoscenze = [];
+$abilita = [];
+$competenze = [];
 
 // Get the database connection
 $db = Database::getInstance()->getConnection();
@@ -19,17 +22,16 @@ if (isset($_GET['id'])) {
 }
 
 if ($verifica) {
-    // Fetch all abilita and competenze to create a name map
-    $abilita_manager = new Abilita($db);
-    $all_abilita = $abilita_manager->findAll();
-    foreach ($all_abilita as $a) {
-        $abilita_map[$a->id] = $a->nome;
-    }
+    $module = $verifica->getModule();
+    if ($module) {
+        $conoscenza_manager = new Conoscenza($db);
+        $conoscenze = $conoscenza_manager->findByIds($module->getConoscenze());
 
-    $conoscenza_manager = new Conoscenza($db);
-    $all_conoscenze = $conoscenza_manager->findAll();
-    foreach ($all_conoscenze as $c) {
-        $conoscenze_map[$c->id] = $c->nome;
+        $abilita_manager = new Abilita($db);
+        $abilita = $abilita_manager->findByIds($module->getAbilita());
+
+        $competenza_manager = new Competenza($db);
+        $competenze = $competenza_manager->findByIds($module->getCompetenze());
     }
 }
 
@@ -55,35 +57,53 @@ $is_teacher = isset($_SESSION['role']) && $_SESSION['role'] === 'teacher';
 
         <div class="card mt-4">
             <div class="card-header">
-                <h3 class="h4 mb-0">Abilità e Conoscenze Verificate</h3>
+                <h3 class="h4 mb-0">Dettagli Ereditati dal Modulo</h3>
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h5>Abilità</h5>
-                        <?php if (!empty($verifica->abilita_ids)): ?>
-                            <ul class="list-group">
-                                <?php foreach ($verifica->abilita_ids as $id): ?>
-                                    <li class="list-group-item"><?php echo add_dependency_tooltip($abilita_map[$id] ?? 'ID Sconosciuto', 'verifiche', 'abilita'); ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                        <?php else: ?>
-                            <p>Nessuna abilità collegata.</p>
-                        <?php endif; ?>
+                <?php if ($module): ?>
+                    <p><strong>Modulo di Riferimento:</strong> <a href="../modules/view.php?id=<?php echo $module->id; ?>"><?php echo htmlspecialchars($module->name); ?></a></p>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h5>Conoscenze</h5>
+                            <?php if (!empty($conoscenze)): ?>
+                                <ul class="list-group">
+                                    <?php foreach ($conoscenze as $item): ?>
+                                        <li class="list-group-item"><?php echo htmlspecialchars($item->nome); ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php else: ?>
+                                <p>Nessuna conoscenza ereditata.</p>
+                            <?php endif; ?>
+                        </div>
+                        <div class="col-md-4">
+                            <h5>Abilità</h5>
+                            <?php if (!empty($abilita)): ?>
+                                <ul class="list-group">
+                                    <?php foreach ($abilita as $item): ?>
+                                        <li class="list-group-item"><?php echo htmlspecialchars($item->nome); ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php else: ?>
+                                <p>Nessuna abilità ereditata.</p>
+                            <?php endif; ?>
+                        </div>
+                        <div class="col-md-4">
+                            <h5>Competenze</h5>
+                            <?php if (!empty($competenze)): ?>
+                                <ul class="list-group">
+                                    <?php foreach ($competenze as $item): ?>
+                                        <li class="list-group-item"><?php echo htmlspecialchars($item->nome); ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php else: ?>
+                                <p>Nessuna competenza ereditata.</p>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <h5>Conoscenze</h5>
-                        <?php if (!empty($verifica->conoscenza_ids)): ?>
-                            <ul class="list-group">
-                                <?php foreach ($verifica->conoscenza_ids as $id): ?>
-                                    <li class="list-group-item"><?php echo add_dependency_tooltip($conoscenze_map[$id] ?? 'ID Sconosciuto', 'verifiche', 'conoscenze'); ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                        <?php else: ?>
-                            <p>Nessuna conoscenza collegata.</p>
-                        <?php endif; ?>
-                    </div>
-                </div>
+                <?php else: ?>
+                    <p>Questa verifica non è collegata a nessun modulo.</p>
+                <?php endif; ?>
             </div>
         </div>
 

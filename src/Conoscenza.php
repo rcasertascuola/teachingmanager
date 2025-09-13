@@ -182,4 +182,19 @@ class Conoscenza
         return $stmt->execute(['id' => $id]);
     }
 
+    public function findByIds($ids)
+    {
+        if (empty($ids)) {
+            return [];
+        }
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = $this->conn->prepare("SELECT * FROM conoscenze WHERE id IN ({$placeholders})");
+        $stmt->execute($ids);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $items = [];
+        foreach ($results as $data) {
+            $items[] = new self($this->conn, $data);
+        }
+        return $items;
+    }
 }
