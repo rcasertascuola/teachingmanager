@@ -8,12 +8,18 @@ class Conoscenza
     public $nome;
     public $descrizione;
 
+    public $anni_corso;
+    public $discipline;
+
     public function __construct($db, $data = [])
     {
         $this->conn = $db;
         $this->id = $data['id'] ?? null;
         $this->nome = $data['nome'] ?? '';
         $this->descrizione = $data['descrizione'] ?? '';
+
+        $this->anni_corso = $data['anni_corso'] ?? [];
+        $this->discipline = $data['discipline'] ?? [];
     }
 
     /**
@@ -28,9 +34,58 @@ class Conoscenza
 
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $conoscenze = [];
+        $conoscenza_ids = [];
         foreach ($results as $data) {
             $conoscenze[] = new self($this->conn, $data);
+            $conoscenza_ids[] = $data['id'];
         }
+
+        if (empty($conoscenza_ids)) {
+            return $conoscenze;
+        }
+
+        // Fetch all related anni_corso in a single query
+        $ids_placeholder = implode(',', array_fill(0, count($conoscenza_ids), '?'));
+        $stmt_anni = $this->conn->prepare("
+            SELECT conoscenza_id, anno_corso
+            FROM conoscenza_anni_corso
+            WHERE conoscenza_id IN ({$ids_placeholder})
+            ORDER BY anno_corso ASC
+        ");
+        $stmt_anni->execute($conoscenza_ids);
+        $anni_map = [];
+        while ($row = $stmt_anni->fetch(PDO::FETCH_ASSOC)) {
+            $anni_map[$row['conoscenza_id']][] = $row['anno_corso'];
+        }
+
+        // Assign the anni_corso to each
+        foreach ($conoscenze as $conoscenza) {
+            if (isset($anni_map[$conoscenza->id])) {
+                $conoscenza->anni_corso = $anni_map[$conoscenza->id];
+            }
+        }
+
+        // Fetch all related disciplines in a single query
+        $stmt_disc = $this->conn->prepare("
+            SELECT cd.conoscenza_id, d.nome
+            FROM conoscenza_discipline cd
+            JOIN discipline d ON cd.disciplina_id = d.id
+            WHERE cd.conoscenza_id IN ({$ids_placeholder})
+            ORDER BY d.nome ASC
+        ");
+        $stmt_disc->execute($conoscenza_ids);
+        $disc_map = [];
+        while ($row = $stmt_disc->fetch(PDO::FETCH_ASSOC)) {
+            $disc_map[$row['conoscenza_id']][] = $row['nome'];
+        }
+
+        // Assign the disciplines to each
+        foreach ($conoscenze as $conoscenza) {
+            if (isset($disc_map[$conoscenza->id])) {
+                $conoscenza->discipline = $disc_map[$conoscenza->id];
+            }
+        }
+
         return $conoscenze;
     }
 
@@ -48,9 +103,37 @@ class Conoscenza
 
         if ($data) {
             $conoscenza = new self($this->conn, $data);
+            $conoscenza->loadAnniCorso();
+            $conoscenza->loadDiscipline();
             return $conoscenza;
         }
         return null;
+    }
+
+    /**
+     * Loads the associated course years for this knowledge entry.
+     */
+    public function loadAnniCorso()
+    {
+        $stmt = $this->conn->prepare('SELECT anno_corso FROM conoscenza_anni_corso WHERE conoscenza_id = :id ORDER BY anno_corso ASC');
+        $stmt->execute(['id' => $this->id]);
+        $this->anni_corso = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+    }
+
+    /**
+     * Loads the associated disciplines for this knowledge entry.
+     */
+    public function loadDiscipline()
+    {
+        $stmt = $this->conn->prepare('
+            SELECT d.nome
+            FROM conoscenza_discipline cd
+            JOIN discipline d ON cd.disciplina_id = d.id
+            WHERE cd.conoscenza_id = :id
+            ORDER BY d.nome ASC
+        ');
+        $stmt->execute(['id' => $this->id]);
+        $this->discipline = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
     }
 
     /**

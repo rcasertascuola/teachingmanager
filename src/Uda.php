@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/AnniCorsoManager.php';
+
 class Uda
 {
     private $conn;
@@ -76,42 +78,53 @@ class Uda
     }
 
     /**
-     * Save the UDA (insert or update).
+     * Save the UDA (insert or update) and trigger the update of course years.
      *
      * @return bool|string True on success, error message string on failure.
      */
     public function save()
     {
-        if ($this->id) {
-            // Update existing UDA
-            $sql = 'UPDATE udas SET module_id = :module_id, name = :name, description = :description WHERE id = :id';
-            $params = [
-                'id' => $this->id,
-                'module_id' => $this->module_id,
-                'name' => $this->name,
-                'description' => $this->description,
-            ];
-        } else {
-            // Insert new UDA
-            $sql = 'INSERT INTO udas (module_id, name, description) VALUES (:module_id, :name, :description)';
-            $params = [
-                'module_id' => $this->module_id,
-                'name' => $this->name,
-                'description' => $this->description,
-            ];
-        }
+        try {
+            $this->conn->beginTransaction();
 
-        $stmt = $this->conn->prepare($sql);
-        $result = $stmt->execute($params);
+            if ($this->id) {
+                // Update existing UDA
+                $sql = 'UPDATE udas SET module_id = :module_id, name = :name, description = :description WHERE id = :id';
+                $params = [
+                    'id' => $this->id,
+                    'module_id' => $this->module_id,
+                    'name' => $this->name,
+                    'description' => $this->description,
+                ];
+            } else {
+                // Insert new UDA
+                $sql = 'INSERT INTO udas (module_id, name, description) VALUES (:module_id, :name, :description)';
+                $params = [
+                    'module_id' => $this->module_id,
+                    'name' => $this->name,
+                    'description' => $this->description,
+                ];
+            }
 
-        if ($result) {
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute($params);
+
             if (!$this->id) {
                 $this->id = $this->conn->lastInsertId();
             }
+
+            // After saving, trigger the course year recalculation
+            $anniCorsoManager = new AnniCorsoManager($this->conn);
+            if (!$anniCorsoManager->updateAll()) {
+                throw new Exception("Failed to update course year associations.");
+            }
+
+            $this->conn->commit();
             return true;
-        } else {
-            $errorInfo = $stmt->errorInfo();
-            return "DB Error: " . ($errorInfo[2] ?? 'Unknown error');
+
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            return "DB Error: " . $e->getMessage();
         }
     }
 
