@@ -19,6 +19,7 @@ class Lesson
     public $conoscenze;
     public $abilita;
     public $disciplina_nome;
+    public $anno_corso;
 
     public function __construct($db, $data = [])
     {
@@ -38,6 +39,7 @@ class Lesson
 
         // For inherited data
         $this->disciplina_nome = $data['disciplina_nome'] ?? null;
+        $this->anno_corso = $data['anno_corso'] ?? null;
     }
 
     /**
@@ -52,7 +54,8 @@ class Lesson
         $sql = "
             SELECT
                 l.*,
-                d.nome AS disciplina_nome
+                d.nome AS disciplina_nome,
+                m.anno_corso
             FROM
                 lessons l
             LEFT JOIN
@@ -132,7 +135,8 @@ class Lesson
         $sql = "
             SELECT
                 l.*,
-                d.nome AS disciplina_nome
+                d.nome AS disciplina_nome,
+                m.anno_corso
             FROM
                 lessons l
             LEFT JOIN

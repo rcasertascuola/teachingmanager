@@ -10,8 +10,8 @@ class Uda
     public $module_id;
     public $name;
     public $description;
-
     public $disciplina_nome;
+    public $anno_corso;
 
     public function __construct($db, $data = [])
     {
@@ -21,6 +21,7 @@ class Uda
         $this->name = $data['name'] ?? '';
         $this->description = $data['description'] ?? '';
         $this->disciplina_nome = $data['disciplina_nome'] ?? null;
+        $this->anno_corso = $data['anno_corso'] ?? null;
     }
 
     /**
@@ -33,7 +34,8 @@ class Uda
         $sql = "
             SELECT
                 u.*,
-                d.nome AS disciplina_nome
+                d.nome AS disciplina_nome,
+                m.anno_corso
             FROM
                 udas u
             LEFT JOIN
@@ -66,7 +68,8 @@ class Uda
         $sql = "
             SELECT
                 u.*,
-                d.nome AS disciplina_nome
+                d.nome AS disciplina_nome,
+                m.anno_corso
             FROM
                 udas u
             LEFT JOIN
@@ -94,7 +97,23 @@ class Uda
      */
     public function findByModuleId($moduleId)
     {
-        $stmt = $this->conn->prepare('SELECT * FROM udas WHERE module_id = :module_id ORDER BY name ASC');
+        $sql = "
+            SELECT
+                u.*,
+                d.nome AS disciplina_nome,
+                m.anno_corso
+            FROM
+                udas u
+            LEFT JOIN
+                modules m ON u.module_id = m.id
+            LEFT JOIN
+                discipline d ON m.disciplina_id = d.id
+            WHERE
+                u.module_id = :module_id
+            ORDER BY
+                u.name ASC
+        ";
+        $stmt = $this->conn->prepare($sql);
         $stmt->execute(['module_id' => $moduleId]);
 
         $udaData = $stmt->fetchAll(PDO::FETCH_ASSOC);

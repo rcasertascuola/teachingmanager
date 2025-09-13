@@ -147,6 +147,9 @@ if ($lesson) {
                 <div class="card-header">
                     <h1 class="h2 mb-0"><?php echo htmlspecialchars($lesson->title); ?></h1>
                     <div>
+                        <?php if ($lesson->anno_corso): ?>
+                            <span class="badge bg-info me-2">Anno <?php echo htmlspecialchars($lesson->anno_corso); ?></span>
+                        <?php endif; ?>
                         <?php if ($lesson->disciplina_nome): ?>
                              <span class="badge bg-primary me-2"><?php echo htmlspecialchars($lesson->disciplina_nome); ?></span>
                         <?php endif; ?>

@@ -64,9 +64,14 @@ if (isset($_GET['id'])) {
                     <a href="../lessons/index.php?uda_id=<?php echo $uda->id; ?>" class="list-group-item list-group-item-action">
                         <div class="d-flex w-100 justify-content-between align-items-center">
                             <h5 class="mb-1"><?php echo htmlspecialchars($uda->name); ?></h5>
-                            <?php if ($uda->disciplina_nome): ?>
-                                <span class="badge bg-primary"><?php echo htmlspecialchars($uda->disciplina_nome); ?></span>
-                            <?php endif; ?>
+                            <div>
+                                <?php if ($uda->anno_corso): ?>
+                                    <span class="badge bg-info me-1">Anno <?php echo htmlspecialchars($uda->anno_corso); ?></span>
+                                <?php endif; ?>
+                                <?php if ($uda->disciplina_nome): ?>
+                                    <span class="badge bg-primary"><?php echo htmlspecialchars($uda->disciplina_nome); ?></span>
+                                <?php endif; ?>
+                            </div>
                         </div>
                         <p class="mb-1"><?php echo htmlspecialchars($uda->description); ?></p>
                     </a>
