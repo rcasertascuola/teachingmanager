@@ -51,22 +51,58 @@ function is_active($path) {
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link <?php echo is_active('/dashboard.php'); ?>" href="/dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link <?php echo is_active('/modules/'); ?>" href="/modules/index.php"><i class="fas fa-puzzle-piece"></i> Moduli</a></li>
-                    <li class="nav-item"><a class="nav-link <?php echo is_active('/udas/'); ?>" href="/udas/index.php"><i class="fas fa-book"></i> UDA</a></li>
-                    <li class="nav-item"><a class="nav-link <?php echo is_active('/lessons/'); ?>" href="/lessons/index.php"><i class="fas fa-chalkboard-teacher"></i> Lezioni</a></li>
-                    <li class="nav-item"><a class="nav-link <?php echo is_active('/contenuti/'); ?>" href="/contenuti/index.php"><i class="fas fa-box-open"></i> Contenuti</a></li>
-                    <li class="nav-item"><a class="nav-link <?php echo is_active('/exercises/'); ?>" href="/exercises/index.php"><i class="fas fa-pencil-ruler"></i> Esercizi</a></li>
-                    <li class="nav-item"><a class="nav-link <?php echo is_active('/verifiche/'); ?>" href="/verifiche/index.php"><i class="fas fa-file-signature"></i> Verifiche</a></li>
-                    <li class="nav-item"><a class="nav-link <?php echo is_active('/feedback/'); ?>" href="/feedback/index.php"><i class="fas fa-comments"></i> Riscontri</a></li>
-                    <li class="nav-item"><a class="nav-link <?php echo is_active('/conoscenze/'); ?>" href="/conoscenze/index.php"><i class="fas fa-lightbulb"></i> Conoscenze</a></li>
-                    <li class="nav-item"><a class="nav-link <?php echo is_active('/abilita/'); ?>" href="/abilita/index.php"><i class="fas fa-tools"></i> Abilità</a></li>
-                    <li class="nav-item"><a class="nav-link <?php echo is_active('/tipologie/'); ?>" href="/tipologie/index.php"><i class="fas fa-tags"></i> Tipologie</a></li>
-                    <li class="nav-item"><a class="nav-link <?php echo is_active('/competenze/'); ?>" href="/competenze/index.php"><i class="fas fa-graduation-cap"></i> Competenze</a></li>
-                    <li class="nav-item"><a class="nav-link <?php echo is_active('/discipline/'); ?>" href="/discipline/index.php"><i class="fas fa-atom"></i> Discipline</a></li>
-                    <li class="nav-item"><a class="nav-link <?php echo is_active('/synoptic_view.php'); ?>" href="/synoptic_view.php"><i class="fas fa-sitemap"></i> Vista Sinottica</a></li>
-                    <?php if ($_SESSION['role'] === 'teacher'): ?>
-                        <li class="nav-item"><a class="nav-link <?php echo is_active('/users/'); ?>" href="/users/index.php"><i class="fas fa-users-cog"></i> Gestione Utenti</a></li>
-                    <?php endif; ?>
+
+                    <!-- Programmazione Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownProgrammazione" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-stream"></i> Programmazione
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownProgrammazione">
+                            <li><a class="dropdown-item <?php echo is_active('/modules/'); ?>" href="/modules/index.php"><i class="fas fa-puzzle-piece"></i> Moduli</a></li>
+                            <li><a class="dropdown-item <?php echo is_active('/udas/'); ?>" href="/udas/index.php"><i class="fas fa-book"></i> UDA</a></li>
+                            <li><a class="dropdown-item <?php echo is_active('/lessons/'); ?>" href="/lessons/index.php"><i class="fas fa-chalkboard-teacher"></i> Lezioni</a></li>
+                            <li><a class="dropdown-item <?php echo is_active('/contenuti/'); ?>" href="/contenuti/index.php"><i class="fas fa-box-open"></i> Contenuti</a></li>
+                            <li><a class="dropdown-item <?php echo is_active('/synoptic_view.php'); ?>" href="/synoptic_view.php"><i class="fas fa-sitemap"></i> Vista Sinottica</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Valutazioni Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownValutazioni" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-edit"></i> Valutazioni
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownValutazioni">
+                            <li><a class="dropdown-item <?php echo is_active('/exercises/'); ?>" href="/exercises/index.php"><i class="fas fa-pencil-ruler"></i> Esercizi</a></li>
+                            <li><a class="dropdown-item <?php echo is_active('/verifiche/'); ?>" href="/verifiche/index.php"><i class="fas fa-file-signature"></i> Verifiche</a></li>
+                            <li><a class="dropdown-item <?php echo is_active('/feedback/'); ?>" href="/feedback/index.php"><i class="fas fa-comments"></i> Riscontri</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Obiettivi Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownObiettivi" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-bullseye"></i> Obiettivi
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownObiettivi">
+                            <li><a class="dropdown-item <?php echo is_active('/tipologie/'); ?>" href="/tipologie/index.php"><i class="fas fa-tags"></i> Tipologie</a></li>
+                            <li><a class="dropdown-item <?php echo is_active('/conoscenze/'); ?>" href="/conoscenze/index.php"><i class="fas fa-lightbulb"></i> Conoscenze</a></li>
+                            <li><a class="dropdown-item <?php echo is_active('/abilita/'); ?>" href="/abilita/index.php"><i class="fas fa-tools"></i> Abilità</a></li>
+                            <li><a class="dropdown-item <?php echo is_active('/competenze/'); ?>" href="/competenze/index.php"><i class="fas fa-graduation-cap"></i> Competenze</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Impostazioni Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownImpostazioni" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-cogs"></i> Impostazioni
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownImpostazioni">
+                            <li><a class="dropdown-item <?php echo is_active('/discipline/'); ?>" href="/discipline/index.php"><i class="fas fa-atom"></i> Discipline</a></li>
+                            <?php if ($_SESSION['role'] === 'teacher'): ?>
+                                <li><a class="dropdown-item <?php echo is_active('/users/'); ?>" href="/users/index.php"><i class="fas fa-users-cog"></i> Gestione Utenti</a></li>
+                            <?php endif; ?>
+                        </ul>
+                    </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
