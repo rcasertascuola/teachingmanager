@@ -54,6 +54,7 @@ function is_active($path) {
                     <li class="nav-item"><a class="nav-link <?php echo is_active('/modules/'); ?>" href="/modules/index.php"><i class="fas fa-puzzle-piece"></i> Moduli</a></li>
                     <li class="nav-item"><a class="nav-link <?php echo is_active('/udas/'); ?>" href="/udas/index.php"><i class="fas fa-book"></i> UDA</a></li>
                     <li class="nav-item"><a class="nav-link <?php echo is_active('/lessons/'); ?>" href="/lessons/index.php"><i class="fas fa-chalkboard-teacher"></i> Lezioni</a></li>
+                    <li class="nav-item"><a class="nav-link <?php echo is_active('/contenuti/'); ?>" href="/contenuti/index.php"><i class="fas fa-box-open"></i> Contenuti</a></li>
                     <li class="nav-item"><a class="nav-link <?php echo is_active('/exercises/'); ?>" href="/exercises/index.php"><i class="fas fa-pencil-ruler"></i> Esercizi</a></li>
                     <li class="nav-item"><a class="nav-link <?php echo is_active('/verifiche/'); ?>" href="/verifiche/index.php"><i class="fas fa-file-signature"></i> Verifiche</a></li>
                     <li class="nav-item"><a class="nav-link <?php echo is_active('/feedback/'); ?>" href="/feedback/index.php"><i class="fas fa-comments"></i> Riscontri</a></li>
