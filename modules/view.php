@@ -1,36 +1,46 @@
 <?php
 require_once '../src/Database.php';
 require_once '../src/Module.php';
+require_once '../src/Disciplina.php';
+require_once '../src/TooltipHelper.php';
 include '../header.php';
 
+if (!isset($_GET['id'])) {
+    header('Location: index.php');
+    exit;
+}
 
-// Get the database connection
 $db = Database::getInstance()->getConnection();
 $module_manager = new Module($db);
-$modules = $module_manager->findAll();
+$module = $module_manager->findById($_GET['id']);
+
+if (!$module) {
+    header('Location: index.php');
+    exit;
+}
+
+// Fetch related discipline for display
+$disciplina_manager = new Disciplina($db);
+$disciplina = $module->disciplina_id ? $disciplina_manager->findById($module->disciplina_id) : null;
+
 ?>
+<div class="container mt-5">
+    <h2>Dettaglio Modulo: <?php echo htmlspecialchars($module->name); ?></h2>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Descrizione</h5>
+            <p class="card-text"><?php echo nl2br(htmlspecialchars($module->description)); ?></p>
 
-    <div class="container mt-4">
-        <h1 class="h2 mb-4">Elenco Moduli</h1>
+            <h5 class="card-title mt-4">Disciplina</h5>
+            <p class="card-text"><?php echo $disciplina ? add_dependency_tooltip($disciplina->nome, 'modules', 'discipline') : 'Nessuna disciplina associata'; ?></p>
 
-        <div class="list-group">
-            <?php if (empty($modules)): ?>
-                <p class="text-center">Nessun Modulo trovato.</p>
-            <?php else: ?>
-                <?php foreach ($modules as $module): ?>
-                    <a href="../udas/view.php?module_id=<?php echo $module->id; ?>" class="list-group-item list-group-item-action">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1"><?php echo htmlspecialchars($module->name); ?></h5>
-                            <small>Anno: <?php echo htmlspecialchars($module->anno_corso); ?></small>
-                        </div>
-                        <p class="mb-1"><?php echo htmlspecialchars($module->description); ?></p>
-                        <small>Disciplina: <?php echo add_dependency_tooltip($module->disciplina_name ?? 'Non specificata', 'modules', 'discipline'); ?></small>
-                    </a>
-                <?php endforeach; ?>
-            <?php endif; ?>
+            <h5 class="card-title mt-4">Anno di Corso</h5>
+            <p class="card-text"><?php echo htmlspecialchars($module->anno_corso); ?>° anno</p>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="mt-3">
+        <a href="edit.php?id=<?php echo $module->id; ?>" class="btn btn-primary">Modifica</a>
+        <a href="index.php" class="btn btn-secondary">Torna all'elenco</a>
+    </div>
+</div>
 <?php include '../footer.php'; ?>
-
