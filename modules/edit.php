@@ -71,9 +71,20 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label for="anno_corso" class="form-label">Anno di Corso</label>
-                            <input type="number" class="form-control" id="anno_corso" name="anno_corso" min="1" max="5" value="<?php echo htmlspecialchars($module->anno_corso ?? ''); ?>">
+                            <select class="form-select" id="anno_corso" name="anno_corso">
+                                <option value="">Tutti gli anni</option>
+                                <?php for ($i = 1; $i <= 5; $i++): ?>
+                                    <option value="<?php echo $i; ?>" <?php echo ($module->anno_corso == $i) ? 'selected' : ''; ?>>
+                                        <?php echo $i; ?>
+                                    </option>
+                                <?php endfor; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="tempo_stimato" class="form-label">Tempo Stimato (ore)</label>
+                            <input type="number" class="form-control" id="tempo_stimato" name="tempo_stimato" min="0" value="<?php echo htmlspecialchars($module->tempo_stimato ?? ''); ?>">
                         </div>
                     </div>
 

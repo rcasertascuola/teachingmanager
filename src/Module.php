@@ -11,6 +11,7 @@ class Module
     public $description;
     public $disciplina_id;
     public $anno_corso;
+    public $tempo_stimato;
     public $disciplina_name;
 
     public function __construct($db, $data = [])
@@ -21,6 +22,7 @@ class Module
         $this->description = $data['description'] ?? '';
         $this->disciplina_id = $data['disciplina_id'] ?? null;
         $this->anno_corso = $data['anno_corso'] ?? null;
+        $this->tempo_stimato = $data['tempo_stimato'] ?? null;
         $this->disciplina_name = $data['disciplina_name'] ?? null;
     }
 
@@ -102,28 +104,33 @@ class Module
         if ($this->disciplina_id === '') {
             $this->disciplina_id = null;
         }
+        if ($this->tempo_stimato === '') {
+            $this->tempo_stimato = null;
+        }
 
         try {
             $this->conn->beginTransaction();
 
             if ($this->id) {
                 // Update existing Module
-                $sql = 'UPDATE modules SET name = :name, description = :description, disciplina_id = :disciplina_id, anno_corso = :anno_corso WHERE id = :id';
+                $sql = 'UPDATE modules SET name = :name, description = :description, disciplina_id = :disciplina_id, anno_corso = :anno_corso, tempo_stimato = :tempo_stimato WHERE id = :id';
                 $params = [
                     'id' => $this->id,
                     'name' => $this->name,
                     'description' => $this->description,
                     'disciplina_id' => $this->disciplina_id,
                     'anno_corso' => $this->anno_corso,
+                    'tempo_stimato' => $this->tempo_stimato,
                 ];
             } else {
                 // Insert new Module
-                $sql = 'INSERT INTO modules (name, description, disciplina_id, anno_corso) VALUES (:name, :description, :disciplina_id, :anno_corso)';
+                $sql = 'INSERT INTO modules (name, description, disciplina_id, anno_corso, tempo_stimato) VALUES (:name, :description, :disciplina_id, :anno_corso, :tempo_stimato)';
                 $params = [
                     'name' => $this->name,
                     'description' => $this->description,
                     'disciplina_id' => $this->disciplina_id,
                     'anno_corso' => $this->anno_corso,
+                    'tempo_stimato' => $this->tempo_stimato,
                 ];
             }
 
