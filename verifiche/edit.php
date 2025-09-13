@@ -1,9 +1,7 @@
 <?php
 require_once '../src/Database.php';
-require_once '../src/Database.php';
 require_once '../src/Verifica.php';
-require_once '../src/Abilita.php';
-require_once '../src/Conoscenza.php';
+require_once '../src/Module.php';
 include '../header.php';
 
 // Auth check
@@ -20,11 +18,9 @@ $formAction = 'save.php';
 // Get the database connection
 $db = Database::getInstance()->getConnection();
 
-// Fetch all available abilities and competencies for the form
-$abilita_manager = new Abilita($db);
-$all_abilita = $abilita_manager->findAll();
-$conoscenza_manager = new Conoscenza($db);
-$all_conoscenze = $conoscenza_manager->findAll();
+// Fetch all modules for the dropdown
+$module_manager = new Module($db);
+$all_modules = $module_manager->findAll();
 
 $griglia_nome = "Griglia di Valutazione";
 $descrittori = [];
@@ -77,32 +73,18 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                     <textarea class="form-control" id="descrizione" name="descrizione" rows="3"><?php echo htmlspecialchars($verifica->descrizione ?? ''); ?></textarea>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">Abilità Collegate</label>
-                            <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
-                                <?php foreach ($all_abilita as $item): ?>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="abilita[]" value="<?php echo $item->id; ?>" id="abilita_<?php echo $item->id; ?>" <?php echo ($verifica && in_array($item->id, $verifica->abilita_ids)) ? 'checked' : ''; ?>>
-                                        <label class="form-check-label" for="abilita_<?php echo $item->id; ?>"><?php echo htmlspecialchars($item->nome); ?></label>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">Conoscenze Collegate</label>
-                            <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
-                                <?php foreach ($all_conoscenze as $item): ?>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="conoscenze[]" value="<?php echo $item->id; ?>" id="conoscenza_<?php echo $item->id; ?>" <?php echo ($verifica && in_array($item->id, $verifica->conoscenza_ids)) ? 'checked' : ''; ?>>
-                                        <label class="form-check-label" for="conoscenza_<?php echo $item->id; ?>"><?php echo htmlspecialchars($item->nome); ?></label>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
+                <div class="mb-3">
+                    <label for="module_id" class="form-label">Modulo Collegato</label>
+                    <select class="form-select" id="module_id" name="module_id">
+                        <option value="">Seleziona un modulo</option>
+                        <?php foreach ($all_modules as $module): ?>
+                            <option value="<?php echo $module->id; ?>" <?php echo (isset($verifica) && $verifica->module_id == $module->id) ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($module->name); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <div class="form-text">
+                        La verifica erediterà le conoscenze, abilità e competenze del modulo selezionato.
                     </div>
                 </div>
 

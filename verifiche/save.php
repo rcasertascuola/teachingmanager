@@ -26,8 +26,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Specific logic for this entity
-    $_POST['abilita_ids'] = $_POST['abilita'] ?? [];
-    $_POST['conoscenza_ids'] = $_POST['conoscenze'] ?? [];
     $_POST['griglia'] = [
         'nome' => trim($_POST['griglia_nome']),
         'descrittori' => isset($_POST['descrittori']) ? $_POST['descrittori'] : []

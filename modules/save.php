@@ -28,6 +28,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $redirect_url = 'index.php';
     $post_data = $_POST;
 
+    // Manually handle the many-to-many relationships
+    $entity->conoscenze = $post_data['conoscenze'] ?? [];
+    $entity->abilita = $post_data['abilita'] ?? [];
+    $entity->competenze = $post_data['competenze'] ?? [];
+
     // Include the generic handler
     require_once '../handlers/save_handler.php';
 } else {

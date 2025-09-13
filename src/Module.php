@@ -14,6 +14,11 @@ class Module
     public $tempo_stimato;
     public $disciplina_name;
 
+    // Related data
+    public $conoscenze;
+    public $abilita;
+    public $competenze;
+
     public function __construct($db, $data = [])
     {
         $this->conn = $db;
@@ -24,6 +29,11 @@ class Module
         $this->anno_corso = $data['anno_corso'] ?? null;
         $this->tempo_stimato = $data['tempo_stimato'] ?? null;
         $this->disciplina_name = $data['disciplina_name'] ?? null;
+
+        // These will be loaded separately if not provided
+        $this->conoscenze = $data['conoscenze'] ?? [];
+        $this->abilita = $data['abilita'] ?? [];
+        $this->competenze = $data['competenze'] ?? [];
     }
 
     /**
@@ -85,7 +95,9 @@ class Module
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($data) {
-            return new self($this->conn, $data);
+            $module = new self($this->conn, $data);
+            $module->loadRelatedData();
+            return $module;
         }
         return null;
     }
@@ -141,6 +153,11 @@ class Module
                 $this->id = $this->conn->lastInsertId();
             }
 
+            // Sync relationships
+            $this->syncRelatedData('module_conoscenze', 'conoscenza_id', $this->conoscenze);
+            $this->syncRelatedData('module_abilita', 'abilita_id', $this->abilita);
+            $this->syncRelatedData('module_competenze', 'competenza_id', $this->competenze);
+
             // After saving, trigger the course year recalculation
             $anniCorsoManager = new AnniCorsoManager($this->conn);
             if (!$anniCorsoManager->updateAll()) {
@@ -166,5 +183,74 @@ class Module
     {
         $stmt = $this->conn->prepare('DELETE FROM modules WHERE id = :id');
         return $stmt->execute(['id' => $id]);
+    }
+
+    /**
+     * Loads related data (conoscenze, abilita, competenze).
+     */
+    private function loadRelatedData()
+    {
+        $this->conoscenze = $this->getRelatedIds('module_conoscenze', 'conoscenza_id');
+        $this->abilita = $this->getRelatedIds('module_abilita', 'abilita_id');
+        $this->competenze = $this->getRelatedIds('module_competenze', 'competenza_id');
+    }
+
+    /**
+     * Fetches related IDs from a join table.
+     */
+    private function getRelatedIds($tableName, $relatedIdColumn)
+    {
+        $thisIdColumn = 'module_id';
+        $stmt = $this->conn->prepare("SELECT {$relatedIdColumn} FROM {$tableName} WHERE {$thisIdColumn} = :id");
+        $stmt->execute(['id' => $this->id]);
+        return $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+    }
+
+    /**
+     * A generic helper to sync many-to-many relationships.
+     */
+    private function syncRelatedData($tableName, $relatedIdColumn, $relatedIds)
+    {
+        $thisIdColumn = 'module_id';
+        $stmt = $this->conn->prepare("DELETE FROM {$tableName} WHERE {$thisIdColumn} = :id");
+        $stmt->execute(['id' => $this->id]);
+
+        if (!empty($relatedIds)) {
+            $sql = "INSERT INTO {$tableName} ({$thisIdColumn}, {$relatedIdColumn}) VALUES ";
+            $placeholders = [];
+            $values = [];
+            foreach ($relatedIds as $relatedId) {
+                $placeholders[] = '(?, ?)';
+                $values[] = $this->id;
+                $values[] = $relatedId;
+            }
+            $sql .= implode(', ', $placeholders);
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute($values);
+        }
+    }
+
+    public function getConoscenze()
+    {
+        if (empty($this->conoscenze) && $this->id) {
+            $this->loadRelatedData();
+        }
+        return $this->conoscenze;
+    }
+
+    public function getAbilita()
+    {
+        if (empty($this->abilita) && $this->id) {
+            $this->loadRelatedData();
+        }
+        return $this->abilita;
+    }
+
+    public function getCompetenze()
+    {
+        if (empty($this->competenze) && $this->id) {
+            $this->loadRelatedData();
+        }
+        return $this->competenze;
     }
 }

@@ -1,9 +1,12 @@
 <?php
 
+require_once __DIR__ . '/Module.php';
+
 class Verifica
 {
     // Database connection
     private $conn;
+    private $module = null;
 
     // Properties matching the 'verifiche' table
     public $id;
@@ -12,10 +15,9 @@ class Verifica
     public $tipo;
     public $created_at;
     public $updated_at;
+    public $module_id;
 
     // Related data
-    public $abilita_ids = [];
-    public $conoscenza_ids = [];
     public $griglia = null; // This will hold the Griglia object
 
     public function __construct($db, $data = [])
@@ -27,6 +29,7 @@ class Verifica
         $this->tipo = $data['tipo'] ?? 'scritto';
         $this->created_at = $data['created_at'] ?? null;
         $this->updated_at = $data['updated_at'] ?? null;
+        $this->module_id = $data['module_id'] ?? null;
     }
 
     /**
@@ -74,16 +77,6 @@ class Verifica
      */
     private function loadRelatedData()
     {
-        // Load Abilita IDs
-        $stmt_abilita = $this->conn->prepare('SELECT abilita_id FROM verifica_abilita WHERE verifica_id = :id');
-        $stmt_abilita->execute(['id' => $this->id]);
-        $this->abilita_ids = $stmt_abilita->fetchAll(PDO::FETCH_COLUMN, 0);
-
-        // Load Conoscenza IDs
-        $stmt_conoscenze = $this->conn->prepare('SELECT conoscenza_id FROM verifica_conoscenze WHERE verifica_id = :id');
-        $stmt_conoscenze->execute(['id' => $this->id]);
-        $this->conoscenza_ids = $stmt_conoscenze->fetchAll(PDO::FETCH_COLUMN, 0);
-
         // Load Griglia and Descrittori
         $stmt_griglia = $this->conn->prepare('SELECT * FROM griglie_valutazione WHERE verifica_id = :id LIMIT 1');
         $stmt_griglia->execute(['id' => $this->id]);
@@ -106,26 +99,24 @@ class Verifica
 
         try {
             if ($this->id) {
-                $stmt = $this->conn->prepare('UPDATE verifiche SET titolo = :titolo, descrizione = :descrizione, tipo = :tipo WHERE id = :id');
+                $stmt = $this->conn->prepare('UPDATE verifiche SET titolo = :titolo, descrizione = :descrizione, tipo = :tipo, module_id = :module_id WHERE id = :id');
                 $stmt->execute([
                     'titolo' => $this->titolo,
                     'descrizione' => $this->descrizione,
                     'tipo' => $this->tipo,
+                    'module_id' => $this->module_id,
                     'id' => $this->id
                 ]);
             } else {
-                $stmt = $this->conn->prepare('INSERT INTO verifiche (titolo, descrizione, tipo) VALUES (:titolo, :descrizione, :tipo)');
+                $stmt = $this->conn->prepare('INSERT INTO verifiche (titolo, descrizione, tipo, module_id) VALUES (:titolo, :descrizione, :tipo, :module_id)');
                 $stmt->execute([
                     'titolo' => $this->titolo,
                     'descrizione' => $this->descrizione,
-                    'tipo' => $this->tipo
+                    'tipo' => $this->tipo,
+                    'module_id' => $this->module_id
                 ]);
                 $this->id = $this->conn->lastInsertId();
             }
-
-            // Sync abilities and knowledges
-            $this->syncRelatedData('verifica_abilita', 'abilita_id', $this->abilita_ids);
-            $this->syncRelatedData('verifica_conoscenze', 'conoscenza_id', $this->conoscenza_ids);
 
             // Sync griglia
             if ($this->griglia) {
@@ -149,25 +140,6 @@ class Verifica
     public function delete($id) {
         $stmt = $this->conn->prepare('DELETE FROM verifiche WHERE id = :id');
         return $stmt->execute(['id' => $id]);
-    }
-
-    private function syncRelatedData($tableName, $relatedIdColumn, $relatedIds) {
-        $stmt = $this->conn->prepare("DELETE FROM {$tableName} WHERE verifica_id = :id");
-        $stmt->execute(['id' => $this->id]);
-
-        if (!empty($relatedIds)) {
-            $sql = "INSERT INTO {$tableName} (verifica_id, {$relatedIdColumn}) VALUES ";
-            $placeholders = [];
-            $values = [];
-            foreach ($relatedIds as $relatedId) {
-                $placeholders[] = '(?, ?)';
-                $values[] = $this->id;
-                $values[] = $relatedId;
-            }
-            $sql .= implode(', ', $placeholders);
-            $stmt = $this->conn->prepare($sql);
-            $stmt->execute($values);
-        }
     }
 
     private function saveGriglia() {
@@ -222,5 +194,37 @@ class Verifica
         $stmt->execute([':verifica_id' => $this->id]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getModule()
+    {
+        if ($this->module === null && $this->module_id) {
+            $this->module = (new Module($this->conn))->findById($this->module_id);
+        }
+        return $this->module;
+    }
+
+    public function getConoscenze()
+    {
+        if (!$this->getModule()) {
+            return [];
+        }
+        return $this->getModule()->getConoscenze();
+    }
+
+    public function getAbilita()
+    {
+        if (!$this->getModule()) {
+            return [];
+        }
+        return $this->getModule()->getAbilita();
+    }
+
+    public function getCompetenze()
+    {
+        if (!$this->getModule()) {
+            return [];
+        }
+        return $this->getModule()->getCompetenze();
     }
 }
