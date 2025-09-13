@@ -18,6 +18,7 @@ class Lesson
     // Related data
     public $conoscenze;
     public $abilita;
+    public $disciplina_nome;
 
     public function __construct($db, $data = [])
     {
@@ -34,6 +35,9 @@ class Lesson
         // For relationships
         $this->conoscenze = $data['conoscenze'] ?? [];
         $this->abilita = $data['abilita'] ?? [];
+
+        // For inherited data
+        $this->disciplina_nome = $data['disciplina_nome'] ?? null;
     }
 
     /**
@@ -45,7 +49,22 @@ class Lesson
      */
     public function findAll($limit = 10, $offset = 0)
     {
-        $sql = 'SELECT * FROM lessons ORDER BY updated_at DESC';
+        $sql = "
+            SELECT
+                l.*,
+                d.nome AS disciplina_nome
+            FROM
+                lessons l
+            LEFT JOIN
+                udas u ON l.uda_id = u.id
+            LEFT JOIN
+                modules m ON u.module_id = m.id
+            LEFT JOIN
+                discipline d ON m.disciplina_id = d.id
+            ORDER BY
+                l.updated_at DESC
+        ";
+
         if ($limit !== null) {
             $sql .= ' LIMIT :limit OFFSET :offset';
         }
@@ -110,7 +129,23 @@ class Lesson
      */
     public function findById($id)
     {
-        $stmt = $this->conn->prepare('SELECT * FROM lessons WHERE id = :id');
+        $sql = "
+            SELECT
+                l.*,
+                d.nome AS disciplina_nome
+            FROM
+                lessons l
+            LEFT JOIN
+                udas u ON l.uda_id = u.id
+            LEFT JOIN
+                modules m ON u.module_id = m.id
+            LEFT JOIN
+                discipline d ON m.disciplina_id = d.id
+            WHERE
+                l.id = :id
+        ";
+
+        $stmt = $this->conn->prepare($sql);
         $stmt->execute(['id' => $id]);
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 

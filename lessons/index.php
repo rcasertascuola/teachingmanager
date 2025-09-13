@@ -26,6 +26,7 @@ $selects = [
 
 $columns = [
     'title' => 'Titolo',
+    'disciplina_nome' => 'Disciplina',
     'module_name' => 'Modulo',
     'uda_name' => 'UDA',
     'tags' => 'Tags'
