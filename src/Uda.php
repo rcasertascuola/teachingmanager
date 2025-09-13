@@ -10,7 +10,6 @@ class Uda
     public $module_id;
     public $name;
     public $description;
-
     public $disciplina_nome;
     public $anno_corso;
 
