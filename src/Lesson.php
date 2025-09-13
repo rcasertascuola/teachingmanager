@@ -16,8 +16,7 @@ class Lesson
     public $updated_at;
 
     // Related data
-    public $conoscenze;
-    public $abilita;
+    public $contenuti;
     public $disciplina_nome;
     public $anno_corso;
 
@@ -34,8 +33,7 @@ class Lesson
         $this->updated_at = $data['updated_at'] ?? null;
 
         // For relationships
-        $this->conoscenze = $data['conoscenze'] ?? [];
-        $this->abilita = $data['abilita'] ?? [];
+        $this->contenuti = $data['contenuti'] ?? [];
 
         // For inherited data
         $this->disciplina_nome = $data['disciplina_nome'] ?? null;
@@ -225,8 +223,7 @@ class Lesson
             }
 
             // Sync relationships
-            $this->syncRelatedData('lezione_conoscenze', 'conoscenza_id', $this->conoscenze);
-            $this->syncRelatedData('lezione_abilita', 'abilita_id', $this->abilita);
+            $this->syncRelatedData('lezione_contenuti', 'contenuto_id', $this->contenuti);
 
             // Sync UDA relationship to pivot table for synoptic view
             if ($this->uda_id) {
@@ -254,15 +251,10 @@ class Lesson
      */
     private function loadRelatedData()
     {
-        // Load conoscenze
-        $stmt = $this->conn->prepare('SELECT conoscenza_id FROM lezione_conoscenze WHERE lezione_id = :id');
+        // Load contenuti
+        $stmt = $this->conn->prepare('SELECT contenuto_id FROM lezione_contenuti WHERE lezione_id = :id');
         $stmt->execute(['id' => $this->id]);
-        $this->conoscenze = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
-
-        // Load abilita
-        $stmt = $this->conn->prepare('SELECT abilita_id FROM lezione_abilita WHERE lezione_id = :id');
-        $stmt->execute(['id' => $this->id]);
-        $this->abilita = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+        $this->contenuti = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 require_once '../src/Database.php';
-require_once '../src/Lesson.php';
+require_once '../src/Contenuto.php';
 
 session_start();
 
@@ -15,22 +15,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $db = Database::getInstance()->getConnection();
 
     // The generic handler needs an entity to populate.
-    $manager = new Lesson($db);
+    $manager = new Contenuto($db);
     if (isset($_POST['id']) && !empty($_POST['id'])) {
         $entity = $manager->findById((int)$_POST['id']);
         if (!$entity) {
             die("Entity not found.");
         }
     } else {
-        $entity = new Lesson($db);
+        $entity = new Contenuto($db);
     }
 
     $redirect_url = 'index.php';
     $post_data = $_POST;
 
     // Manually handle many-to-many relationships before the generic handler
-    // This ensures that if all items are unchecked, the relationship is cleared.
-    $entity->contenuti = $post_data['contenuti'] ?? [];
+    $entity->conoscenze = $post_data['conoscenze'] ?? [];
+    $entity->abilita = $post_data['abilita'] ?? [];
 
     // Include the generic handler
     require_once '../handlers/save_handler.php';

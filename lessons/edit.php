@@ -2,8 +2,7 @@
 require_once '../src/Database.php';
 require_once '../src/Lesson.php';
 require_once '../src/Uda.php';
-require_once '../src/Conoscenza.php';
-require_once '../src/Abilita.php';
+require_once '../src/Contenuto.php';
 include '../header.php';
 
 // Auth check
@@ -19,10 +18,8 @@ $db = Database::getInstance()->getConnection();
 
 $uda_manager = new Uda($db);
 $udas = $uda_manager->findAll();
-$conoscenza_manager = new Conoscenza($db);
-$all_conoscenze = $conoscenza_manager->findAll();
-$abilita_manager = new Abilita($db);
-$all_abilita = $abilita_manager->findAll();
+$contenuto_manager = new Contenuto($db);
+$all_contenuti = $contenuto_manager->findAll();
 
 $lesson_manager = new Lesson($db);
 $all_lessons = $lesson_manager->findAll(null); // Get all lessons for the dropdown
@@ -93,36 +90,17 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                         <input type="text" class="form-control" id="tags" name="tags" value="<?php echo htmlspecialchars($lesson->tags ?? ''); ?>">
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Conoscenze Collegate</label>
-                                <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
-                                    <?php foreach ($all_conoscenze as $conoscenza): ?>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="conoscenze[]" value="<?php echo $conoscenza->id; ?>" id="conoscenza_<?php echo $conoscenza->id; ?>" <?php echo ($lesson && in_array($conoscenza->id, $lesson->conoscenze)) ? 'checked' : ''; ?>>
-                                            <label class="form-check-label" for="conoscenza_<?php echo $conoscenza->id; ?>">
-                                                <?php echo htmlspecialchars($conoscenza->nome); ?>
-                                            </label>
-                                        </div>
-                                    <?php endforeach; ?>
+                    <div class="mb-3">
+                        <label class="form-label">Contenuti Collegati</label>
+                        <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
+                            <?php foreach ($all_contenuti as $contenuto): ?>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="contenuti[]" value="<?php echo $contenuto->id; ?>" id="contenuto_<?php echo $contenuto->id; ?>" <?php echo ($lesson && in_array($contenuto->id, $lesson->contenuti)) ? 'checked' : ''; ?>>
+                                    <label class="form-check-label" for="contenuto_<?php echo $contenuto->id; ?>">
+                                        <?php echo htmlspecialchars($contenuto->nome); ?>
+                                    </label>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Abilità Collegate</label>
-                                <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
-                                    <?php foreach ($all_abilita as $item): ?>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="abilita[]" value="<?php echo $item->id; ?>" id="abilita_<?php echo $item->id; ?>" <?php echo ($lesson && in_array($item->id, $lesson->abilita)) ? 'checked' : ''; ?>>
-                                            <label class="form-check-label" for="abilita_<?php echo $item->id; ?>">
-                                                <?php echo htmlspecialchars($item->nome); ?> (<?php echo $item->tipo; ?>)
-                                            </label>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            </div>
+                            <?php endforeach; ?>
                         </div>
                     </div>
 
