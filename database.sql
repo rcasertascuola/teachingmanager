@@ -348,3 +348,42 @@ CREATE TABLE `abilita_anni_corso` (
   PRIMARY KEY (`abilita_id`, `anno_corso`),
   FOREIGN KEY (`abilita_id`) REFERENCES `abilita`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Relazione Competenze -> Anno Corso (N a N)
+CREATE TABLE `competenza_anni_corso` (
+  `competenza_id` INT(11) NOT NULL,
+  `anno_corso` TINYINT NOT NULL,
+  PRIMARY KEY (`competenza_id`, `anno_corso`),
+  FOREIGN KEY (`competenza_id`) REFERENCES `competenze`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- tabelle di relazione per le discipline ereditate
+--
+
+-- Relazione Conoscenze -> Discipline (N a N)
+CREATE TABLE `conoscenza_discipline` (
+  `conoscenza_id` INT(11) NOT NULL,
+  `disciplina_id` INT(11) NOT NULL,
+  PRIMARY KEY (`conoscenza_id`, `disciplina_id`),
+  FOREIGN KEY (`conoscenza_id`) REFERENCES `conoscenze`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`disciplina_id`) REFERENCES `discipline`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Relazione Abilità -> Discipline (N a N)
+CREATE TABLE `abilita_discipline` (
+  `abilita_id` INT(11) NOT NULL,
+  `disciplina_id` INT(11) NOT NULL,
+  PRIMARY KEY (`abilita_id`, `disciplina_id`),
+  FOREIGN KEY (`abilita_id`) REFERENCES `abilita`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`disciplina_id`) REFERENCES `discipline`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Relazione Competenze -> Discipline (N a N)
+CREATE TABLE `competenza_discipline` (
+  `competenza_id` INT(11) NOT NULL,
+  `disciplina_id` INT(11) NOT NULL,
+  PRIMARY KEY (`competenza_id`, `disciplina_id`),
+  FOREIGN KEY (`competenza_id`) REFERENCES `competenze`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`disciplina_id`) REFERENCES `discipline`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
