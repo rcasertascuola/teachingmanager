@@ -33,6 +33,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $entity->abilita = $post_data['abilita'] ?? [];
     $entity->competenze = $post_data['competenze'] ?? [];
 
+    // The generic handler will re-assign these, but it's harmless as the values are identical.
+
     // Include the generic handler
     require_once '../handlers/save_handler.php';
 } else {
