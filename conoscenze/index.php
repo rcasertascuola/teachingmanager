@@ -19,6 +19,7 @@ $entity_name = 'Conoscenza';
 $table_name = 'conoscenze';
 $columns = [
     'nome' => 'Nome',
+    'origine' => 'Origine',
     'anni_corso' => 'Anni di Corso',
     'discipline' => 'Discipline'
 ];

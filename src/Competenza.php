@@ -10,6 +10,7 @@ class Competenza
     public $nome;
     public $descrizione;
     public $tipologia_id;
+    public $origine;
 
     // Related data
     public $anni_corso;
@@ -22,6 +23,7 @@ class Competenza
         $this->nome = $data['nome'] ?? '';
         $this->descrizione = $data['descrizione'] ?? '';
         $this->tipologia_id = $data['tipologia_id'] ?? null;
+        $this->origine = $data['origine'] ?? 'altro';
 
         // These will be loaded separately if not provided
         $this->anni_corso = $data['anni_corso'] ?? [];
@@ -126,19 +128,21 @@ class Competenza
             $this->conn->beginTransaction();
 
             if ($this->id) {
-                $stmt = $this->conn->prepare('UPDATE competenze SET nome = :nome, descrizione = :descrizione, tipologia_id = :tipologia_id WHERE id = :id');
+                $stmt = $this->conn->prepare('UPDATE competenze SET nome = :nome, descrizione = :descrizione, tipologia_id = :tipologia_id, origine = :origine WHERE id = :id');
                 $params = [
                     'nome' => $this->nome,
                     'descrizione' => $this->descrizione,
                     'tipologia_id' => $this->tipologia_id,
+                    'origine' => $this->origine,
                     'id' => $this->id
                 ];
             } else {
-                $stmt = $this->conn->prepare('INSERT INTO competenze (nome, descrizione, tipologia_id) VALUES (:nome, :descrizione, :tipologia_id)');
+                $stmt = $this->conn->prepare('INSERT INTO competenze (nome, descrizione, tipologia_id, origine) VALUES (:nome, :descrizione, :tipologia_id, :origine)');
                 $params = [
                     'nome' => $this->nome,
                     'descrizione' => $this->descrizione,
-                    'tipologia_id' => $this->tipologia_id
+                    'tipologia_id' => $this->tipologia_id,
+                    'origine' => $this->origine
                 ];
             }
 

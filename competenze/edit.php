@@ -42,6 +42,17 @@ $form_fields = [
         'options' => $tipologie_options,
         'required' => true,
         'default_option' => 'Seleziona una tipologia...'
+    ],
+    'origine' => [
+        'label' => 'Origine',
+        'type' => 'select',
+        'required' => true,
+        'options' => [
+            'dipartimento' => 'Dipartimento',
+            'ministeriali' => 'Ministeriali',
+            'docente' => 'Docente',
+            'altro' => 'Altro'
+        ]
     ]
 ];
 

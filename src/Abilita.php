@@ -8,6 +8,7 @@ class Abilita
     public $nome;
     public $descrizione;
     public $tipo;
+    public $origine;
 
     // Related data
     public $anni_corso;
@@ -20,6 +21,7 @@ class Abilita
         $this->nome = $data['nome'] ?? '';
         $this->descrizione = $data['descrizione'] ?? '';
         $this->tipo = $data['tipo'] ?? 'cognitiva'; // Default value
+        $this->origine = $data['origine'] ?? 'altro';
 
         // These will be loaded separately
         $this->anni_corso = $data['anni_corso'] ?? [];
@@ -124,19 +126,21 @@ class Abilita
             $this->conn->beginTransaction();
 
             if ($this->id) {
-                $stmt = $this->conn->prepare('UPDATE abilita SET nome = :nome, descrizione = :descrizione, tipo = :tipo WHERE id = :id');
+                $stmt = $this->conn->prepare('UPDATE abilita SET nome = :nome, descrizione = :descrizione, tipo = :tipo, origine = :origine WHERE id = :id');
                 $params = [
                     'nome' => $this->nome,
                     'descrizione' => $this->descrizione,
                     'tipo' => $this->tipo,
+                    'origine' => $this->origine,
                     'id' => $this->id
                 ];
             } else {
-                $stmt = $this->conn->prepare('INSERT INTO abilita (nome, descrizione, tipo) VALUES (:nome, :descrizione, :tipo)');
+                $stmt = $this->conn->prepare('INSERT INTO abilita (nome, descrizione, tipo, origine) VALUES (:nome, :descrizione, :tipo, :origine)');
                 $params = [
                     'nome' => $this->nome,
                     'descrizione' => $this->descrizione,
-                    'tipo' => $this->tipo
+                    'tipo' => $this->tipo,
+                    'origine' => $this->origine
                 ];
             }
 
