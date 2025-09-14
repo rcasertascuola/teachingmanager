@@ -33,8 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $entity->abilita = $post_data['abilita'] ?? [];
     $entity->competenze = $post_data['competenze'] ?? [];
 
-    // Prevent the generic handler from overwriting these properties
-    unset($post_data['conoscenze'], $post_data['abilita'], $post_data['competenze']);
+    // The generic handler will re-assign these, but it's harmless as the values are identical.
 
     // Include the generic handler
     require_once '../handlers/save_handler.php';
