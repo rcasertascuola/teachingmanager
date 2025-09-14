@@ -100,33 +100,45 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                     <div class="row mt-4">
                         <div class="col-md-4 mb-3">
                             <label for="conoscenze" class="form-label">Conoscenze</label>
-                            <select multiple class="form-control" id="conoscenze" name="conoscenze[]" style="height: 200px;">
+                            <input type="text" id="conoscenze-filter" class="form-control mb-2" placeholder="Filtra conoscenze...">
+                            <div id="conoscenze-container" class="form-control" style="height: 200px; overflow-y: auto;">
                                 <?php foreach ($all_conoscenze as $item): ?>
-                                    <option value="<?php echo $item->id; ?>" <?php echo in_array($item->id, $module->conoscenze) ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($item->nome); ?>
-                                    </option>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="conoscenze[]" value="<?php echo $item->id; ?>" id="conoscenza_<?php echo $item->id; ?>" <?php echo in_array($item->id, $module->conoscenze) ? 'checked' : ''; ?>>
+                                        <label class="form-check-label" for="conoscenza_<?php echo $item->id; ?>">
+                                            <?php echo htmlspecialchars($item->nome); ?>
+                                        </label>
+                                    </div>
                                 <?php endforeach; ?>
-                            </select>
+                            </div>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="abilita" class="form-label">Abilità</label>
-                            <select multiple class="form-control" id="abilita" name="abilita[]" style="height: 200px;">
+                            <input type="text" id="abilita-filter" class="form-control mb-2" placeholder="Filtra abilità...">
+                            <div id="abilita-container" class="form-control" style="height: 200px; overflow-y: auto;">
                                 <?php foreach ($all_abilita as $item): ?>
-                                    <option value="<?php echo $item->id; ?>" <?php echo in_array($item->id, $module->abilita) ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($item->nome); ?>
-                                    </option>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="abilita[]" value="<?php echo $item->id; ?>" id="abilita_<?php echo $item->id; ?>" <?php echo in_array($item->id, $module->abilita) ? 'checked' : ''; ?>>
+                                        <label class="form-check-label" for="abilita_<?php echo $item->id; ?>">
+                                            <?php echo htmlspecialchars($item->nome); ?>
+                                        </label>
+                                    </div>
                                 <?php endforeach; ?>
-                            </select>
+                            </div>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="competenze" class="form-label">Competenze</label>
-                            <select multiple class="form-control" id="competenze" name="competenze[]" style="height: 200px;">
+                            <input type="text" id="competenze-filter" class="form-control mb-2" placeholder="Filtra competenze...">
+                            <div id="competenze-container" class="form-control" style="height: 200px; overflow-y: auto;">
                                 <?php foreach ($all_competenze as $item): ?>
-                                    <option value="<?php echo $item->id; ?>" <?php echo in_array($item->id, $module->competenze) ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($item->nome); ?>
-                                    </option>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="competenze[]" value="<?php echo $item->id; ?>" id="competenza_<?php echo $item->id; ?>" <?php echo in_array($item->id, $module->competenze) ? 'checked' : ''; ?>>
+                                        <label class="form-check-label" for="competenza_<?php echo $item->id; ?>">
+                                            <?php echo htmlspecialchars($item->nome); ?>
+                                        </label>
+                                    </div>
                                 <?php endforeach; ?>
-                            </select>
+                            </div>
                         </div>
                     </div>
 
@@ -136,5 +148,34 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
             </div>
         </div>
     </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const setupFilter = (filterInputId, containerId) => {
+        const filterInput = document.getElementById(filterInputId);
+        const checkboxContainer = document.getElementById(containerId);
+
+        if (!filterInput || !checkboxContainer) return;
+
+        const items = checkboxContainer.querySelectorAll('.form-check');
+
+        filterInput.addEventListener('input', function() {
+            const filterValue = this.value.toLowerCase();
+            items.forEach(function(item) {
+                const label = item.querySelector('.form-check-label');
+                if (label.textContent.toLowerCase().includes(filterValue)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    };
+
+    setupFilter('conoscenze-filter', 'conoscenze-container');
+    setupFilter('abilita-filter', 'abilita-container');
+    setupFilter('competenze-filter', 'competenze-container');
+});
+</script>
 
 <?php include '../footer.php'; ?>
