@@ -53,6 +53,13 @@ $form_fields = [
             'docente' => 'Docente',
             'altro' => 'Altro'
         ]
+    ],
+    'codifica' => [
+        'label' => 'Codifica (5 caratteri)',
+        'type' => 'text',
+        'attributes' => [
+            'maxlength' => 5
+        ]
     ]
 ];
 
