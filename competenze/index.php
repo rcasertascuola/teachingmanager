@@ -24,11 +24,13 @@ $joins = [
 $selects = [
     'competenze.id as id',
     'competenze.nome as nome',
+    'competenze.codifica as codifica',
     'competenze.origine as origine',
     'tipologie_competenze.nome as tipologia'
 ];
 $columns = [
     'nome' => 'Nome',
+    'codifica' => 'Codifica',
     'origine' => 'Origine',
     'tipologia' => 'Tipologia',
     'anni_corso' => 'Anni di Corso',

@@ -11,6 +11,7 @@ class Competenza
     public $descrizione;
     public $tipologia_id;
     public $origine;
+    public $codifica;
 
     // Related data
     public $anni_corso;
@@ -24,6 +25,7 @@ class Competenza
         $this->descrizione = $data['descrizione'] ?? '';
         $this->tipologia_id = $data['tipologia_id'] ?? null;
         $this->origine = $data['origine'] ?? 'altro';
+        $this->codifica = $data['codifica'] ?? null;
 
         // These will be loaded separately if not provided
         $this->anni_corso = $data['anni_corso'] ?? [];
@@ -128,21 +130,23 @@ class Competenza
             $this->conn->beginTransaction();
 
             if ($this->id) {
-                $stmt = $this->conn->prepare('UPDATE competenze SET nome = :nome, descrizione = :descrizione, tipologia_id = :tipologia_id, origine = :origine WHERE id = :id');
+                $stmt = $this->conn->prepare('UPDATE competenze SET nome = :nome, descrizione = :descrizione, tipologia_id = :tipologia_id, origine = :origine, codifica = :codifica WHERE id = :id');
                 $params = [
                     'nome' => $this->nome,
                     'descrizione' => $this->descrizione,
                     'tipologia_id' => $this->tipologia_id,
                     'origine' => $this->origine,
+                    'codifica' => $this->codifica,
                     'id' => $this->id
                 ];
             } else {
-                $stmt = $this->conn->prepare('INSERT INTO competenze (nome, descrizione, tipologia_id, origine) VALUES (:nome, :descrizione, :tipologia_id, :origine)');
+                $stmt = $this->conn->prepare('INSERT INTO competenze (nome, descrizione, tipologia_id, origine, codifica) VALUES (:nome, :descrizione, :tipologia_id, :origine, :codifica)');
                 $params = [
                     'nome' => $this->nome,
                     'descrizione' => $this->descrizione,
                     'tipologia_id' => $this->tipologia_id,
-                    'origine' => $this->origine
+                    'origine' => $this->origine,
+                    'codifica' => $this->codifica
                 ];
             }
 
