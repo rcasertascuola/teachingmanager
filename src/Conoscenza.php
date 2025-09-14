@@ -7,6 +7,7 @@ class Conoscenza
     public $id;
     public $nome;
     public $descrizione;
+    public $origine;
 
     public $anni_corso;
     public $discipline;
@@ -17,6 +18,7 @@ class Conoscenza
         $this->id = $data['id'] ?? null;
         $this->nome = $data['nome'] ?? '';
         $this->descrizione = $data['descrizione'] ?? '';
+        $this->origine = $data['origine'] ?? 'altro';
 
         $this->anni_corso = $data['anni_corso'] ?? [];
         $this->discipline = $data['discipline'] ?? [];
@@ -147,11 +149,11 @@ class Conoscenza
             $this->conn->beginTransaction();
 
             if ($this->id) {
-                $stmt = $this->conn->prepare('UPDATE conoscenze SET nome = :nome, descrizione = :descrizione WHERE id = :id');
-                $params = ['nome' => $this->nome, 'descrizione' => $this->descrizione, 'id' => $this->id];
+                $stmt = $this->conn->prepare('UPDATE conoscenze SET nome = :nome, descrizione = :descrizione, origine = :origine WHERE id = :id');
+                $params = ['nome' => $this->nome, 'descrizione' => $this->descrizione, 'origine' => $this->origine, 'id' => $this->id];
             } else {
-                $stmt = $this->conn->prepare('INSERT INTO conoscenze (nome, descrizione) VALUES (:nome, :descrizione)');
-                $params = ['nome' => $this->nome, 'descrizione' => $this->descrizione];
+                $stmt = $this->conn->prepare('INSERT INTO conoscenze (nome, descrizione, origine) VALUES (:nome, :descrizione, :origine)');
+                $params = ['nome' => $this->nome, 'descrizione' => $this->descrizione, 'origine' => $this->origine];
             }
 
             $stmt->execute($params);

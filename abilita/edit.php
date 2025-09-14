@@ -41,6 +41,17 @@ $form_fields = [
             'cognitiva' => 'Cognitiva',
             'tecnico/pratica' => 'Tecnico/Pratica'
         ]
+    ],
+    'origine' => [
+        'label' => 'Origine',
+        'type' => 'select',
+        'required' => true,
+        'options' => [
+            'dipartimento' => 'Dipartimento',
+            'ministeriali' => 'Ministeriali',
+            'docente' => 'Docente',
+            'altro' => 'Altro'
+        ]
     ]
 ];
 

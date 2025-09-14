@@ -19,6 +19,7 @@ $entity_name = 'Abilità';
 $table_name = 'abilita';
 $columns = [
     'nome' => 'Nome',
+    'origine' => 'Origine',
     'tipo' => 'Tipo',
     'anni_corso' => 'Anni di Corso',
     'discipline' => 'Discipline'

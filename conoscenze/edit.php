@@ -10,39 +10,37 @@ if ($_SESSION['role'] !== 'teacher') {
     exit;
 }
 
-// Get the database connection
+// Configuration for the generic edit handler
 $db = Database::getInstance()->getConnection();
+$manager = new Conoscenza($db);
 
-$conoscenza_manager = new Conoscenza($db);
-$conoscenza = null;
+$entity = null;
 if (isset($_GET['id'])) {
-    $conoscenza = $conoscenza_manager->findById($_GET['id']);
+    $entity = $manager->findById((int)$_GET['id']);
 } else {
-    $conoscenza = new Conoscenza($db);
+    $entity = new Conoscenza($db);
 }
 
-$pageTitle = $conoscenza ? 'Modifica Conoscenza' : 'Crea Nuova Conoscenza';
-$formAction = 'save.php';
+$page_title = $entity->id ? 'Modifica Conoscenza' : 'Crea Nuova Conoscenza';
+$form_action = 'save.php';
+
+$form_fields = [
+    'nome' => ['label' => 'Nome', 'type' => 'text', 'required' => true],
+    'descrizione' => ['label' => 'Descrizione', 'type' => 'textarea'],
+    'origine' => [
+        'label' => 'Origine',
+        'type' => 'select',
+        'required' => true,
+        'options' => [
+            'dipartimento' => 'Dipartimento',
+            'ministeriali' => 'Ministeriali',
+            'docente' => 'Docente',
+            'altro' => 'Altro'
+        ]
+    ]
+];
+
+// Include the generic handler
+require_once '../handlers/edit_handler.php';
 ?>
-    <div class="container mt-5">
-        <h2><?php echo $pageTitle; ?></h2>
-        <form action="<?php echo $formAction; ?>" method="post">
-            <?php if ($conoscenza && $conoscenza->id): ?>
-                <input type="hidden" name="id" value="<?php echo $conoscenza->id; ?>">
-            <?php endif; ?>
-
-            <div class="form-group">
-                <label for="nome">Nome</label>
-                <input type="text" class="form-control" id="nome" name="nome" value="<?php echo htmlspecialchars($conoscenza->nome ?? ''); ?>" required>
-            </div>
-
-            <div class="form-group">
-                <label for="descrizione">Descrizione</label>
-                <textarea class="form-control" id="descrizione" name="descrizione" rows="3"><?php echo htmlspecialchars($conoscenza->descrizione ?? ''); ?></textarea>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Salva</button>
-            <a href="index.php" class="btn btn-secondary">Annulla</a>
-        </form>
-    </div>
 <?php include '../footer.php'; ?>
