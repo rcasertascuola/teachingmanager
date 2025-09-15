@@ -79,5 +79,25 @@ class Documento
 
         return false;
     }
+
+    public function update()
+    {
+        $query = "UPDATE " . $this->table_name . " SET topic = :topic, description = :description WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+
+        $this->topic = htmlspecialchars(strip_tags($this->topic));
+        $this->description = htmlspecialchars(strip_tags($this->description));
+        $this->id = htmlspecialchars(strip_tags($this->id));
+
+        $stmt->bindParam(':topic', $this->topic);
+        $stmt->bindParam(':description', $this->description);
+        $stmt->bindParam(':id', $this->id);
+
+        if ($stmt->execute()) {
+            return true;
+        }
+
+        return false;
+    }
 }
 ?>

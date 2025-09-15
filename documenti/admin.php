@@ -37,6 +37,7 @@ $stmt = $documento->readAll();
                             <td><?php echo htmlspecialchars($row['description']); ?></td>
                             <td><?php echo htmlspecialchars($row['upload_date']); ?></td>
                             <td>
+                                <a href="edit.php?id=<?php echo $row['id']; ?>" class="btn btn-warning btn-sm">Modifica</a>
                                 <a href="download.php?id=<?php echo $row['id']; ?>" class="btn btn-success btn-sm">Download</a>
                                 <a href="delete.php?id=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm">Elimina</a>
                             </td>
