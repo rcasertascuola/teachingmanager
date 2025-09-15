@@ -1,4 +1,5 @@
 <?php
+// Note: Authentication is handled by header.php
 require_once '../header.php';
 ?>
 
@@ -21,8 +22,8 @@ require_once '../header.php';
                     <label for="description" class="form-label">Descrizione</label>
                     <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">Carica</button>
-                <a href="index.php" class="btn btn-secondary">Annulla</a>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-upload"></i> Carica</button>
+                <a href="admin.php" class="btn btn-secondary"><i class="fas fa-times"></i> Annulla</a>
             </form>
         </div>
     </div>

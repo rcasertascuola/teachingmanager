@@ -1,4 +1,5 @@
 <?php
+// Note: Authentication is handled by header.php
 require_once '../header.php';
 require_once '../src/Database.php';
 require_once '../src/Documento.php';
@@ -27,8 +28,8 @@ $documento->readOne();
                     <label for="description" class="form-label">Descrizione</label>
                     <textarea class="form-control" id="description" name="description" rows="3"><?php echo htmlspecialchars($documento->description); ?></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">Salva Modifiche</button>
-                <a href="admin.php" class="btn btn-secondary">Annulla</a>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salva Modifiche</button>
+                <a href="admin.php" class="btn btn-secondary"><i class="fas fa-times"></i> Annulla</a>
             </form>
         </div>
     </div>

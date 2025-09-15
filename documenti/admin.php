@@ -1,4 +1,5 @@
 <?php
+// Note: Authentication is handled by header.php
 require_once '../header.php';
 require_once '../src/Database.php';
 require_once '../src/Documento.php';
@@ -12,7 +13,7 @@ $stmt = $documento->readAll();
     <div class="card">
         <div class="card-header">
             <h4>Gestione Documenti</h4>
-            <a href="upload.php" class="btn btn-primary float-end">Carica Nuovo Documento</a>
+            <a href="upload.php" class="btn btn-primary float-end"><i class="fas fa-plus"></i> Carica Nuovo Documento</a>
         </div>
         <div class="card-body">
             <table class="table table-striped">
@@ -37,9 +38,9 @@ $stmt = $documento->readAll();
                             <td><?php echo htmlspecialchars($row['description']); ?></td>
                             <td><?php echo htmlspecialchars($row['upload_date']); ?></td>
                             <td>
-                                <a href="edit.php?id=<?php echo $row['id']; ?>" class="btn btn-warning btn-sm">Modifica</a>
-                                <a href="download.php?id=<?php echo $row['id']; ?>" class="btn btn-success btn-sm">Download</a>
-                                <a href="delete.php?id=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm">Elimina</a>
+                                <a href="edit.php?id=<?php echo $row['id']; ?>" class="btn btn-warning btn-sm"><i class="fas fa-pencil-alt"></i></a>
+                                <a href="download.php?id=<?php echo $row['id']; ?>" class="btn btn-success btn-sm"><i class="fas fa-download"></i></a>
+                                <a href="delete.php?id=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
                             </td>
                         </tr>
                     <?php endwhile; ?>
