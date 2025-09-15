@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
+    exit("Accesso non autorizzato.");
+}
+
 require_once '../src/Database.php';
 require_once '../src/Documento.php';
 
@@ -18,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $documento->description = $_POST['description'];
 
         if ($documento->create()) {
-            header('Location: index.php');
+            header('Location: admin.php');
             exit();
         } else {
             echo 'Errore nel salvataggio del documento nel database.';

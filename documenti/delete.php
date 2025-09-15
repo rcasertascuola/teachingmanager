@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
+    exit("Accesso non autorizzato.");
+}
+
 if (isset($_GET['id'])) {
     require_once '../src/Database.php';
     require_once '../src/Documento.php';
@@ -16,7 +21,7 @@ if (isset($_GET['id'])) {
         }
 
         if ($documento->delete()) {
-            header('Location: index.php');
+            header('Location: admin.php');
             exit();
         } else {
             echo 'Errore nella cancellazione del documento dal database.';
