@@ -64,6 +64,8 @@ function is_active($path) {
                             <li><a class="dropdown-item <?php echo is_active('/lessons/'); ?>" href="/lessons/index.php"><i class="fas fa-chalkboard-teacher"></i> Lezioni</a></li>
                             <li><a class="dropdown-item <?php echo is_active('/contenuti/'); ?>" href="/contenuti/index.php"><i class="fas fa-box-open"></i> Contenuti</a></li>
                             <li><a class="dropdown-item <?php echo is_active('/synoptic_view.php'); ?>" href="/synoptic_view.php"><i class="fas fa-sitemap"></i> Vista Sinottica</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item <?php echo is_active('/import_page.php'); ?>" href="/import_page.php"><i class="fas fa-file-import"></i> Importa Modulo da JSON</a></li>
                         </ul>
                     </li>
 
