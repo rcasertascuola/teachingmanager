@@ -12,7 +12,7 @@ $orario->user_id = $_SESSION['id'];
 $stmt_orari = $orario->read();
 
 $disciplina = new Disciplina($db);
-$stmt_discipline = $disciplina->read();
+$discipline_list = $disciplina->findAll();
 
 $giorni_settimana = [
     1 => 'Lunedì',
@@ -39,9 +39,9 @@ $giorni_settimana = [
                     <div class="col-md-3">
                         <label for="disciplina_id" class="form-label">Disciplina</label>
                         <select id="disciplina_id" name="disciplina_id" class="form-select" required>
-                            <?php while ($row = $stmt_discipline->fetch(PDO::FETCH_ASSOC)) : ?>
-                                <option value="<?php echo $row['id']; ?>"><?php echo htmlspecialchars($row['nome']); ?></option>
-                            <?php endwhile; ?>
+                            <?php foreach ($discipline_list as $disc) : ?>
+                                <option value="<?php echo $disc->id; ?>"><?php echo htmlspecialchars($disc->nome); ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="col-md-3">
