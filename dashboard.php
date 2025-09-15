@@ -14,12 +14,26 @@ require_once 'header.php';
         <div class="row">
             <!-- Main Content -->
             <div class="col-md-8">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h4>Visione Giornaliera Appuntamenti</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h4>Prossimo Appuntamento</h4>
+                            </div>
+                            <div class="card-body" id="next-appointment">
+                                <!-- Next appointment will be loaded here -->
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body" id="daily-appointments">
-                        <!-- Appointments will be loaded here by JavaScript -->
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h4>Appuntamento Precedente</h4>
+                            </div>
+                            <div class="card-body" id="previous-appointment">
+                                <!-- Previous appointment will be loaded here -->
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -27,8 +41,11 @@ require_once 'header.php';
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
-                            <div class="card-body feature-slot" style="min-height: 400px;">
-                                <p class="text-muted">_placeholder per contenuti futuri_</p>
+                            <div class="card-header">
+                                <h4>Agenda della Settimana</h4>
+                            </div>
+                            <div class="card-body" style="min-height: 400px;">
+                                <div id="dashboard-calendar"></div>
                             </div>
                         </div>
                     </div>
@@ -59,6 +76,7 @@ require_once 'header.php';
         </div>
     </div>
 
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
     <script>
         function updateTime() {
             const now = new Date();
@@ -69,31 +87,44 @@ require_once 'header.php';
         setInterval(updateTime, 1000);
         updateTime(); // initial call
 
-        function fetchTodaysAppointments() {
-            fetch('/calendario/api_today.php')
+        function fetchDashboardData() {
+            fetch('/calendario/api_dashboard.php')
                 .then(response => response.json())
                 .then(data => {
-                    const appointmentsContainer = document.getElementById('daily-appointments');
-                    appointmentsContainer.innerHTML = ''; // Clear existing
-                    if (data.length > 0) {
-                        const list = document.createElement('ul');
-                        list.className = 'list-group list-group-flush';
-                        data.forEach(app => {
-                            const item = document.createElement('li');
-                            item.className = 'list-group-item';
-                            const startTime = new Date(app.start).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-                            const endTime = new Date(app.end).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-                            item.innerHTML = `<strong>${app.title}</strong> (${startTime} - ${endTime})`;
-                            list.appendChild(item);
-                        });
-                        appointmentsContainer.appendChild(list);
+                    // Populate next appointment
+                    const nextContainer = document.getElementById('next-appointment');
+                    if (data.next) {
+                        const startTime = new Date(data.next.start).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+                        nextContainer.innerHTML = `<p><strong>${data.next.title}</strong> alle ${startTime}</p>`;
                     } else {
-                        appointmentsContainer.innerHTML = '<p class="text-muted">Nessun appuntamento per oggi.</p>';
+                        nextContainer.innerHTML = '<p class="text-muted">Nessun altro appuntamento per oggi.</p>';
                     }
+
+                    // Populate previous appointment
+                    const prevContainer = document.getElementById('previous-appointment');
+                    if (data.previous) {
+                        const startTime = new Date(data.previous.start).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+                        prevContainer.innerHTML = `<p><strong>${data.previous.title}</strong> alle ${startTime}</p>`;
+                    } else {
+                        prevContainer.innerHTML = '<p class="text-muted">Nessun appuntamento precedente oggi.</p>';
+                    }
+
+                    // Initialize weekly calendar
+                    var calendarEl = document.getElementById('dashboard-calendar');
+                    var calendar = new FullCalendar.Calendar(calendarEl, {
+                        initialView: 'timeGridWeek',
+                        headerToolbar: false,
+                        events: data.all_today,
+                        editable: false,
+                        selectable: false,
+                        height: 'auto',
+                        allDaySlot: false
+                    });
+                    calendar.render();
                 })
-                .catch(error => console.error('Error fetching appointments:', error));
+                .catch(error => console.error('Error fetching dashboard data:', error));
         }
 
-        fetchTodaysAppointments();
+        fetchDashboardData();
     </script>
 <?php require_once 'footer.php'; ?>
