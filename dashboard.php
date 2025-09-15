@@ -18,8 +18,8 @@ require_once 'header.php';
                     <div class="card-header">
                         <h4>Visione Giornaliera Appuntamenti</h4>
                     </div>
-                    <div class="card-body feature-slot">
-                        <p class="text-muted">_placeholder per gli appuntamenti di oggi_</p>
+                    <div class="card-body" id="daily-appointments">
+                        <!-- Appointments will be loaded here by JavaScript -->
                     </div>
                 </div>
 
@@ -68,5 +68,32 @@ require_once 'header.php';
         }
         setInterval(updateTime, 1000);
         updateTime(); // initial call
+
+        function fetchTodaysAppointments() {
+            fetch('/calendario/api_today.php')
+                .then(response => response.json())
+                .then(data => {
+                    const appointmentsContainer = document.getElementById('daily-appointments');
+                    appointmentsContainer.innerHTML = ''; // Clear existing
+                    if (data.length > 0) {
+                        const list = document.createElement('ul');
+                        list.className = 'list-group list-group-flush';
+                        data.forEach(app => {
+                            const item = document.createElement('li');
+                            item.className = 'list-group-item';
+                            const startTime = new Date(app.start).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+                            const endTime = new Date(app.end).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+                            item.innerHTML = `<strong>${app.title}</strong> (${startTime} - ${endTime})`;
+                            list.appendChild(item);
+                        });
+                        appointmentsContainer.appendChild(list);
+                    } else {
+                        appointmentsContainer.innerHTML = '<p class="text-muted">Nessun appuntamento per oggi.</p>';
+                    }
+                })
+                .catch(error => console.error('Error fetching appointments:', error));
+        }
+
+        fetchTodaysAppointments();
     </script>
 <?php require_once 'footer.php'; ?>
