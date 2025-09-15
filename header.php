@@ -51,6 +51,7 @@ function is_active($path) {
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link <?php echo is_active('/dashboard.php'); ?>" href="/dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link <?php echo is_active('/documenti/index.php'); ?>" href="/documenti/index.php"><i class="fas fa-file-alt"></i> Documenti</a></li>
 
                     <!-- Programmazione Dropdown -->
                     <li class="nav-item dropdown">
