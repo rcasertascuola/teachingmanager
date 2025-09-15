@@ -1,0 +1,51 @@
+{
+  "conoscenze": [
+    { "nome": "Algebra Booleana", "descrizione": "Principi dell'algebra di Boole." },
+    { "nome": "Circuiti Logici", "descrizione": "Studio delle porte logiche e dei circuiti combinatori e sequenziali." }
+  ],
+  "abilita": [
+    { "nome": "Semplificare espressioni booleane", "descrizione": "Utilizzare le leggi di De Morgan e le mappe di Karnaugh.", "tipo": "cognitiva" },
+    { "nome": "Progettare un circuito combinatorio", "descrizione": "Dalla tabella della verità al circuito.", "tipo": "tecnico/pratica" }
+  ],
+  "competenze": [
+    {
+      "nome": "Progettazione di Sistemi Digitali di Base",
+      "descrizione": "Capacità di analizzare un problema e progettare un semplice sistema digitale.",
+      "tipologia": "Tecnica",
+      "abilita_associate_per_nome": [
+        "Semplificare espressioni booleane",
+        "Progettare un circuito combinatorio"
+      ],
+      "conoscenze_associate_per_nome": [
+        "Algebra Booleana",
+        "Circuiti Logici"
+      ]
+    }
+  ],
+  "modulo": {
+    "nome": "Elettronica Digitale",
+    "descrizione": "Un'introduzione ai fondamenti dell'elettronica digitale.",
+    "disciplina": "Elettronica",
+    "anno_corso": 3,
+    "udas": [
+      {
+        "nome": "UDA 1: Logica Booleana e Circuiti Combinatori",
+        "descrizione": "Introduzione ai concetti fondamentali.",
+        "lezioni": [
+          {
+            "titolo": "Lezione 1: Algebra di Boole",
+            "contenuto": "Contenuto della lezione sull'algebra booleana...",
+            "conoscenze_associate_per_nome": ["Algebra Booleana"],
+            "abilita_associate_per_nome": ["Semplificare espressioni booleane"]
+          },
+          {
+            "titolo": "Lezione 2: Porte Logiche e Circuiti",
+            "contenuto": "Contenuto della lezione sui circuiti logici...",
+            "conoscenze_associate_per_nome": ["Circuiti Logici"],
+            "abilita_associate_per_nome": ["Progettare un circuito combinatorio"]
+          }
+        ]
+      }
+    ]
+  }
+}
