@@ -51,7 +51,17 @@ function is_active($path) {
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link <?php echo is_active('/dashboard.php'); ?>" href="/dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link <?php echo is_active('/documenti/admin.php'); ?>" href="/documenti/admin.php"><i class="fas fa-file-alt"></i> Documenti</a></li>
+
+                    <!-- Agenda Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAgenda" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-book-reader"></i> Agenda
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownAgenda">
+                            <li><a class="dropdown-item <?php echo is_active('/calendario/index.php'); ?>" href="/calendario/index.php"><i class="fas fa-calendar-alt"></i> Calendario</a></li>
+                            <li><a class="dropdown-item <?php echo is_active('/documenti/admin.php'); ?>" href="/documenti/admin.php"><i class="fas fa-file-alt"></i> Documenti</a></li>
+                        </ul>
+                    </li>
 
                     <!-- Programmazione Dropdown -->
                     <li class="nav-item dropdown">
