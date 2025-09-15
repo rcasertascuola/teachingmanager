@@ -4,7 +4,7 @@ require_once '../src/Database.php';
 require_once '../src/Orario.php';
 require_once '../src/Disciplina.php';
 
-$database = new Database();
+$database = Database::getInstance();
 $db = $database->getConnection();
 
 $orario = new Orario($db);

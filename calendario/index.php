@@ -31,7 +31,10 @@ require_once '../header.php';
                         </li>
                     </ul>
                     <hr>
-                    <a href="orario.php" class="btn btn-primary mt-2">Gestisci Orario Lezioni</a>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-success" id="addAppointmentBtn">Aggiungi Appuntamento</button>
+                        <a href="orario.php" class="btn btn-primary">Gestisci Orario Lezioni</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -122,6 +125,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     calendar.render();
+
+    document.getElementById('addAppointmentBtn').addEventListener('click', function() {
+        document.getElementById('eventForm').reset();
+        document.getElementById('eventId').value = '';
+        document.getElementById('deleteEvent').style.display = 'none';
+
+        // Set default start and end times for new appointments
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const day = now.getDate().toString().padStart(2, '0');
+        const hours = now.getHours().toString().padStart(2, '0');
+
+        document.getElementById('eventStart').value = `${year}-${month}-${day}T${hours}:00`;
+        document.getElementById('eventEnd').value = `${year}-${month}-${day}T${(parseInt(hours) + 1).toString().padStart(2, '0')}:00`;
+
+        eventModal.show();
+    });
 
     document.getElementById('saveEvent').addEventListener('click', function() {
         var id = document.getElementById('eventId').value;
