@@ -1,0 +1,244 @@
+Sistemi e reti
+
+    Nucleo fondante
+
+        III anno
+            Basi teoriche della teoria degli insiemi reti e trasmissione dati
+            Progettazione di reti lan
+        IV Anno
+            Protocolli di rete architetture di rete
+        V anno
+            Sicurezza informatica
+            Crittografia
+            Sistemi wireless
+            Reti radiomobili
+
+    III anno
+        Conoscenze
+            Struttura, architettura e componenti dei sistemi di elaborazione.
+            Procedure di installazione e configurazione dei componenti hardware e software di un sistema di elaborazione.
+            Struttura e organizzazione di un sistema operativo e politiche di gestione dei processi.
+            Classificazione e moduli di gestione delle risorse del sistema operativo.
+            Essere in grado di progettare semplici reti scegliendo in maniera opportuna la topologia, la tecnologia di trasmissione, la tecnica di accesso al canale e la tecnica di commutazione
+
+    IV anno
+        Conoscenze
+            Riprodurre il funzionamento di una rete reale tramite semplici esercizi di simulazione con packet tracer.
+            Configurare un router adeguando le caratteristiche hardware e software alle specifiche esigenze della realtà in esame. Applicare gli algoritmi di routing attuando scelte adeguate alle caratteristiche della rete. Orientarsi nella complessità della morfologia della wan/gan
+            Individuando i macroelementi che la compongono ed i principi di interconnessione e di comunicazione tra di essi.
+            Identificare ed interpretare le componenti dei segmenti udp e tcp.
+            Scegliere i servizi a livello di trasporto adeguandole alle esigenze della trasmissione.
+            Lessico e terminologia tecnica di settore anche in lingua inglese
+
+    III e IV anno 
+        Competenze
+            Configurare, installare e gestire sistemi di elaborazione dati e reti
+            Scegliere dispositivi e strumenti in base alle loro caratteristiche funzionali
+            Descrivere e comparare il funzionamento di dispositivi e strumenti elettronici e di telecomunicazione
+            Gestire progetti secondo le procedure e gli standard previsti dai sistemi aziendali di gestione della qualità e della sicurezza
+            Utilizzare le reti e gli strumenti informatici nelle attività di studio, ricerca e approfondimento disciplinare
+            Analizzare il valore, i limiti e i rischi delle varie soluzioni tecniche per la vita sociale e culturale con particolare attenzione alla sicurezza nei luoghi di vita e di lavoro, alla tutela della persona, dell’ambiente e del territorio.
+
+        Abilità cognitive
+            Individuare la corretta configurazione di un sistema per una data applicazione.
+            Identificare i principali dispositivi periferici;
+            Selezionare un dispositivo adatto all’applicazione data.
+            Identificare e analizzare gli aspetti funzionali dei principali componenti di un sistema operativo.
+            Scegliere il sistema operativo adeguato ad un determinato ambiente di sviluppo.
+            Utilizzare il lessico e la terminologia tecnica di settore anche in lingua inglese.
+
+        Abilità pratiche
+            Installare, configurare e gestire sistemi operativi garantendone la sicurezza.
+            Progettare e realizzare applicazioni che interagiscono con le funzionalità dei sistemi operativi.
+            Progettare e realizzare applicazioni in modalità concorrente.
+
+    V anno
+        Conoscenze
+            Metodi e tecnologie per la programmazione di rete.
+            Protocolli e linguaggi di comunicazione a livello applicativo.
+            Tecniche di filtraggio del traffico di rete.
+            Tecniche crittografiche applicate alla protezione dei sistemi e delle reti.
+            Reti private virtuali.
+            Modello client/server e distribuito per i servizi di rete.
+            Funzionalità e caratteristiche dei principali servizi di rete.
+            Strumenti e protocolli per la gestione ed il monitoraggio delle reti.
+            Macchine e servizi virtuali, reti per la loro implementazione.
+
+        Competenze
+            Configurare, installare e gestire sistemi di elaborazione dati e reti
+            Scegliere dispositivi e strumenti in base alle loro caratteristiche funzionali
+
+        Abilità cognitive
+            Identificare le caratteristiche di un servizio di rete.
+            Selezionare, installare, configurare e gestire un servizio di rete locale o ad accesso pubblico.
+            Integrare differenti sistemi operativi in rete
+            Utilizzare il lessico e la terminologia tecnica di settore anche in lingua inglese.
+
+        Abilità pratiche
+            Realizzare applicazioni per la comunicazione di rete.
+            Sviluppare applicazioni client-server utilizzando protocolli esistenti e/o progettando semplici protocolli di comunicazione.
+            Progettare reti interconnesse con parti
+
+Tep
+    Nucleo fondante
+        III anno
+            Sistemi operativi
+            Gestione delle risorse
+        IV ANNO
+            Il modello a processi
+            Risorse e condivisione
+        V anno
+            Thread e concorrenza
+            Comunicazione e sincronizzazione tra processi, i semafori
+            Problemi classici della programmazione concorrente
+
+    Conoscenze
+        III ANNO
+            Principi di teoria e di codifica dell’informazione.
+            Classificazione, struttura e funzionamento generale dei sistemi operativi.
+            Struttura e organizzazione di un sistema operativo e politiche di gestione dei processi.
+            Classificazione e moduli di gestione delle risorse del sistema operativo.
+        IV ANNO
+            Tecniche e tecnologie per la programmazione concorrente e la sincronizzazione dell’accesso a risorse condivise.
+            Casi significativi di funzionalità programmabili di un sistema operativo.
+            Fasi e modelli di gestione di un ciclo di sviluppo.
+            Tecniche e strumenti per la gestione delle specifiche e dei requisiti di un progetto.
+            Tipologie di rappresentazione e documentazione dei requisiti, dell’architettura dei componenti di un sistema e delle loro relazioni e interazioni.
+            Rappresentazione e documentazione delle scelte progettuali e di
+            implementazione in riferimento a standard di settore.
+            Normative di settore nazionale e comunitaria sulla sicurezza e la tutela ambientale.
+            Lessico e terminologia tecnica di settore anche in lingua inglese
+
+
+
+    III e IV anno
+        Competenze
+            Sviluppare applicazioni informatiche per reti locali o servizi a distanza.
+            Scegliere dispositivi e strumenti in base alle loro caratteristiche funzionali.
+            Gestire progetti secondo le procedure e gli standard previsti dai sistemi aziendali di gestione della qualità e della sicurezza.
+            Gestire processi produttivi correlati a funzioni aziendali.
+            Configurare, installare e gestire sistemi di elaborazione dati e reti.
+            Redigere relazioni tecniche e documentare le attività individuali e di gruppo relative a situazioni professionali.
+        
+        Abilità cognitive
+            Identificare e analizzare gli aspetto funzionali dei principali componenti di un sistema operativo.
+            Identificare i principali dispositivi periferici.
+            Selezionare un dispositivo adatto all’applicazione data.
+            Identificare le fasi di un progetto nel contesto del ciclo di sviluppo.
+            Scegliere il sistema operativo adeguato ad un determinato ambiente di sviluppo.
+            Utilizzare il lessico e la terminologia tecnica di settore anche in lingua inglese.
+        
+        Abilità pratiche
+            Progettare e realizzare applicazioni che interagiscono con la funzionalità dei sistemi operativi.
+            Documentare i requisiti e gli aspetti architetturali di un prodotto/servizio, anche in riferimento a standard di settore.
+            Progettare e realizzare applicazioni in modalità concorrente.
+            Utilizzare le normative di settore sulla sicurezza e la tutela ambientale.
+
+    V anno
+
+    Competenze
+        Sviluppare applicazioni informatiche per reti locali o servizi a distanza.
+        Scegliere dispositivi e strumenti in base alle loro caratteristiche funzionali.
+        Gestire progetti secondo le procedure e gli standard previsti dai sistemi aziendali di gestione della qualità e della sicurezza.
+        Gestire processi produttivi correlati a funzioni aziendali.
+        Configurare, installare e gestire sistemi di elaborazione dati e reti.
+        Redigere relazioni tecniche e documentare le attività individuali e di gruppo relative a situazioni professionali.
+    
+    Conoscenze
+        Metodi e tecnologie per la programmazione di rete.
+        Protocolli e linguaggi di comunicazione a livello applicativo.
+        Tecnologie per la realizzazione di web service.
+    
+    Abilità cognitive
+        Identificare le caratteristiche di un servizio di rete.
+        Selezionare, installare, configurare e gestire un servizio di rete locale o ad accesso pubblico.
+        Integrare differenti sistemi operativi in rete
+        Utilizzare il lessico e la terminologia tecnica di settore anche in lingua inglese.
+    
+    Abilità pratiche
+        Realizzare applicazioni per la comunicazione di rete.
+        Progettare l’architettura di un prodotto/servizio individuandone le componenti tecnologiche.
+        Realizzare semplici applicazioni orientate ai servizi.
+        Sviluppare programmi client/server utilizzando protocolli esistenti.
+        Progettare semplici protocolli di comunicazione.
+
+IA
+    Nucleo fondante
+        Rappresentazione della conoscenza e dei dati;
+        Apprendimento e adattamento dei sistemi;
+        Ragionamento e risoluzione di problemi;
+        Interazione tra sistemi intelligenti e ambiente;
+        Implicazioni etiche e sociali dell'intelligenza artificiale
+
+    COMPETENZE
+        Sviluppare applicazioni informatiche per reti locali o servizi a distanza
+        Configurare, installare e gestire sistemi di elaborazione dati e reti.
+        Redigere relazioni tecniche e documentare le attività individuali e di gruppo relative a situazioni professionali.
+
+    CONOSCENZE
+        Fondamenti e Storia dell'Intelligenza Artificiale
+            Introduzione all'idea di Intelligenza Artificiale e agli antecedenti storici, esame delle teorie e dei modelli chiave sviluppati nel tempo. Comprendere l'evoluzione delle applicazioni pratiche dell'IA nel corso del tempo. Esaminare i primi successi e le sfide incontrate nell'implementazione pratica. Esaminare gli impatti storici dell'IA sulla società e sulle previsioni future.
+
+        Modelli Teorici dell'IA
+            Familiarità con concetti come reti neurali, logica simbolica, e apprendimento automatico.
+            
+        Etica e Implicazioni Sociali dell'IA   
+            Comprendere le sfide etiche e sociali associate all'IA.
+
+        Programmazione Python per Data Science e Machine Learning
+            Concetti di base della programmazione Python (sintassi, variabili, operatori, strutture dati). Introduzione alla libreria numpy per la manipolazione efficiente di array multidimensionali e a matplotlib per la visualizzazione dei dati. Introduzione alla libreria pandas per l'analisi dati e la manipolazione di dati strutturati. Introduzione alla libreria scikit-learn per l'apprendimento automatico in Python. Comprendere cos'è Anaconda e le sue caratteristiche principali, inclusi i pacchetti preinstallati e l'ambiente di gestione degli ambienti virtuali. Familiarizzare con Jupyter e il suo concetto di notebook interattivo per la creazione di documenti che combinano codice eseguibile, testo formattato e visualizzazioni.
+
+        Ambienti di Sviluppo per l'IA    
+            Esaminare le caratteristiche di Google Colab, un ambiente di sviluppo basato su cloud che offre accesso gratuito a GPU e TPU per l'esecuzione di notebook Jupyter.
+
+        Modelli di Regressione Lineare
+            Concetti fondamentali delle regressioni lineari, compresa la definizione di variabili dipendenti e
+            indipendenti. Descrizione della regressione lineare semplice e del metodo dei minimi quadrati. Introduzione alla regressione lineare multipla e alla gestione di più variabili indipendenti. 
+
+        Valutazione dei Modelli Statistici:    
+            Metodi per valutare la bontà del modello di regressione lineare, tra cui R-squared, p-value e altri
+            test di significatività.
+
+        Reti Neurali e Architetture di Deep Learning            
+            Concetti di base delle reti neurali, tra cui neuroni, architetture di rete e funzioni di attivazione.
+            Descrizione dell'algoritmo di backpropagation per l'addestramento delle reti neurali. Introduzione alle reti neurali profonde e alle loro architetture, come reti neurali convoluzionali (CNN) e reti neurali ricorrenti (RNN).
+
+        Progettazione e Ottimizzazione di Reti Neurali        
+            Tecniche per la progettazione e l'ottimizzazione dei modelli di reti neurali, comprese le tecniche di
+            regolarizzazione e l'ottimizzazione degli iperparametri.
+
+        Applicazioni Pratiche delle Reti Neurali
+            Studio di casi di studio e applicazioni reali di reti neurali in vari settori.
+
+
+    ABILITÀ COGNITIVE
+        Analisi Storica e Critica dell'IA
+            Comprendere il contesto storico e le influenze filosofiche sull'IA. Analizzare le prime definizioni e concettualizzazioni dell'IA. Relazionare teorie e modelli ai progressi tecnologici. Analizzare il ruolo dell'IA nella risoluzione di problemi reali e le implicazioni sociali ed economiche dei suoi sviluppi. Riflettere sulle implicazioni etiche e sociali dei progressi nell'IA.
+
+        Applicazione Pratica del Machine Learning
+            Capire i concetti fondamentali di machine learning e come applicarli utilizzando scikit-learn.
+
+        Interpretazione e Analisi della Regressione Lineare     
+            Comprendere il principio di regressione lineare e le sue applicazioni in statistica e analisi dei dati. Comprendere come adattare un modello di regressione lineare ai dati e interpretare i coefficienti. Comprendere i concetti di multicollinearità e di selezione delle variabili. Interpretare i risultati dell'analisi dei dati e comprendere le limitazioni dei modelli di regressione lineare.
+
+        Comprensione dei Processi di Apprendimento Neurale    
+            Comprendere il funzionamento generale di una rete neurale e il processo di apprendimento. Comprendere il ruolo e il funzionamento dell'algoritmo di backpropagation nel calcolo del gradiente e nell'aggiornamento dei pesi della rete.
+
+        Configurazione e Applicazione di Reti Neurali Profonde    
+            Comprendere il funzionamento e le applicazioni delle reti neurali profonde in problemi di visione
+            artificiale, elaborazione del linguaggio naturale e altro ancora. Comprendere come selezionare e configurare gli iperparametri per migliorare le prestazioni del modello.
+
+        Valutazione Critica dei Modelli Predittivi    
+            Analizzare e valutare criticamente l'efficacia delle reti neurali in contesti applicativi specifici.
+            Comprendere il processo decisionale degli alberi decisionali e la loro capacità di classificare o predire
+            l'output.
+
+
+    ABILITÀ PRATICHE
+        Sviluppo in Python per l'Analisi e la Visualizzazione Dati
+            Capire come scrivere e eseguire script Python per risolvere problemi semplici.Comprendere come utilizzare numpy per operazioni matematiche su array e matplotlib per creare grafici. Comprendere come caricare, esplorare e manipolare dati utilizzando pandas. 
+            
+        Gestione di Ambienti di Sviluppo Interattivi    
+            Capire come installare Anaconda sul proprio sistema e gestire gli ambienti virtuali per progetti
+            Python separati. Comprendere come avviare e utilizzare Jupyter Notebook per scrivere e eseguire codice Python in celle interattive. Capire come utilizzare Google Colab per eseguire notebook Jupyter, condividere e collaborare con
+            altri utenti.
